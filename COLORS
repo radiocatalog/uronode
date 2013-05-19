@@ -1,0 +1,25 @@
+Incase you're wondering about the method behind the madness in my color
+schema it's very simple. Picture yourself with 3 vehicles to drive on
+different roads with; a scooter, a compact car, and an SUV. Each vehicle
+(or protocol) has it's own color. Each vehicle follows the same rules
+of the road (green for go, red for stop, blinking red for alarms). When
+you command URONode to go somewhere, you get green. When you return and
+the process has completed it's red. Ax25/Flex is Yellow, NetRom is Cyan,
+and IP/System messages are Magenta.
+
+It's VERY IMPORTANT that you program any automated scripts that connect
+to URONode that they do NOT use colors! Simply remove 512 from their
+permissions. If you do NOT do this, the robot script may attempt to 
+decipher ANSI code and it may cause it to hang. YOU HAVE BEEN WARNED!
+
+
+Here's the schema:
+Connects display in green as in "gateway go"
+Reconnects display in red as in "gateway stop"
+IP based information is in magenta
+Netrom Nodes (full list) in bold cyan
+FlexNet destis (full list) in yellow
+System info in bright white
+Aborts and timeouts blink bright red
+Logouts in low cyan
+

@@ -1,0 +1,14 @@
+
+USAGE
+        Dest [*|<nodecall>]
+
+DESCRIPTION
+        Shows the FlexNet destination table of the local node. The
+        destinations on this list can be reached using the Connect
+        command without knowing the actual network path used 
+        (assuming the network is OK).
+
+        The optional parameter * toggles verbose mode, showing the
+        ssid mask, the round-trip-time and the path used to reach each
+        node. You can also specify a node callsign to get the verbose
+        information for a single node.

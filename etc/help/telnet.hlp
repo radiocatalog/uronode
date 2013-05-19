@@ -1,0 +1,25 @@
+
+USAGE
+        Telnet <host> [<port>] [s|d]
+
+DESCRIPTION
+        Initiates a telnet session to a remote host using TCP/IP.
+        You might not be able to connect to a given host due to the
+        local operator's policy of using this node, or simply because
+        the host is unreachable due to a network failure. You can use
+        the ping command to check if a host is reachable.
+
+        By default, the telnet command connects to the TCP port 23
+        (allocated for telnet). You can specify another TCP port or
+        a TCP port name.
+
+        If a single `s' is entered as the last parameter, then when
+        the remote host disconnects you will be returned to this node.
+        If a single `d' is entered as the last parameter, you will
+        be disconnected from this node too. Default behaviour (neither
+        `s' nor `d' entered) depends on sysop configuration.
+
+EXAMPLES
+        telnet aripisa.ampr.org
+        telnet aripisa.ampr.org 1024
+        telnet 44.134.208.29

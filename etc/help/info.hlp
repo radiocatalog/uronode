@@ -1,0 +1,8 @@
+
+USAGE
+        Info
+
+DESCRIPTION
+       Displays the version information and the contents of the
+       /etc/ax25/node.info file, which describes those aspects of
+       the system that the sysop likes to brag about.

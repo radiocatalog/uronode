@@ -1,0 +1,15 @@
+
+USAGE
+        PIng <hostname> [<length>]
+
+DESCRIPTION
+        Checks if a host can be reached trough the network by sending
+        an ICMP Echo Request packet to the host and waiting for it to
+        reply. If a reply is received the round-trip-time (RTT)
+        between the local and remote hosts is shown.
+
+        If an optional length is specified the data portion of the
+        packet is filled with length number of bytes.
+
+EXAMPLE
+        ping aripisa.ampr.org

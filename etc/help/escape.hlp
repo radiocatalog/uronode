@@ -1,0 +1,16 @@
+
+USAGE
+        Escape <escape char>
+
+DESCRIPTION
+        Sets the character will be treated as the signal to close down any
+        open connection made from the node.
+
+	You can specify the escape character in a number of ways. They are:
+
+           <char> the actual binary character
+           ^T     to set it to Control-T (or any other control character)
+           0xNN   to set it to hexadecimal value NN
+           0NNN   to set it to Octal value NNN
+           NNN    to set it to decimal value NNN (no leading zero!)
+           -1     to disable this feature

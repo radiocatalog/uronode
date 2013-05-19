@@ -1,0 +1,13 @@
+
+USAGE
+        Finger [<username>][@<hostname>]
+
+DESCRIPTION
+        Retrieves information about users of a system. If the user
+        name is omitted, shows the users currently logged on the 
+        host. If the hostname is omitted, defaults to the local host.
+
+EXAMPLES
+        finger @aripisa.ampr.org
+        finger iz5awz@aripisa.ampr.org
+        finger iz5awz

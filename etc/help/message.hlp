@@ -1,0 +1,14 @@
+
+USAGE 
+	MEssage <callsign or user@domain>
+
+DESCRIPTION
+
+        Send email to users (now only available for messages to sysop).
+	Note: sysop has to enable your mail flag for you to be able to
+	receive mail, otherwise you may only send from here.
+
+	*Sysop Note: use your adduser or userconf program and create
+	the users account as well as adding the mail flag to the
+	configuration file. Select: /bin/false for a shell.
+

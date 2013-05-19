@@ -1,0 +1,8 @@
+
+USAGE
+        Mheard [<port>]
+
+DESCRIPTION
+        Gives a list of heard AX25 stations on all ports and, if 
+	specified, on the specified port.
+        Use the "Ports" command to get a list of available ports.

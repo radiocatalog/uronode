@@ -1,0 +1,16 @@
+
+USAGE
+        Routes
+
+DESCRIPTION
+        Shows the NET/ROM route table of the local host (eg. the nodes
+        which the local node directly talks with). These nodes are used
+        to reach the other nodes on the node table. Fields shown are:
+
+         Link           - Is there an AX25 connection active to this node
+         Port           - Which port is this route on
+         Callsign       - The callsign of the neighbour node
+         Quality        - A relative quality for the path (0-255)
+         Destinations   - Number of other nodes reached via this route
+         Lock           - Is the quality of this route locked by the operator
+         QSO            - Number of NET/ROM session enties

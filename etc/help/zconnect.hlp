@@ -1,0 +1,23 @@
+
+USAGE
+        ZConnect <call | alias> [s|d]                   For NET/ROM or Links
+        ZConnect <port> <call> [via <digi1> ...] [s|d]  For AX25
+	ZConnect <call> <address> [<digi>] [d|s]        For ROSE
+	ZConnect <destination> [s|d]                    For FlexNet
+
+DESCRIPTION
+        Compresses an AX25, NET/ROM, ROSE or Flexnet connection to a
+	remote host. If more than two parameters are entered and the
+        second parameter is ten charachers in length then it is
+        interpreted as a ROSE connection, otherwise the first
+        parameter is interpreted as a port name and AX25 is used
+        to make the connection via that port. If only one parameter
+        is given the connection is made searching for the callsign
+	in NET/ROM nodes, in AX25 Fixed links, in FlexNet destinations
+	and last in Mheard database in this order.	
+
+        If a single `s' is entered as the last parameter, then when
+        the remote host disconnects you will be returned to this node.
+        If a single `d' is entered as the last parameter, you will
+        be disconnected from this node too. Default behaviour (neither
+        `s' nor `d' entered) depends on sysop configuration.

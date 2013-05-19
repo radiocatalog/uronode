@@ -1,0 +1,30 @@
+#ifndef	CONFIG_H
+#define	CONFIG_H
+
+/*
+ * Some global #defines for programmers to use for conditional compilation
+ */
+@HAVEAX25@
+@HAVEFLEX@
+@HAVEROSE@
+@HAVENETROM@
+@HAVEZLIB@
+@HAVEMHEARD@
+@HAVETCPIP@
+#define	PROC_AX25_CALLS_FILE	"/proc/net/ax25_calls"
+
+/*
+ * mheard specific (we need to get this out of here!!!!)
+ */
+#define	DATA_MHEARD_FILE	"@VAR_DIR@/mheard/mheard.dat"
+
+/*
+ * node specific
+ */
+#define	CONF_NODE_FILE		"@ETC_DIR@/uronode.conf"
+#define	CONF_NODE_PERMS_FILE	"@ETC_DIR@/uronode.perms"
+@HAVEMOTD@		@MOTDPATH@
+#define	CONF_NODE_INFO_FILE	"@ETC_DIR@/uronode.info"
+#define	DATA_NODE_LOGIN_FILE	"@VAR_DIR@/node/loggedin"
+#define	DATA_NODE_HELP_DIR	"@VAR_DIR@/node/help/"
+#endif

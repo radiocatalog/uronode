@@ -1,0 +1,90 @@
+URONode README file	April 12, 2003
+
+Note: Please read the CHANGES file for detailed information
+about the changes from AWZNode to URONode and what I've
+done with it... along with current version info! - Brian N1URO
+
+Hi linuxers!
+
+First all, I thanks PE1RJA and OH2BNS for their very great job!
+
+*****************************************************************************
+The v0.5.x release is a temporary version of URONode running and compiling
+under linux 2.4.x, with glibc 6 and new ax25 and ax25io libraries. v0.0.11
+*****************************************************************************
+
+UROnode is based on AWZ|LinuxNode by Tomi Manninen OH2BNS and FlexNode 
+by Roy PE1RJA. It was born initially for the aripisa.ampr.org system 
+by Stefano Noferi IZ5AWZ of ARI Ham Radio Association of Pisa (ITALY).
+Users in URONode can connect all ham packet world: all AX25, NETROM, ROSE, 
+FLEXNET, ITANET, TCP/IP nodes in the world are now near.
+
+Comment from Stefano:
+I have a "packet" dream: all the packet networks can interchange connections.
+My version of node software for Linux is an attempt to realize this idea
+and I hope it can help the ham radio digital world to come back one. ;)
+
+I thanks ARI association of Pisa and Alex Del Chicca IK5PWJ,
+for their trust and supports.
+
+This README file, the documentation etc. are very incomplete! 
+Sorry, but my free time is very very very... very little.. :)
+
+If you decide to use URONode, send me a mail.
+     
+Routing features include: (in order preferance)
+- netrom routing
+- fixed routes
+	Create and/or modify /etc/ax25/node.routes, the format of this file
+        is in the example file etc/node.route.ex.
+	Now fixed link nodes in this file have an alias and 3 connection 
+	modes, can be queried using the Links command and can be 
+	connected directly using: Connect <call>|<alias> (ie. without 
+	specifying the downlink port)
+- flexnet destination lists
+	A separate daemon (flexd) queries a neighbouring flexnet node for its
+        reachable destinations, these destinations are stored on the local
+        disk and can be queried using the Dest command and can be connected
+        directly using: Connect <destination>
+	Config file: /etc/ax25/flexd.conf:
+	MyCall <call>            # the callsign used during the connection
+	PollInterval <interval>  # how often the destinations are downloaded
+	FlexGate <call>          # the neighbouring flexnet node
+	The pollinterval is specified in seconds and the callsign after
+        flexgate must be defined in /etc/ax25/node.routes !!
+- mheard based routing
+        When users are using your node the mheard tables are filled with
+        callsigns, callsigns heard on ports can be connected directly with
+        the Connect <call> command, without specifying the downlink port.
+
+Other features:
+- local users of the linux machine can be granted access to the mailreader
+  and optionally to the shell. Config file: /etc/ax25/node.users
+  <call>:<password>:<username>:[mail][,shell]
+  call : the callsign of the user that is allowed to access special features
+  password : a string pasword for MD2 standard authentication
+  username : the (real)-username on the linux side
+  options : mail  - the user has permission to access his or her mailbox
+            shell - the user has permission to access the shell
+  The password check is used when the user want to access the shell with
+  "sys" command, the node prints out a Prompt, 5 numbers and a 10-digits 
+  number for MD2.
+  Users with the mail option enabled will receive messages like "New mail
+  has arrived", mostly when the stated condition is met ;-)
+- all users can send messages to a callsign associated in the kernel table
+  with a linux username ("send" command).
+- now the sysop can modified the node prompt and password prompt 
+- "!" command show system statistics
+- old "SEssions" command is now "MSessions"
+- now "MHeard" command can be used without port specification
+- changed the output of several query programs (like ports/routes etc.) also
+  included more netrom specific output in these commands
+- included a lastlog, which shows the time, date and port of your previous
+  session, if this is your first connect, you are requested to read the
+  info text
+
+The official FTP Site of URONode is:
+ftp://ftp.uroweb.net/pub/ax25/
+
+Please check out the file INSTALL to compile and install URONode.
+Also please read the CHANGES file for all version history changes.

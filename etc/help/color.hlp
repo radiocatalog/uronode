@@ -1,0 +1,18 @@
+
+USAGE
+        <none>
+
+DESCRIPTION
+        Adds ANSI color to the system for you. Send a message to
+	the sysop and request that they add 512 to your permissions
+	flag for the interface(s) you connect in from to get the
+	color schema. You *must* use an ANSI compliant terminal such
+	as Qmodem, Telix, telnet, etc.
+	Interfaces available:	Schema:
+	ax25			ax25	- yellow
+	netrom			netrom	- cyan
+	internet		internet- magenta
+	amprnet			system 	- white
+	localhost		starts	- green
+				stops	- red
+				alarms	- flashing red

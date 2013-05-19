@@ -1,0 +1,14 @@
+
+USAGE
+        STatus
+
+DESCRIPTION
+        Returns information about the status of the Linux system which this 
+        FlexNode runs on. All information is taken directly from the 
+        operating system.
+
+        The "load average" values indicate the average amount of processes
+        waiting for processor time during the last 1, 5 and 15 minutes.
+        Load average of 1.0 would mean that the all of the processor time is
+        used by the processes, and all processes still get all of the time
+        they can use.

@@ -1,0 +1,69 @@
+1. COMPILING and INSTALLING
+
+To compile and run URONode you will need to have libax25-0.0.4 or newer
+installed on your system. It should work on any platform where libax25 can
+be compiled and installed. 
+Note however that it will NOT work with 2.0.x kernels.
+
+To install you should first run:
+
+  ./configure
+
+and answer to the questions it makes. 
+
+** IF ** this is an ** UPGRADE **:
+and if you said no to configure running a "make", just type:
+make; make installbin
+This will *not* overwrite your config files, and will freshen up
+your binaries only. If you told the configure script to make, then
+all you need to type to upgrade is: make installbin.
+
+** IF ** this is a new install:
+
+If all files needed are present everything should work. Next:
+
+  make (if you said "no" to the configure script launching it for you)
+  make install
+  make installhelp
+
+Optionally you may want to run also:
+
+  make installconf
+
+to install the default configuration files. 
+Note however this copy example files in /etc/ax25 but with ".ex". 
+You should rename it by removing ".ex" at the end of filenames.
+
+After that you need to edit the configuration files to suit your system. 
+The manual pages for node.conf(5) and node.perms(5) should give an idea 
+of what to put into these files. The AX25-HOWTO is a must read also.
+
+2. RUNNING
+
+URONode is intended to be called from ax25d or inetd. It doesn't need
+any command line arguments. See the node(8) manual page.
+
+To run URONode from ax25d, /etc/ax25/ax25d.conf should have something
+like this in it:
+
+  # AX25 Port ax0
+  [N1URO-2 VIA ax0]
+  default  * * * * * *  -    root  /usr/bin/uronode  uronode
+
+  # NETROM Port
+  <nr0>
+  default  * * * * * *  -    root  /usr/bin/uronode  uronode
+
+/etc/inetd.conf could have something like this in it:
+
+  # Listen at telnet port -> URONode
+  telnet  stream  tcp     nowait  root    /usr/bin/uronode     uronode
+
+Note that URONode should always be run as root. Otherwise outgoing
+connects won't work. Also ping needs a raw socket which requires root
+priviledges.
+
+URONode can also be called from command line. It then uses kernel
+axassociation table to find a call associated to the user. Again
+for outgoing connects (and ping) to work URONode needs to be
+installed setuid root (make install does that by default).

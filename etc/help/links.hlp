@@ -1,0 +1,16 @@
+
+USAGE
+        Links [ d | n | v | <call>]
+
+DESCRIPTION
+        Shows the AX25 link table of the local node. The destinations 
+        on this list can be reached using the Connect command without 
+	knowing the actual network path used (assuming the network is OK).
+
+        The optional parameter d show the AX25 nodes directly linked.
+	The optional parameter n show the AX25 nodes linked connecting 
+	another node and passing a string type "C XX0XX".
+	The optional parameter v show the AX25 links via digipeaters.
+
+	You can also specify a destination callsign to get the verbose 
+	information for a single destination.

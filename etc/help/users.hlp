@@ -1,0 +1,8 @@
+
+USAGE
+        Users
+
+DESCRIPTION
+        Shows a list of users currently connected to the local node,
+        where the users are coming from, and what are they doing at the
+        moment.

@@ -1,0 +1,35 @@
+Welcome to the official FAQ file for URONode.
+
+The purpose of this file is to help explain better about URONode and what
+the various features were designed for. Since this file will be maintained
+via URONode Sysop reports, I'll consider this file a constant 'work in
+progress' type file.
+
+When using URONode or really any other linux node flavor, keep in mind
+that the actual node program itself is only a front-end for the users
+to do various functions your linux server may have to provide. Node really
+doesn't do any sort of control features whatsoever, it merely acts as a
+sort of proxy to your linux daemons. Those features are toggled on/off at
+compile time by the operator of the node. I've taken time to rework the
+configure script to give the node ops more flexibility in what they wish
+to service their end users with. Nothing about URONode was ever designed
+as a 'replacement' for any existing services such as email and convers.
+I'm not even going to suggest one chooses to run URONode as a replacement
+for LinuxNode by Tomi, AWZNode, or even FlexNode. The goals I set when
+starting this project were moreso to custom fit my unique setup and its
+something I can share with the amateur community at the same time.
+
+URONode is NOT:
+A replacement for *NOS
+A replacement for Email
+A replacement for PBBS
+A replacement for convers
+A FlexNet router
+
+URONode IS:
+A user front-end with some additional features to help compliment those 
+existing features an end user may need but for whatever reason doesn't
+have access to at the moment, while allowing links to various entities
+such as AX.25 links, Net/Rom routing, FlexNet destinations, general and
+amprnet TCP/IP services.
+

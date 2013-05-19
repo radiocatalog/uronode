@@ -1,0 +1,11 @@
+gcc -Wstrict-prototypes -O2 -g -c user.c
+gcc -Wstrict-prototypes -O2 -g -c util.c
+gcc -Wstrict-prototypes -O2 -g -c nodeusers.c
+gcc  -o nodeusers user.o util.o nodeusers.o -lax25 -lax25io -lz
+gcc -Wstrict-prototypes -O2 -g -c node.c
+gcc -Wstrict-prototypes -O2 -g -c cmdparse.c
+gcc -Wstrict-prototypes -O2 -g -c config.c
+gcc -Wstrict-prototypes -O2 -g -c command.c
+gcc -Wstrict-prototypes -O2 -g -c mheard.c
+gcc -Wstrict-prototypes -O2 -g -c axcalluser.c
+gcc -Wstrict-prototypes -O2 -g -c gateway.c

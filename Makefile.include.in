@@ -1,0 +1,13 @@
+# Processor architecture
+ARCH		= @ARCH@
+
+# Paths
+ETC_DIR		= @ETC_DIR@
+SBIN_DIR	= @SBIN_DIR@
+BIN_DIR		= @BIN_DIR@
+LIB_DIR		= @LIB_DIR@
+MAN_DIR		= @MAN_DIR@
+VAR_DIR		= @VAR_DIR@
+
+# Is Zlib available?
+ZLIB		= @ZLIB@

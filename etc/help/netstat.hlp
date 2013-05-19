@@ -1,0 +1,7 @@
+
+USAGE
+        NEtstat
+
+DESCRIPTION
+        Gives a list of active TCP/IP connections to and from the local
+        host.

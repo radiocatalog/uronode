@@ -1,0 +1,225 @@
+#!/bin/sh
+
+echo "Cleaning the directory for a fresh configuration..."
+sleep 2
+make distclean > make.debug
+
+ETC_DIR=/etc/ax25
+SBIN_DIR=/usr/sbin
+BIN_DIR=/usr/bin
+LIB_DIR=/usr/lib
+MAN_DIR=/usr/share/man
+VAR_DIR=/var/ax25
+
+echo "Welcome to the configuration utility for URONode. This configure script"
+echo "will very simply and easily guide you into installling URONode with as"
+echo "very little trouble as possible. All you need to really do is simply"
+echo "answer the following questions below properly. If you make a mistake"
+echo "just break out of it (ctrl+c) and rerun ./configure. Let's get started!"
+sleep 1
+echo " "
+sleep 1
+echo -n "you need gcc to build URONode: "
+GCC=`which gcc`
+sleep 2
+if [ -e "$GCC" ]
+   then
+   echo -n "saw $GCC... "
+   sleep 1
+   echo "GCC found! Congratulations!!"
+else
+   echo "gcc not found!"
+   echo " "
+   echo "You need this compiler to build URONode."
+   echo "Please install gcc, and rerun this ./configure script."
+   echo "If you have a copy of gcc installed, please insure you have a"
+   echo "symlink by typing as root: ln -s /usr/bin/gcc-#.## /usr/bin/gcc"
+   echo "and rerun ./configure to continue."
+   exit 1
+fi
+echo -n "Your machine architecture is: "
+sleep 1
+ARCH=`uname -m`
+echo $ARCH
+sleep 1
+echo -n "Checking for the existence of the Zlib headers... "
+ZLIB=""
+HAVEZLIB="#undef HAVE_ZLIB"
+for zlibdir in /usr/include /usr/local/include
+do
+	if [ -f $zlibdir/zlib.h ]
+	then
+		echo $zlibdir/zlib.h
+		ZLIB="-lz"
+		HAVEZLIB="#define HAVE_ZLIB	1"
+	fi
+done
+if [ -z "$ZLIB" ]
+then
+	echo "not found."
+	echo "            Without Zlib Node will lack compression support"
+	echo "            See INSTALL for more information."
+	echo
+fi
+
+# Global protocol definition symbols for programmers that want to conditionally
+# compile
+	HAVEAX25="#undef HAVE_AX25"
+	HAVEFLEX="#undef HAVE_FLEX"
+	FLEXNET=" "
+	IN="#"
+	HAVENETROM="#undef HAVE_NETROM"
+	HAVEROSE="#undef HAVE_ROSE"
+	HAVEMHEARD="#undef HAVE_MHEARD"
+	HAVETCPIP="#undef HAVE_TCPIP"
+	HAVEMOTD="#undef HAVE_MOTD"
+	MOTDPATH=
+	echo -n "Include support for the AX.25 protocol ? [Y/n]: "; read answer
+	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+	then
+		HAVEAX25="#define HAVE_AX25	1"
+	fi
+	#
+        echo -n "Include support for the FlexNet protocol ? [Y/n]: "; read answer
+        if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+        then
+                HAVEAX25="#define HAVE_AX25	1"
+		HAVEFLEX="#define HAVE_FLEX	1"
+		FLEXNET="flexd"
+		IN=""
+        fi
+        # 
+	echo -n "Include support for the NetRom protocol ? [Y/n]: "; read answer
+	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+	then
+		HAVEAX25="#define HAVE_AX25	1"
+		HAVENETROM="#define HAVE_NETROM	1"
+	fi
+	#
+	echo -n "Include support for the Rose protocol ? [Y/n]: "; read answer
+	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+	then
+		HAVEAX25="#define HAVE_AX25	1"
+		HAVEROSE="#define HAVE_ROSE               1"
+	fi
+	#
+	echo -n "Include support for MHeard ports listen ? [Y/n]: "; read answer
+	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+	then
+		HAVEAX25="#define HAVE_AX25	1"
+		HAVEMHEARD="#define HAVE_MHEARD	1"
+	fi
+	#
+	echo -n "Include support for TCP/IP functions ? [Y/n]: "; read answer
+	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+	then
+		HAVETCPIP="#define HAVE_TCPIP	1"
+		HAVEMOTD="#define HAVEMOTD"
+		MOTDPATH='"/etc/ax25/uronode.motd"'
+	fi
+
+echo "Creating Makefile"
+
+sed -e  "s~@FLEXNET@~$FLEXNET~g; \
+	 s~@IN@~$IN~g" <Makefile.in > Makefile
+
+echo "Creating Makefile.include"
+
+sed -e "s~@ARCH@~$ARCH~g; \
+	s~@ETC_DIR@~$ETC_DIR~g; \
+	s~@LIB_DIR@~$LIB_DIR~g; \
+	s~@SBIN_DIR@~$SBIN_DIR~g; \
+	s~@BIN_DIR@~$BIN_DIR~g; \
+	s~@VAR_DIR@~$VAR_DIR~g; \
+	s~@MAN_DIR@~$MAN_DIR~g; \
+	s~@ZLIB@~$ZLIB~g" <Makefile.include.in >Makefile.include
+
+echo "Creating config.h"
+
+sed -e "s~@ETC_DIR@~$ETC_DIR~g; \
+	s~@LIB_DIR@~$LIB_DIR~g; \
+	s~@SBIN_DIR@~$SBIN_DIR~g; \
+	s~@BIN_DIR@~$BIN_DIR~g; \
+	s~@VAR_DIR@~$VAR_DIR~g; \
+	s~@MAN_DIR@~$MAN_DIR~g; \
+	s~@HAVEAX25@~$HAVEAX25~g; \
+	s~@HAVEFLEX@~$HAVEFLEX~g; \
+	s~@HAVENETROM@~$HAVENETROM~g; \
+	s~@HAVEROSE@~$HAVEROSE~g; \
+	s~@HAVEMHEARD@~$HAVEMHEARD~g; \
+	s~@HAVETCPIP@~$HAVETCPIP~g; \
+	s~@HAVEMOTD@~$HAVEMOTD~g; \
+	s~@MOTDPATH@~$MOTDPATH~g; \
+	s~@HAVEZLIB@~$HAVEZLIB~g" <config.h.in >config.h
+
+echo "Creating dependancy files..."
+make depend > /dev/null 2>&1
+echo "Configuration successful!!"
+sleep 1
+echo "about the authors..."
+sleep 3
+echo "URONode is a combined effort of years worth of work. Those who's code"
+echo "is included in this flavor of a linux based node are:"
+sleep 1
+echo -n "Brian Rogers N1URO (current maintainer), "
+sleep 1
+echo "Stefano Noferi IZ5AWZ"
+sleep 1
+echo -n "Tomi Manninen OH2BNS, "
+sleep 1
+echo -n "Alan Cox GW4PTS, "
+sleep 1
+echo "and Roy Van Zundert PE1RJA"
+echo ""
+sleep 1
+echo "Special thanks to: Morgan, sm6tky for his security report"
+echo "and Barry K2MF for his input on some of my routines and supplying"
+echo "some source code."
+sleep 1
+echo ""
+echo -n "Shall I run the make command for you ? [Y/n]: "; read answer
+	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+        then
+		echo "Making URONode! Please be patient."
+		sleep 1
+		echo "compile errors will be in make.debug."
+		echo ""
+		sleep 1
+		echo "You may not see anything until the process is complete..."
+		make >> make.debug
+		echo "let's check for binary errors..."
+		sleep 1
+		echo -n "nodeusers: "
+		sleep 2
+		if [ -x ./nodeusers ]; then
+			echo "SUCCESS!"
+		else
+			echo "FAILED!"
+		fi
+		sleep 1
+		echo -n "uronode:   "
+		sleep 2
+		if [ -x ./uronode ]; then
+			echo "SUCCESS!"
+		else
+			echo "FAILED!"
+		fi
+		sleep 1
+		echo -n "flexd:     "
+		sleep 2
+		if [ -x ./flexd ]; then
+			echo "SUCCESS!"
+		else
+			echo "FAILED! - perhaps you didn't want flexnet?"
+			echo "This is not an error if you chose NO to flexnet."
+			echo "This only means the flexnet daemon binary was not found."
+			echo ""
+			echo "Process complete!"
+			echo ""
+		fi
+		sleep 2
+		echo "Check the file make.debug if you had errors."
+		echo "If no errors, type: make install or make upgrade" 
+		echo "and edit your files in /etc/ax25/"
+        fi
+exit 0

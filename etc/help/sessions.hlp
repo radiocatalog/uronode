@@ -1,0 +1,10 @@
+
+USAGE
+        SEssions [* | <call>]
+
+DESCRIPTION
+        Gives a list of active AX25 and NET/ROM connections to and 
+        from the local host. With an asterisk (*) as an argument 
+        shows also AX25 and NET/ROM sockets in listening state. With
+        a callsign as an argument gives a list of all connections with
+        either source or destination callsign <call>.

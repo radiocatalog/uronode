@@ -1,0 +1,12 @@
+
+USAGE
+        Mail
+
+DESCRIPTION
+        Access your mailbox and send mail to other users
+	if you have mail waiting.
+	(only available for sysops and some users).
+
+        Note: this feature is initially disabled, contact the sysop
+        if you like to have it enabled.
+

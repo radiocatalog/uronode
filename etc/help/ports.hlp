@@ -1,0 +1,12 @@
+
+USAGE
+        Ports
+
+DESCRIPTION
+        Shows the available AX25 ports. Shown are the port name, a short 
+        description for the port, the number of sessions via the port (qso)
+        and the number received and transmitted packets via the port.
+        The port name is used when using the Connect command to connect
+        to an user or service not running NET/ROM or FlexNet (eg. not visible
+        in the Nodes and Destinations lists). The port name is also visible
+        in the Route, MHeard and MSession lists.

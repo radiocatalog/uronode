@@ -1,0 +1,1100 @@
+30/4/1998 v0.3a:
+Users with no permissions on AX25, NETROM, ROSE, TELNET outgoing connections,
+can use alias commands that connect a remote node by AX25, NETROM, ROSE and
+TELNET outgoing connections.
+
+30/4/1998 v0.3b:
+"!" command crashed on systems with no swap: CORRECTED!
+Reconnected on Telnet sended two prompt-line: CORRECTED!
+
+ 8/1/2000 v0.4-pre1:
+Now compile and run under kernel 2.2.x, glibc6 and new ax25 and ax25io libs! 
+Added Gateway special tranfer mode.
+
+18/2/2000 v0.4-pre2:
+"Ports" command crashed on systems without listening sockets: CORRECTED!
+Bad Pre-compiler directive order for systems without ROSE support: CORRECTED!
+Now AWZNode have a better I/O flushing.
+Other little code bugs resolved.
+
+*Rewrites by Brian N1URO
+**Note: this is being done on a debian linux server running kernel 2.4.20.
+  your milage may vary depending on the flavor of linux you're using. It
+  may be possible that with the exception of screen pushes, the AWZNode
+  could infact be working 100% fine, this I don't know.
+
+5/4/2003 v0.5.2:
+Renamed the project to AWZ-URONode.
+Stripped out the recursing prompt to the end users. 
+Redesigned the output of the node to be similar to that of TheNet X1J type
+nodes.
+Added NodeId variable header of several command output lines, this is
+totally configurable in /etc/ax25/node.conf under the "NodeId" option. I
+suggest in keeping with the design of TheNet X1J to use a format similar
+to: UROHUB:N1URO-2} (that's my personal preference hi!)
+In flexd.c (line 310), changed i++ from (2) to (16) to ignore additional ctext.
+If by chance you only get one packet burst worth of ctext or login.fpr 
+information, you may reduce (16) below to 8, or if yo uget 3 packets worth 
+of information you may go higher. In my case, I receive two packets of connect
+texts from my FlexNet gateway node so I use 16 for myself. You will have to 
+experiment with this. You have been notified. Failure to adjust the parsing
+code properly -will- result in any connect text strings as being falsely
+parsed as bogus flexnet destinations and will maintain a sloppy list.
+
+5/4/2003 v0.5.3:
+With the amount of rewrites, I decided to rename the node to URONode.
+Did more cosmetic cleanups and changed the node to look more like TheNet
+type node. This also included some code cleanup and rewrites of some
+minor routines.
+Readded a node prompt as an option, however unlike the previous way
+the prompt was programmed, if there was no prompt defined, a generic
+AWZNode -> prompt displayed. If in /etc/ax25/node.conf the prompt
+was left blank (aka: "") then a null line feed occurred. Now in
+regards to the prompt, if no Prompt is defined in /etc/ax25/node.conf
+a flexnet type prompt "=>" will display, or if you set the prompt in
+/etc/ax25/node.conf to Prompt "", then the prompt will be defeated
+and no additional lines of text (null or not) will be displayed.
+*I found it VERY frustrating that when a sysop or a user with 
+shell permissions accessed the shell, upon return, there was
+no notification that you were back into the node! Added a routine
+that welcomed the user back to the node upon shell logout.
+Repeated the above for the PMS gateway. I guess AWZ hardcoded in
+a prompt for such notifications so I assume I am the one who
+broke this hi!
+
+6/4/2003 v0.5.4
+Cleaned out some coded carriage returns which to me only adds junk to the
+code (unless the intent was for this to ensure a local echo wasn't working
+or something of that nature... ) at any rate, commented it out for now.
+Tightned some more of the displays which also cleans up some code as well.
+By now you may be wondering the madness behind my logic:
+As I stated when I first started this project, my goal was to use the
+existing AWZNode code and make it behave (oh austin powers behave!) as
+much like a TheNet X1J node as I could, with enhancing upon the existing
+tcp/ip and flexnet features this node has. Of course, code cleanup is part
+of the process. One thing I noticed on both AWZ and Tomi's node programs
+were the added strings both push such as the "Trying" messages when a
+user requests a connect to another node, etc. Personally, and especially
+on busy 1k2 baud links, i find it a bit irritating (as I'm sure end users
+do also) that additional lag due to a null line-feed or the node telling 
+me what I asked it to is in process. In essance, this *should* make the
+node appear to connect faster for the end user... I hope *grin*
+Cleaned up the Sessions display... the net/rom sessions screen had an 
+allocation for Rtt when it's not in use. This also caused the Sendq
+colum to appear grunged/misplaced. 
+There's still some line-feeds here n there I'm cleaning as I go to which
+the subversion will increase hi!
+
+6/4/2003 v0.5.5
+Changed mailbox.c and system.c from looking at the users's environment
+mail variable to point to /usr/bin/mail and /var/spool/mail/ respectively.
+I noticed (on debian anyway) that the hardcoded paths failed mail to no
+end. Doing more work on mail as I go along. Note: this only affects internet
+based email! A seperate PBBS such as F6FBB is recommended for AX.25 mail.
+Changed MSession command back to Sessions. I have no idea why this was done.
+Deleted the Send command. It refuses to send no matter what I do anyway, so
+to me it's useless. Also changed ! (STats) to STats to match Tomi's node.
+Personally, I found this confusing between the two nodes. Added a Quit 
+hardcoded command to match both TheNet X1J and FlexNet style nodes.
+Tweeked the way the Stats displayed. Memory shows not just 'memory' but
+the definitions between swap and physical ram are displayed. Also AX.25
+daemon socket stats are also a bit more defined.
+Mail checking sometimes worked, other times didn't. Fixed the mailpoll
+routines so that polling would keep displaying to the user that he/she
+has new mail. This may irritate the user, but considering it's your
+hard disk space that's storing their internet email, for them to be
+on the node and simply choose *not* to read and/or delete mail from
+your resources is just as rude to you (my train of thought anyway).
+**NOTE: I can't stress enough on how dangerous (in regards to spam)
+the mail feature can be! I **highly** suggest that you *only* give
+access to those you know are hams! Needless to say, I would *not*
+turn access for this feature on for global access!!! Not only would
+you upset many people who are against receiving junk emails, but you
+could risk losing any and all internet connectivity from your ISP as
+some are *very* picky about spam mail that's relayed! Working for ISPs
+in the past, I can verify this :-)
+
+8/4/2003 v0.5.6
+Still cleaning up some displays...this will be a task as I go along.
+One thing I'm not positive about is whether or not on multiple port
+usage how some diplays will read since I only have a single ax0 port
+I'm using.
+Fixed some routines in the do_finger command and added user usage
+messages. In some cases, routines were forced so that if certain
+strings (even null) weren't set after the finger command, it 
+was programmed to force the user to finger the localhost whether
+or not that was their intentions. Personally, I found it better
+to push a usage message of one line to the user than to go ahead
+and process an errant finger request to the localhost. I did
+force finger to require an @ within the command... since you're
+fingering something"@"somewhere. This is displayed in the usage
+message to the end user whether or not the input string after
+the command is null.
+Mail checking still seems buggy, and the bug seems somehow (so far)
+to be linked with the mailbox.c routines. This is also where the
+do_sendmessage command is. Fixed some routines in the send command
+where if the To: or Subject fields comtained an UPPERCASE 
+character, it could cause the node to segfault out and leave
+the ipcs open. This is bad! More on this in the Known Bugs section.
+
+10/4/2003 v0.5.7
+Whew! After much hassle...FIXED the former (and I mean former hi!)
+SEnd command. While I was at it I also renamed it from Send to
+MEssage. I thought Mail and MEssage were similar in function so
+I decided to keep them together on the prompt as well.
+
+11/4/2003 v0.5.8
+Found a bug in the MEssage command *sigh* more on this below.
+Moved the location of the help files from /usr/lib/ax25/node/help/
+to /var/ax25/node/help/ so that all created node files are together.
+Changed/fixed some of the help files to reflect changed commands, etc.
+Cleaned up more diplay text. (since I'm more a code hacker than a true
+coder, this is what I do best hi!.. but I learn as I go.)
+Edited the man pages and changed them from a text to a compressed format.
+Changed the configure script to grab the server's hostname. If your
+server's hostname is already an *.ampr.org host, then you should be
+fine with everything. If your server's hostname is a commercial domain
+based name, then you will have to edit config.h and insert the proper
+your.ampr.org hostname inside, or if you wish replied mail to be auto
+redirected to a NOS based node, enter in your NOS' ampr.org hostname.
+Added a warning message in the ./configure script to alert the sysop
+to check their config.h file for proper paths, etc. I was going to force
+a load of vi, but now-a-day most people don't use vi from my discussions
+but another editor such as ae, joe, pico, etc. Since the sysop will be
+editing their config files anyway, I feel the sysop can take a minute to
+verify paths and variables. Please pay close attention to any and all
+comments within this file!
+Added Makefile.in which is a 'generic' Makefile. Makefile is now created
+when you run the configure script. Also added some other environment 
+grabber functions to the configure script which adds to the proper files
+that requires them for you.
+Added removal of Makefile in the command 'make distclean'.
+Removed local echo of "To:" field when using the MEssage command. That was
+for debugging purposes anyway.
+
+12/4/2003 v0.5.9
+Fixed the bug that drove me nuts with the mail command. Now the mail
+command will reject/refuse a parameter. One more down off of the
+hitlist of bugs :-) It was suggested by N1UAN to make a configure
+script toggle for the MEssage command too. I may do that in the future.
+Fixed a bug in the POrts output. Since I only have one port, this was
+hard for me to test. N1UAN has multiple ports and using his node I was
+able to see and fix this bug before it made it to the buglist.
+
+12/4/2003 v0.5.10
+Woops, fixed a bug in the Info command where there wasn't a line
+feed after the compile date. Reported by N1UAN. I also found a bug
+in the display of: Node Call|Alias where lines were grunging. I
+*think* I fixed this. Unfortunately this is the result of me only
+having one port to work with hi! I happened to find this myself
+using the copy N1UAN is running. Hopefully I fixed this bug.
+More of a maintenance release than anything else. Fixed a few tweeks
+here and there, nothing worthwhile to mention. The key thing in this 
+version was to make it more customizable for the hard-set commands.
+This was suggested by N1UAN to which I kind of agree. It is possible that
+one could have a linux box on an amateur radio packet network but not wish
+to have it connected to the ampr.org or any other TCP/IP network. Coding in
+these commands would then become a bit of a tease to the end user who may
+wish to use URONode as a 'NOS' substitute for outbound telnet links, etc.
+Now hardcoded commands will be toggled on/off depending on how you answer
+the configure script. Answering NO to ALL questions will enable ONLY the
+following hardcoded commands:
+?, Bye, Escape, Help, Info, Quit, Status.
+Answering YES to AX.25 enables:
+Connect, Desti, Ports, Links, SEssions, Users.
+Answering YES to Email enables:
+MEssage.
+Answering NO to FlexNet:
+Disables the Desti command and will NOT compile or install the flexd
+daemon...however if you have a destinations file that is valid that
+will allow users to connect to digipeated paths without having to 
+manually type a 'via' statement in.
+Answering YES to FlexNet enables:
+Desti. 
+Answering YES to MHEARD enables:
+MHeard.
+Answering YES to NETROM enables:
+Nodes, Routes.
+Answering YES to ROSE enables:
+Rose based protocol strings within ax.25
+Answering YES to TCP/IP enables:
+Finger, HOst, Ping, Telnet
+Answering YES to TALK enables:
+TAlk.
+I may move the users to the default hardcoded commands..but for now my 
+thinking at 5:00am on a saturday morning is, if you're not going to run
+ax.25, then you probably aren't as concerned who's in the node :-) Also
+the use of the linux netstat command will show you who's on. The commands
+I'm considering moving to the default are the ax.25 related commands...
+since after all, if you're on RF, you'll -need- ax.25 right?
+The Mail and SYsop commands are flagged on|off by the node.user file.
+
+14/4/2003 v.0.5.11
+Another change to the configure script. This time it checks your local
+hostname and requests that you verify it. If you see it's correct, 
+just hit enter. If not, change it. Now... and this is tricky...
+*if* you do NOT wish to have users RECEIVE mail on the node but have another
+smtp based server such as a NOS node in which you wish your users to receive
+smtp mail, then what I suggest you do is set hostname to the hostname of
+THAT server. What this will do is send mail from the user with a 'return'
+path of your NOS server. For example;
+On my system I have an MFNOS node which users may send and receive SMTP
+based mail. It has a hostname of "n1uro.ampr.org". While users may have
+permission to SEND mail from URONode "dx.n1uro.ampr.org", I wish them to
+only receive their mail at n1uro.ampr.org, so in this case I would tell
+the configure script my hostname is: n1uro.ampr.org. It's sort of a way
+you can allow mail with some sort of anti-third-party protection. Its not
+perfect, but it helps. The configure script *will* prompt you for this
+whether or not you enable the Email feature.
+I added two neat commands. One is the new Version command. This is set
+as part of the default hardcoded commands. All it does is shows the
+version information of the node. This same data is also shown in the
+Users command to keep the node in line with the display parameters of
+TheNet/X1J style nodes (as I like). The other is what I call a Whowas
+command. I got the idea from being on IRC, and borrowed code from    
+PE1RJA's node. With the W command, this will show you when a callsign 
+was last on the node, and how that user connected... ie: which port,    
+ip address, etc. If the user connected multiple times within the scope  
+of the log rotation then a columnized listing of that user's information
+will be displayed. My happy news is that the SSID stripper from the
+user's connection in sending email is fixed. One bug down!
+
+15/4/2003 v0.5-R1
+WooHOO! MHeard table read/write of digipeated MHeard routing is FIXED!
+What I had to do was get argv to parse up to two digipeaters and then
+print to the device each in reverse order. Now since my RF digipeater
+gateway is a direct flexnet neighbor on axip, this was all I had to
+test with, your milage may vary. If the digipeated path is not yet in
+the mheard table, then it will fail. Another bug off of the list!
+*whew* I knew I was close <G>. Also found some more screen writes
+to tighten up. As far as I know, I'm going to (for now) close this
+chapter of my life's efforts and make a release. I"m happy with how
+URONode is performing and my alpha tester N1UAN appears to be just
+as pleased :) 
+Found a bug in the output of the Who command when *
+was entered. While this didn't seem to affect me on a debian system,
+it did seem to act funky on a SuSe system. Flexd needs NOT be edited
+now. Cleaned up some time variables in the MHeard routine and added
+a column for the port heard, and the frame (pid) type. Since the
+users can now see the pid types, they'll have a hint as to how their
+connect request will be handled.
+Found two bugs in the finger routine, both which appear to be in ALL
+flavors of "*node". The first one I fixed, and that was quite simple.
+When fingering information, the [address] or [hostname] was omitted.
+I don't know if this was intentional, but I fixed it anyway to match
+that of standard 'finger' displays. The second appears to be that
+on a long RF hop, or a socket that's become broke due to routing
+being cut, etc... there's *no* escape. For now, I've omitted the
+Escape: CTRL-* display in all routines. It will still work for
+telnet, netrom, and other types of connects. Since the Escape
+command is a seperate command at the moment, I think it's fine
+for users to check|set their Escape sequence. Hopefully I'll be
+able to figure out a routine to escape from a 'stuck finger' :-)
+Also tweeked the output of the HOst command.
+*Welp, further research shows that there is no "escape" in the
+native linux finger command... as there is none with the ftp command.
+Needless to say, the better 'fix' was to simply disable all 'trying' state
+messages. Personally I find them to be excess traffic that's not needed as
+either the node will tell you that it's connected or it will tell you that
+it failed. I know flexnet will tell you that it's trying a link setup and
+xnet will take that a step further and show you which port the link is being
+setup on. I may add the set escape sequence in the login screen as default
+prior to users attempting connections so that it'll be easier on them to
+know that there is a way to break a connect if needed.
+
+16/4/2003 v0.5-R2
+Ok, well I did decide to add the CTRL-* message as part of the
+initial user login screen. Also made some minor tweeks to the
+telnet login where now it shows more of a 'linux' style login.
+Did some more screens cleanups and stripped out a lot of the debugs
+I had commented out of the code. Ok..enough for now...I'm considering
+this version 'done' unless bugs are reported. :)
+
+22/08/2003 - Bug/security report
+Morgan sm6tky publically posed a security report with some PoC listed but 
+not all. While I was able to duplicate what he did submit for PoC, I 
+wasn't able to find others. I'm very greatful to Morgan for bringing such 
+information to my attention, I'm surprised that his first step was to post 
+it in a public email list and list that I didn't reply when I wasn't even 
+given the chance to... however with that being said, I still took his 
+notations to heart and put the project a bit on the back-burner until I 
+had time to do the fixes. I also offered Morgan a chance to submit code 
+fixes to which he failed to do such. I don't claim to be a coder but just 
+a hobbiest in regards to C and always welcome patches as I have with htppu 
+with patches submitted by Thomas dl9sau who's also released his own flavor 
+entitled SAUPP. Version 0.6.x will be in process as I have the time to do 
+such.
+
+v0.6.0 - never happened. Just made the directory structure and took an 
+initial peek at Morgan's reports.
+
+12/7/2005 v0.6.1
+Security issues fixed/removed. Rather than fix the talk command I decided 
+to just eliminate it in favor of an external conversd command. I figure 
+there's plenty of channels and lord knows there's actually more convers
+servers now than users to use them... why not just use that?
+
+Another security issue was mail. Instead of having mail routines built 
+into the node itself, I figure a node sysop can grab my updated axmail
+node plugin and use that. I've done some basic security tests and it 
+seems to be a better way to go.
+
+12/7/2005 v0.6.2
+Just a beta version, never released while working on more security 
+fixes... I think I'm getting close now! 
+
+Changed some code in the do_help routine in command.c where Morgan 
+reported the possibility of a buffer overflow. 
+
+Changed some code in the syslog routine in util.c hopefully fixing the 
+formatstring vulnerability in that routine.
+
+Changed some code in gateway.c in hopes of fixing the reported buffer 
+overflow.
+
+Found what I thought to be an open hole in ipc.c, should be fixed and
+with any luck the ipcs build-up issues will vanish with it. Only time
+and your debug reports will tell.
+
+Fixed a bug in Makefile where the man pages weren't installed due to the 
+fact I gzipped them and didn't change this in Makefile.
+
+Changed the ftp url path, listed below.
+
+v0.6.3 - some cosmetic tweeks I can't recall what they were.
+
+04/07/2006 v0.6.4
+
+Found a bug where if a user's permissions were flagged for "no escape"
+such as a xNOS, F6FBB BBS, etc, that the node tried to display an Esc-?
+as part of the prompt/screens. Removed the Esc-? from displaying. That
+simply annoyed me and I'm surprised it wasn't reported... after all if
+there's no escape why show "?" as one since "?" can be used as an escape
+character with CTRL.
+
+Added an Email flag in node.conf. Simply add: 
+Email  <your@node.ampr.org>
+on a blank line within node.conf for it to get pulled into the node. If you
+don't "(null)" will display. It won't prevent the node from functioning but
+will show users how lazy you are hi! This allows a sysop to deny all users
+connection access _unless_ they have a password, while at the same time
+allowing the node sysop a means of displaying a point of contact so that
+users wishing to use their node and it requires a password can send a
+communication to gain access. I strongly suggest for any account that has
+sysop privs on the node that you force a password on _all_ connects and
+that you only grant access via internet/amprnet to those who request a
+password for security reasons if anything at all. Because I feel this is
+security related, I'm making this a release.
+
+Fixed a bug in the install routine for the man pages. The default 
+install for man pages was /usr/man, now it's /usr/share/man. I also
+updated the manpage for node.conf.5 and re-gzipped it.
+
+24/10/2006 v0.6.5
+After a nudge from Stefano in Italy, I reintroduced a method in which one
+user on the node can send a brief "msg" to another. The command once was
+"talk" and still is on node (or if you prefer linuxnode that Tomi has
+set the standard for!). For the sender, they get a full status report
+as to what happened to their "msg" once the "enter" key is hit. For
+the receiver, if they're truely idle on the node, the message will pop up
+on them and the prompt will not return until they acknowledge receipt
+of the msg by hitting the "enter" key. Also note that a system bell
+will return on both sides, or just the sender's side *if* the msg
+wasn't delivered. Since this acts sort of similar to today's Instant
+Messaging world... I figure "what the hay they play noises too". I still
+stand on the theory that if one wishes to engage in keyboard chat, they
+should make direct TNC<>TNC connects or use convers but Stefano
+made me rethink this and I can see how it could be used for one user
+to "ping" another user with a msg saying "hey meet me on conv channel
+32767 and see if we can wake the sleeping sysops!" :-) Originally this
+was part of Morgan's security report filed back in 2003 (what? me
+procrastinate? LOL) so with convers so easily available to URONode as
+a plugin I felt it just as simple and quicker a fix just to remove
+"talk". I renamed the command to "msg" since you're really just sending
+a message and not really "talking" to the remote end.
+
+Fixed the help files a bit to move talk.hlp to msg.hlp, and edited the
+content of such to fit the re-introduced command.
+
+26/10/2006 v1.0.0
+First off, many thanks to Stefano and Alessio for their interest and
+contributions to URONode. They've inspired me to help improve this
+spinoff of AWZNode (which is a spinoff of FlexNode which is a
+spinoff of node which is a spinoff of.... :-} ) Stefano asked me a while
+back about putting in compression for Telnet and Connect commands. 
+Considering so many have broadband now on their wired links, I somewhat felt
+this to be unnecessary, and here in the U.S. ax25 based transmissions are
+supposed to be in plain text... so between those two major reasons I had
+thought it best to just eliminate this feature a while back... not to 
+mention security issues with zlib that were going on. Since those have
+been cleared and in respect to the motivation Stefano and Alessio have
+given me with their interest in this project I thought it only nice that
+I try and fullfill their desires as best as I can. Recieving compressed
+requests into URONode was always there but not an outgoing client... so
+I spent a few moments and coded one back into the front end. Needless
+to say, ZTelnet and ZConnect (as with node) are in URONode now as
+client gateway commands. 
+You need to set up another inetd/xinetd instance on an unused port
+that calls "node -c" to enable receiving compressed connections via
+telnet. Make a new alias/ssid for ax25/netrom if you wish to support 
+ZConnect client requests. Failure to do such will result in the remote
+end getting an error message.
+
+27/12/2007 v1.0.1
+After a heated discussion with w0rli (as if that has never happened
+on packet before, and him accusing me of knowing nothing about packet
+or it's protocols) I decided to keep him happy while working on a system
+that's linked to one of his. Hank feels that by having a login screen this
+makes a node an application. While I can understand how he determines this
+in his one-sided point of view, I still disagree with it but can appreciate
+his concerns. Apparently he has never logged into a backbone router at an
+ISP and seen a cisco MOTD file... or is a backbone core or border router
+not a node on a network? :) In any event, I decided that I'd make the whole
+login sequence of displaying the node version and /etc/ax25/node.motd file
+an option to the node sysop upon running the ./configure script. Along
+with not displaying a MOTD file, the default FlexNet style prompt of
+"=>" will also not display. This will make URONode act more like
+Hank's snos and like TheNet X1J-4 (with the "welcome" message flagged
+off upon connect). Thanks are given to w0rli for this idea.
+
+I also added a flag for the "NODE} Goodbye." string so that if you
+do not have a MOTD displayed, it will also halt the display of the
+node front-end saying bye to the user. 
+
+01/01/2008 v1.0.1a
+I decided that I'd go through the code and search for more cases that
+if MOTD is *not* defined, to ignore any and all reconnect flags, whether or not
+they're defined for external plugins (ie: axMail) or alias commands in the
+/etc/ax25/node.conf file. If during configure you decided to add MOTD during
+the option questions, then the node will infact act more like a user 
+application including allowing reconnects etc.
+
+I had thought I fixed the man pages install, appearantly I never saved it.
+This should now be fixed. My apologies.
+
+* Author's Note: If you're linking the node to systems such as SNOS, or
+you're on a very busy network, or if you forward with other BBS systems
+who for whatever reason feel the need to connect to your node first
+before connecting to the BBS (which I feel is unneccessary but happens), I
+strongly suggest that you do NOT enable the MOTD which is the default option
+now in the configure script. 
+
+*** Important: I just don't have the time to clean up all the gcc-3.x
+compiler warnings however URONode compiles just fine under gcc-2.95
+so I made a decision to force gcc-2.95 for compiling URONode under.
+Configure was rewritten to check for this, and if it doesn't it will
+instruct you on where you can get a copy. This will not interfere with
+your installed copy of gcc-3.x if you so have it. I have verified that
+URONode compiles quite cleanly under gcc-2.95 and I do have both
+versions on my box:
+root@schlitz:/usr/bin# ls -al gcc
+lrwxrwxrwx  1 root root 7 Jun 25 00:00 gcc -> gcc-3.3
+root@schlitz:/usr/bin# ls -al gcc-*
+-rwxr-x---  1 root root 69960 Mar 10  2004 gcc-2.95
+-rwxr-x---  1 root root 85196 May 24  2005 gcc-3.3
+As you see above, gcc by itself is just a symlink to the latest 
+version of gcc-*. Ensure that gcc-2.95 is in your executable
+path.
+
+23-24/01/2008 v1.0.2
+Huge news! I finally got off my duff and cleaned up compile warnings.
+URONode will now compile fine on gcc-4.1 and under! This was just something
+that was under my craw for a very long time, but not that critical enough
+so you can really ignore the above notes in regards to GCC.
+
+I ended up also making some modifications to the configure script, Makefile
+and config.h. Part of cleaning up some of the compile errors was a dupe
+conflict between library "log" routines and the internal node "log" routine.
+URONode now has it's own node_log() routine as to keep it seperate from
+library log routines. There's no change in it writing to syslog for you,
+just the function was renamed to avoid compiler warnings. Many files were
+updated due to this.
+
+**Man file for uronode is now called "uronode", not "node". The binary made now
+is also "uronode".** This is *very* important because when you run 
+"make install" or "make installbin", your inetd.conf/xinetd files will need
+to be changed to spawn the new binary, and your config within 
+/etc/ax25/ax25d.conf will also need to be changed from calling "node" to
+call "uronode" now!! If you do NOT do this, you will be stuck running either
+an older compile or it won't launch at all. Please see the examples in the
+INSTALL file for help on how to configure this properly. In the future
+I may change the config files from node.* to uronode.* too. The advantage
+of doing this would be tri fold:
+1) it'd allow sysops to compare and test URONode side by side with another
+   package such as Tomi's LinuxNode
+2) sysops could offer both flavors of a "node" to users if they so desired
+   to do such.
+3) a sysop might prefer to have 2 compiles of URONode... one with full
+   MOTD compiled in, one without.
+Those who know me, know I believe in allowing a sysop to have the freedom
+to pick and choose just how they run their nodes... and this just adds
+to their options. I do however discourage doing this unless it's for
+testing reasons but c'est la vie. 
+
+**** Actually, I figured why wait to change files around, so I changed
+all the config files from "node.*" to "uronode.*". Now if you're doing
+an UPGRADE, you'll need to rename your config files in /etc/ax25/node.*
+to /etc/ax25/uronode.* or else you'll have issues with some routines.
+I also deleted the *.ex files and changed installconf so that the proper
+files get copied into /etc/ax25 for new installs. I also changed all the
+man page files that were node.* to uronode.*
+
+As much as it sorta kinda but not really pained me to do this, I decided
+that it may be cool to have *something* to let the user know that their
+outbound ax25-type connect is via flexnet, so I added a routine in
+gateway.c which checks the connect type and if the request is via FlexNet,
+the user will see the standard "link setup..." message like they would on
+a flexnet node, followed by "*** connected to <desti>". This MAY have an
+adverse affect on FBB forwarding since FBB looks for "Connected..." instead
+of "*** connected...", but there's ways around that in your FBB forward
+file.
+
+25/01/2008 v1.0.3
+
+*Big News*
+For Debian and (K)ubuntu users, I've decided to make a release of
+uronode as a .deb package. This is my first time doing this and I'm really
+not that comfortable with rolling it out officially since it's my first 
+pre-packaged binary so here's what I suggest you do if you decide to use it:
+cd /etc and tar cvf ax25/* ax25files.tar
+dpkg -i /path/to/uronode*.deb
+tar xvf ax25files.tar
+For now this will preserve your current config as the .deb package *will*
+overwrite your current files in full including configs!
+YOU HAVE BEEN WARNED!
+
+Found a bug in the WHO command when MOTD was disabled. Currently if you
+don't define that, then the WHO command is deactivated and not compiled
+in. MH works fine and should be enough to be used to track recent connects
+to your node.
+
+Discovered a bug in the newly introduced FlexNet style cosmetics where
+after "link setup..." if the connect request times out, error isn't printed
+on a new line. I wrote a new string to push to the user so that if their
+request does time out, it matches that of FlexNet's timeout string while
+leaving vanilla ax25 and netrom timeout errors the same. Again, these
+strings will inform end users the type of outgoing request was made
+whether it was FlexNet or vanilla ax25.
+
+While I was add it, I decided it would be helpful to end users who are
+making FlexNet links to show which ax25 interface is being used for
+connects similar to that of how Xnet shows connect requests. The interface
+will be displayed in parentheses () such as: Link setup (ax0)...
+so if the link fails, the user can see which interface to try a direct ax25
+connect request out from.
+
+I think I fixed a slight bug in flexd.c where if the LO.FPR and C.FPR 
+weren't formatted just right, it'd exit prematurely and issue a false
+error. Apparantly the buffer was set a bit too high and captured too much
+to parse, so I lowered "buffer" from 1024 to 512 and it now appears to be
+fine.
+
+A "bug" was reported about the config of the backend of URONode when infact
+the bug was with ax25d.conf and nrports. Remember, when you configure your
+node, ALL your SSIDs for ax25, netrom ports, and axports *MUST BE UNIQUE* if
+you have RF links to native netrom nodes. Failure to do such will result in
+some flooding issues because if an ssid in axports, ax25d.conf and nrports
+is shared, an X1J node connecting into URONode will result in the ax25 link
+layer being seen as a user and not a network socket. You'll ping-pong
+the node with X1J in almost an endless loop. *You have been warned!*
+
+22/02/2008 v1.0.4
+
+I decided to make the node text more "technically correct" in it's display
+of things... mainly in regards to "ports". We don't have "ports" per say
+but we do have "interfaces". Needless to say, any reference to "port(s)"
+has been changed to "interface(s)" including the former Ports command. This
+has been replaced with the new INTerfaces command.
+
+Users now will show the "interface" a user may be coming in on if it's ax25
+or if inbound from FlexNet.
+
+The PIng command has been shortened to Ping now with the refactor of the
+"Ports" command. Ping now only requires "P" to ping another node.
+
+*Note: this will be the last release for a while as I'm moving and won't
+have a server or test bed to test with.
+
+10/05/2008 v1.0.5r1
+
+The move has completed and of course in my own sick and twisted mind, I have
+decided to do a release that I call version 1.0.5 release candidate 1. This
+is a minor release but it's something I despirately wanted to do for a while
+and was just sitting like an itch under my skin to do, and sometimes you have
+to just take a break from it <all> to clear the noggin and get the code the
+way you want it. What was bothering me was the fact that not one flavor of
+a linux-node complies with that of the Software 2000, inc specifications of
+Net/Rom... and I desired to be the first to do such... yay me? 
+
+In any event I went through the code and made changes to the following files: 
+command.c, config.c, extcmd.c, gateway.c, node.c, node.h, and system.c. 
+What this does for you is makes your URONode behave more to the specifications 
+of Net/Rom regardless of how you define the MOTD flag. If you define the MOTD 
+flag, the node will continue to behave as it has <all> along, however it forces
+it in "off" mode when the incoming connection is Net/Rom based. This is
+extremely useful if a robot script (such as FBB forwarding) is used to
+go through your node.
+
+The decision of making this a release candidate was because I'm sure I may 
+have missed testing some of it's behavior and will have to do some cosmetic
+and/or bug fixes.. so if you find any, please report them to me and I'll do
+what I can to fix it.
+
+Source, .deb, and .rpm packages are available at the typical location of
+ftp://ftp.uroweb.net/pub/ax25/ ...enjoy for now!
+
+12/05/2008 v1.0.5r2
+
+I had this really irritating bug that appearantly I just never noticed 
+all this time when HAVEMOTD was undefined. Thanks to some assistance from
+K2MF, I was able to identify and fix this bug. Inside the main loop statement
+for the node, when a user disconnected, it was adding an extra frame to
+the stream that contained only a line feed. Looking back at this, I did this
+due to the fact that X1J handles it's output to the terminal differently than
+does any other node that I'm aware of.
+
+In any event, taking out this line feed somewhat caused other outputs of
+text to lack a line feed when it needed it... so this meant changes in
+command.c, extcmd.c, gateway.c, ipc.c, node.c, system.c, user.c and maybe
+more that I can't quite recall as of this writing.
+
+The good news is that I did fix 2 minor bugs that were under my skin!
+One minor bug was that when a nodes or destis list ended with a row of
+4, an extra line-feed was displayed. While this bug still exists under
+certain conditions, it's no longer present during netrom connects.
+
+Also during a netrom disconnect, an extra line-feed no longer sends to
+the remote node thus making it more Software 2000, inc. compliant. I'll fix
+the previous mentioned bug for release 1.0.6 sometime.
+
+21/05/08 v1.0.5r3
+
+Fixed some screen cosmetics that I introduced while making the node more 
+Software2000 compliant... I'm sure I missed a few more.
+
+***Big News***
+I've finally tracked down and fixed the remote escape bug (I think)!
+What I saw was happening was that the SIGPIPE handler wasn't being
+executed properly and it appeared to be waiting for more data which
+it never received. I added a quit_handler routine in the main loop
+which now will execute a node_logout(), flush out the IPCs,
+log the event to syslog, and close out the application properly.
+Due to this bug lingering in all flavors of *node for linux, and not
+having the resources to fully stress-test this, I'm going to leave this
+as release candidate 3 for now until (hopefully not!) someone reports
+that this routine is causing ill-behavior.
+
+26/05/08 v1.0.5r4
+
+There was a LOT of cosmetic changes in this one which caused me to add
+a LOT of conditional calls into the code, many of which I'm unsure whether
+or not it'll fly properly under every condition so your milage will definately
+vary depending on your specific setup! Since URONode has become very popular
+within the EastNet packet system I decided to make the node appear for both
+the ax25/FlexNet side or its NetRom side, dependant on how the user logs into
+the node. Because of the massive changes in structures, rather than listing
+them <all>, the above description should do. 
+**Note: you MUST add a new line in uronode.conf that defines
+FlexId		XX#XX-##
+Either take yourcall-ssid from ax25d.conf OR if you're linked to a
+node that does flexnet, use yourcall-ssid as it is on the remote flexnet
+system. If you don't, and a user connects in via telnet or ax25/flex you'll
+display (null) to them. Also: if you added a } after your NodeId 
+callsign-ssid, remove it. It's been hardcoded into URONode now.
+
+I decided to mute the banner section of the login sequence however 
+it will still display your MOTD if it's defined during ./configure.
+If there's a demand for it, I may add it as a configurable option.
+
+Even though I put r4 out for download, I did find a couple minor bugs
+which have since been fixed.
+
+29/05/08 v1.0.5r5
+
+In a nutshell, if the user connects to your URONode via NetRom, then
+they will get standard NetRom prompts with "ALIAS:CALL-#} " as a result
+header to all of your commands with the exception of FlexNet gateway
+connects.
+
+Now in uronode.conf, a *new* line _must_ be added for FlexId. The parameter
+is:
+FlexId	<call-flexssid>
+An example since my URONode is on FlexNet as ssid 3:
+FlexId	N1URO-3
+
+Also note that the need to have a closed bracket "}" after your NodeId
+now is not required and should be deleted. I finally got off my butt and
+hard-coded it into the software.
+
+The Version routine was also changed depending on how the user is connected
+in. If the incoming connect is made using NetRom, then the standard prompt
+is displayed. If the incoming connect is via any other type of link, then
+a columnized display is made showing Software version, NodeId, and FlexId
+in hopes of eliminating confusion to the end user.
+
+While in the midst of all the above, I did find some cosmetics to fix.
+
+Before I make this release candidate an official, I'm curious as to 
+whether or not anyone would object to me eliminating some of the
+standards of the login banner of the node (non-NetRom displayed).
+Please let me know and I'll make the necessary changes if need be.
+-- actually I already decided to do this.
+
+I added a new routine in util.c which now will give the end user
+the type of prompt based upon the type of connection. The default
+for ax25/FlexNet is: "=> " (note the space after > unlike Flex)
+for NetRom is: "ALIAS:CALL-ID} "
+for tcp/ip is: "usercall@hostname:/uronode$ "
+
+With the new routine, I changed the main loop in node.c from defaulting to
+Prompt simply to using node_prompt().
+
+01/06/08 v 1.0.5
+URONode version 1.0.5 is now considered to be "final". With the new month
+is a new final release, and in this release it has more face-lifts than
+Joan Rivers hihi!
+
+I added a new routine in the configure script which will prompt you for
+telnet colored routines... yes we have ANSI! Now, a couple things about
+pushing ANSI code:
+1 - consider network bandwidth if you have IP users via RF
+2 - many windows apps such as WinPack do NOT support ansi. This is NOT
+    a fault of URONode, but that of the Windows application. If you
+    find you have trouble decoding ansi, try PuTTY or use HyperTerminal
+    in telnet mode. Ansi is hard disabled for ax25/Flex and NetRom connects.
+I also added ansi codes for "Nodes" and for "Desti" lists commands if the
+inbound connect is made via IP.
+
+Added an "EXit" command for users in IP mode since you now feel like you're
+in a bash shell... just a 'force of habit' thing. Bye still works.
+
+Fixed a bug introduced with the new node_prompt changes to node.c. If
+the user was required to enter a password outside of being on the localhost
+or amprnet, the prompt displayed twice... this is now fixed. I also found
+and fixed soem more cosmetics that I considered to be wrong. This bug was
+driving me insane as to why it was doing this, but I finally tracked it
+down.
+
+Found and fixed another bug where if the user's permissions were set
+to a perm "escape off", prompts didn't properly function.
+
+Made a change to nodeusers where now if no one is on the node, it'll
+say such instead of simply being blank.
+
+A note about ansi:
+linux shells will decode ansi pretty good as will old DOS based terminal
+programs such as Qmodem, Telix, etc. If you use a raw terminal such as
+xNOS, you'll need to insure you load ANSI.SYS in your C:\CONFIG.SYS file
+and reboot so the terminal will decode ansi.
+Windows telnet *will* decode ansi as well however since XP, local echoing
+by default is set to OFF. You can CTRL-] and type: set localecho, then hit
+enter twice and you can get echoing back on.
+If you use something such as WinPack which doesn't decode ANSI, please do
+NOT contact me! Contact the authors of WinPack and report the lack of
+ansi as a bug.
+
+I also am including a copy of axdigi from the original FlexNode package.
+This is compiled as a static binary and a copy of axdigi.conf IS
+also included in the source package, but I won't package it with the .deb
+or .rpm packages... however I do reserve the right to change my mind :)
+
+Static binary packages are compiled with the following options OFF:
+Rose support
+All other options are compiled in.
+
+04/07/2008 v1.0.6
+Found and fixed a bug in the Who routine where a netrom prompt was merging
+with the last entry of a list even if the connect was not netrom. This change 
+was made in system.c.
+
+Added some more ansi routines if #defined COLOR. Here's the schema:
+Connects display in green as in "gateway go"
+Reconnects display in red as in "gateway stop"
+Commands display in bright white
+Netrom Nodes (full list) in bold cyan
+FlexNet destis (full list) in yellow
+Current users in magenta
+Aborts and timeouts blink bright red
+Logouts in low cyan
+I'm making the color schema a bit more consistant through out the application.
+While doing such, I'm cleaning things up so that just the headers are in
+color, not the actual results so that if one is NOT decoding in ansi (and
+again if not that's a fault of the client NOT of the node) the node won't 
+appear as offensive. 
+
+Found a bug in the auto router where it wasn't parsing the digi path
+from the mheard table, HUGE credit goes to Barry K2MF (of MFNOS fame) for 
+supplying the code that properly handles this. Fixed.
+
+Did a lot of clean-up for how the node/shell responds dependant on how the
+user connects in. Many changes done in gateway.c, extcmd.c and node.c.
+
+Now made ANSI a flag in uronode.perm... I may change this later however
+because of such, it forced me to have to make a new nuser_list routine
+in command.c as well as move node_prompt from util.c elsewhere so 
+command.c seemed like the best choice. Setting the user bit +512 will
+now grant them telnet ANSI color. Not giving them this will turn
+it off. I'd like to make it an end-user toggle so that depending on
+which client the user is coming in with they can choose online to get
+color or not. The user perm flag replaces defining Color during the
+configure script.
+
+Defining MOTD now serves multiple functions:
+1) Display of the MOTD screen/file
+2) Display of prompts for all interfaces
+3) Reconnect back to the node upon a gateway link out
+I suggest compiling with MOTD on, which configured by default in the 
+.deb and .rpm packages.
+
+Changed some of the technical correctness of the node in regards to IP
+functions. Ping now returns ICMP Echo request/reply messages and IP based
+connects out now show the service/port that the connection request is being 
+opened to.
+
+Added color schemas to the NetRom and ax25/Flex interfaces if the user 
+requests it to be on. The same color schema is used on all 3 interfaces.
+
+Fixed a very irritating bug that some folks have reported on which
+when do_ports() was called, and the axport description was over 42 
+characters in length, do_ports() was *not* properly truncating the
+additional characters, and making things looks a bit sloppy. A similar
+bug exists in LinuxNode =< 0.3.2. Note: In your axports file, you *MUST*
+have a tab after the window digit before writing your interface 
+description or else the parser will consider the spaces as just that...
+empty spaces! You have been WARNED!
+
+Updated uronode.conf and uronode.perms files to show examples of recently
+added features.
+
+Long overdue: Updated the MAN pages!! I'm so sorry for letting these slide!
+It really is hard enough trying to keep track of things in this file, never
+mind actually documenting it in a manual page or two hihi!
+
+Found and fixed a bug in the logout routine where a false error was being
+reported that the shared memory segment (IPC) couldn't close. Somehow this
+was introduced by me duping the lines in the routines so that it was actually
+trying to close the shared memory segment twice! I guess in reality, the
+log error was indeed correct since there was no second segment to close hi!
+
+Added a "make update" option to the Makefile. This option *must* be used
+in version release sequential order or else it may fail!
+
+Fixed a cosmetic bug in the way NetRom nodes introduced by me when I created
+multiple interfaces. The word "NetRom" appeared twice in the header when
+a user would request a Nodes list.
+
+15/11/2008 v1.0.7
+
+Made some cosmetic changes to text and ansi color displays, still a few
+more to do but not critical so it gives me an excuse to do a maintenance
+release one of these days hihi!
+
+With the assistance of the great and mighty <all>, the <all> of c coding
+knowledge, I was able to incorporate a loop detection system when making
+FlexNet or ax25 connects... now if there's a loop in the outbound connect
+request, the user will be informed of such which includes a system bell
+(beep). I thought about adding a loop connect block such as with FlexNet
+however in the case of axip/axudp links many links may share the same
+interface which really would be unfair to the user trying to gateway out
+that's also coming in from the same axip interface.
+
+Now for the big news of this release: By request of Bob Anderson K2BJG,
+I wrote a kluge for flexd.c which now requires 2 additional fields in
+/etc/ax25/flexd.conf - MyGate and MyRange. Inside flexd.conf, MyGate
+is your neighbor FlexNet gateway without ssid, and MyRange would be
+the full ssid range of the FlexNet gateway you poll. This will add your
+FlexNet gateway into your local desti table complete with SSID range and
+give it a ttl of 0 since there's no true ttl polling going on... but there
+is a catch to this: you MUST add each ssid of the remote FlexNet system
+into uronode.routes as a direct link or else connect requests will fail
+because the connect will try to digi off of the remote FlexNet system
+to itself. I don't know if I agree with this yet or not as a local
+FlexNet system never shows itself in it's desti table, and that's what
+K2BJG has asked me to do with URONode. As I said, for now this is all
+a kluge but it does appear to work if instructions are followed
+verbatim.
+
+Examples:
+MyGate N1URO
+MyRange 1-11
+
+Made a change in the Makefile so that the axdigi module does NOT copy over
+by default. Now you MUST do this manually and add it to your scripts. Not
+everyone would wish to use this so why force more junk in a directory? :)
+
+28/11/2008 v1.0.8
+*notes lost, sorry.
+
+27/05/2009 v1.0.9
+**production copy stolen. See LICENSE for who did this and my responce.
+
+11/05/2013 v2.0
+Clean up of some code... I had a copy of 1.0.8 from 2008 I recovered. I did
+have a version 1.0.9 in production but can't seem to locate it for some 
+reason so starting from memory using 1.0.8. Thanks to Brett WA7V for 
+supplying me with some teaser code :-)
+
+Updated version! We're on 2.0... finally! (yea, big news right? Maybe 
+not!)
+
+Moved the "Who" commmand to the list of basic internal node commands.
+I can't recall why on earth I had it defined with MOTD. Perhaps it may
+come to me later but for now I can't recall. I may have to move it
+somewhere else, but I believe it has to do something with logging
+features or something along those lines. For now, you need to define
+MOTD as a compile selective to have the <Who (call)> defined.
+
+Fixed the sysop shell warning, this needed to be a tad more specific
+in my point of view... then again who am I? Also cleaned up the return
+prompt as it could be confusing if the incoming connection was done via
+NetRom. I removed the default FlexNet Identifier out. Now it just says:
+"Welcome back.".
+
+In regards to the "Who" command; I see what was going on here and where 
+I left off with it! Logging and the "Who" command pretty much go hand in
+hand - so they're combined. The initial design of FlexNode was to have a
+MOTD based off of the logging of when the user last was on, otherwise if
+they did not exist, push the "new user" screen to them. The down and 
+dirty quick fix is to simply remove it from netrom connections into the
+system! Who cares if you get a MOTD on a flex/ax25 or a telnet connect
+into the system! 
+
+With the above said, I changed the sequence of "configure" to ask if the
+sysop/admin wishes to log user connects into the system. In the future I
+will either move this to be included with protocols or I may simply hard
+code it in as a defaulted option, and move the "Who" command as being
+defined into TCP/IP functions. For now, it's hard coded in as a selected
+option but will NOT display for NetRom connects.
+
+While I was at it, I changed some of the routines in the configure script.
+Nothing major but did improve upon a few things. While doing this, and
+running "make upgrade" I noticed that flexd.conf was being overwritten!
+OUCH! I'm surprised this went on for as long as it did. I *think* I did
+this to force people to add the new lines in flexd.conf that K2BJG/SK had
+asked me to do.
+
+Created a man page for flexd.conf(5)! I'm surprised no one asked me why this
+was missing! It explains further how to create the file. Keep in mind, this 
+also works on Xnet as well as Flexnet. If this doesn't help you figure out
+how to create this file or edit the sample one... I don't honestly know what
+to tell you. In doing such, it also forced me to change the generated 
+Makefile so that "install upgrade" and "install man" installs it.
+
+Changed the licensing! This is (I'll admit) very personal and _must_
+remain as is! I could fill a TB hard disk with reasons and debates
+as to why it's no longer GPL code. Please insure you are in an area
+where you can use this code. Thank you.
+
+Fixed an ANSI bug I had in the "Users" command which was driving me nuts!
+On NetRom, it would change the prompt to magenta which it shouldn't. What
+I did as a fix was to force a removal of ANSI on the prompt for NetRom
+based connects... simple enough. There may be other ANSIs for me to fix
+and I'll cross those bridges when I get to them. Found another in gateway.c
+and fixed the netrom ANSI to properly reflect that once a connection was
+made, it was "systems GO" (green) without changing the Node's ID string.
+
+Created a COLORS file which somewhat explains the hows/whys of not only
+how I came up with a schema, but when it should and should NOT be used. It
+may also be used as a quick reference guide for the local sysop. It's a nice
+little cheat sheet one may print and keep near their keyboard if they want.
+
+Added text to both the colors.hlp and help.hlp file for a users better
+understanding of the color schema and how to gain colors to their terminal
+if they so choose to have it. See my wishlist below for more information on
+where I wish to go with this.
+
+Added an item to the Wish List located further below in this file. With so
+many spend-thrifty hams, do I really need to go through the code and match
+it with the most up-to-date version(s) of GCC for compiling? I originally
+developed the code using GCC version 2.95, now I'm compiling it on version
+4.2.4 and it's not showing any errors during compile. If you have a specific 
+version of GCC you're using, please submit that and proper hardware for me
+to run it on and I'll be more than happy to march forward :-)
+
+Changed the inactivity timeout message so that it does NOT show
+the FlexNet node call and gives a more specific message as to why the user
+was disconnected. This was a call I originally edited and have now cleaned
+up in node.c. There may be more of such messages. I can only test so much
+and for so long :)
+
+Made some more ANSI cleanups - in regards to Status and Users commands. I
+had them as magenta and they should only be bright white as they don't
+fit into any real category except for local system informations. For these
+I had to make routine changes as well as ANSI changes in user.c and in
+command.c. Also fixed the ANSI for version in NetRom. It currently had none. 
+This was done in command.c. Also cleaned up Links and Routes ANSI in command.c
+and other places where needed. Originally I had the Routes as yellow which
+even though it points the ax25-interface that NetRom is encapsulated under,
+it's really more for NetRom "route"-ing... so changed it to cyan to keep with
+the schema. 
+
+Found a disaster in ANSI routines for the Links command and the variant 
+switches along with it! The ANSI ran to the table which I did not want
+to have happen and I believe I was very diligent in cleaning this up
+in ver 1.0.8 or 1.0.9. In any event, I recall doing this and now I have
+repeated my work... thus taken time away from more important tasks *sigh*.
+These were worked in router.c. I also cleaned up other places where ANSI
+ran over other strings that it shouldn't, and where it may have engaged
+prior to where it should. Such instances are when it would highlight over
+the Node-ID string (ex: MYNODE:mycall-5}). This really made my skin crawl
+and I *know* I fixed this before... who knows perhaps I made a cleaner
+routine than I had.
+
+I recall doing a LOT of code clean-up, and it appears I need to revisit this
+again. When I'm done, hopefully I can get rid of a few hundred lines of code
+that's simply commented out for testing purposes only. The sizes of your
+binaries should not be affected by this and I believe I've been diligent
+to clean up the configure script to somewhat automate this process for you.
+This task will be excessively time consuming! If anything it'd be an excuse
+for a maintenance release!
+
+Fixed a minor routine in ipc.c in regards to the Msg command. I deliberately
+did NOT add ANSI to this because in a way the Msg command I feel is a tad
+intrusive such as with an instant message, however I did clean up how an
+incoming message was handled to the recipient. It now (in my opinion)
+shows a cleaner screen.
+
+I found Craig Small's old axdigi code and made an elf compile. In layman's
+terms, it's a static binary and should run as-is for you. This binary 
+claims to be fully automagic in regards to crossport digipeating unless you
+make changes to your interfaces in which you should restart it. This binary
+also should NOT require /etc/ax25/axdigi.conf anymore. I have the other
+binary so if you think you need it, let me know.
+
+Added an install for axdigi in Makefile.in under "install bin".  Previously
+this file was not included, now it is. I may write a shell script to launch
+the daemons for you... keep an eye on this file for further info!
+
+------
+
+Known Critical Bugs:
+(see below 3 lines)
+
+Known NON-Critical Bugs:
+** Wow! I don't think I have any now ** :-) 
+{but I'm sure I just jinxed myself!}
+
+Wish-list:
+GCC updating? Is it necessary??
+Auto ANSI detector
+Who file sorter
+-----------
+
+Development Information (aka Disclaimer):
+URONode is developed on an IBM eSeries 330 eServer with dual 1.2GHz CPUs
+The OS is Debian Linux 4 using kernel 2.4.27, libax25 v0.0.11,
+ax25-tools v0.0.8 and ax25-apps v0.0.6. This software comes with
+absolutely NO guarantees so crash n burn at your own risk. We all may
+be surprised and find out that it actually DOES something useful!
+URONode may not run 100% depending on environmental conditions specific
+to your system.
+
+------------
+
+Comments/suggestions? email: brian@support.uroweb.net
+Gripes??? cat gripes > /dev/null :-) just kidding!
+
+This version will get you going for now. I'll post any changes to:
+ftp://ftp.uroweb.net/pub/ax25/
+
+73 de Brian N1URO

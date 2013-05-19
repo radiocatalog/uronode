@@ -1,0 +1,8 @@
+
+USAGE
+        Who (<call> | *)
+
+DESCRIPTION
+        Shows a list when the user with the callsign <call> last
+        connected to this node. Use the asterisk to print out
+        the entire log table.

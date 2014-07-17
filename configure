@@ -74,14 +74,19 @@ fi
 	HAVETCPIP="#undef HAVE_TCPIP"
 	HAVEMOTD="#undef HAVE_MOTD"
 	MOTDPATH=
-	echo -n "Include support for the AX.25 protocol ? [Y/n]: "; read answer
-	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+#	echo -n "Include support for the AX.25 protocol ? [Y/n]: "; read answer
+#	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+	whiptail --title "URONode Options:" --yesno "Support AX25?" 7 22
+	if [ $? -ne 1 ]
 	then
 		HAVEAX25="#define HAVE_AX25	1"
 	fi
 	#
-        echo -n "Include support for the FlexNet protocol ? [Y/n]: "; read answer
-        if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+#        echo -n "Include support for the FlexNet protocol ? [Y/n]: "; read answer
+#        if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+	whiptail --title "URONode Options:" --yesno "Support FlexNet?" 7 22
+
+	if [ $? -ne 1 ]
         then
                 HAVEAX25="#define HAVE_AX25	1"
 		HAVEFLEX="#define HAVE_FLEX	1"
@@ -89,29 +94,37 @@ fi
 		IN=""
         fi
         # 
-	echo -n "Include support for the NetRom protocol ? [Y/n]: "; read answer
-	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+#	echo -n "Include support for the NetRom protocol ? [Y/n]: "; read answer
+#	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+	whiptail --title "URONode Options:" --yesno "Support NetRom?" 7 22
+	if [ $? -ne 1 ]
 	then
 		HAVEAX25="#define HAVE_AX25	1"
 		HAVENETROM="#define HAVE_NETROM	1"
 	fi
 	#
-	echo -n "Include support for the Rose protocol ? [Y/n]: "; read answer
-	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+#	echo -n "Include support for the Rose protocol ? [Y/n]: "; read answer
+#	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+	whiptail --title "URONode Options:" --yesno "Support ROSE?" 7 22
+	if [ $? -ne 1 ]
 	then
 		HAVEAX25="#define HAVE_AX25	1"
 		HAVEROSE="#define HAVE_ROSE               1"
 	fi
 	#
-	echo -n "Include support for MHeard ports listen ? [Y/n]: "; read answer
-	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+#	echo -n "Include support for MHeard ports listen ? [Y/n]: "; read answer
+#	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+	whiptail --title "URONode Options:" --yesno "Support MHeard?" 7 22
+	if [ $? -ne 1 ]
 	then
 		HAVEAX25="#define HAVE_AX25	1"
 		HAVEMHEARD="#define HAVE_MHEARD	1"
 	fi
 	#
-	echo -n "Include support for TCP/IP functions ? [Y/n]: "; read answer
-	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+#	echo -n "Include support for TCP/IP functions ? [Y/n]: "; read answer
+#	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+	whiptail --title "URONode Options:" --yesno "Support TCP/IP?" 7 22
+	if [ $? -ne 1 ]
 	then
 		HAVETCPIP="#define HAVE_TCPIP	1"
 		HAVEMOTD="#define HAVEMOTD"
@@ -161,9 +174,11 @@ sleep 3
 echo "URONode is a combined effort of years worth of work. Those who's code"
 echo "is included in this flavor of a linux based node are:"
 sleep 1
-echo -n "Brian Rogers N1URO (current maintainer), "
+echo "Brian Rogers N1URO (current maintainer), "
 sleep 1
-echo "Stefano Noferi IZ5AWZ"
+echo "Marius Petrescu YO2LOJ (current team member),"
+sleep 1
+echo "Stefano Noferi IZ5AWZ (AWZNode)"
 sleep 1
 echo -n "Tomi Manninen OH2BNS, "
 sleep 1
@@ -177,20 +192,23 @@ echo "and Barry K2MF for his input on some of my routines and supplying"
 echo "some source code."
 sleep 1
 echo ""
-echo -n "Shall I run the make command for you ? [Y/n]: "; read answer
-	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+#echo -n "Shall I run the make command for you ? [Y/n]: "
+	whiptail --title "Shall I make URONode?" --yesno "Yes to make or No to exit" 7 30 
+#	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+	if [ $? -ne 1 ]
         then
-		echo "Making URONode! Please be patient."
-		sleep 1
-		echo "compile errors will be in make.debug."
-		echo ""
-		sleep 1
-		echo "You may not see anything until the process is complete..."
+#		echo "Making URONode! Please be patient."
+#		sleep 1
+#		echo "compile errors will be in make.debug."
+#		echo ""
+#		sleep 1
+#		echo "You may not see anything until the process is complete..."
+		whiptail --title "Making URONODE..." --msgbox "Making. Check make.debug for errors. Hit OK to continue. You may not see anything for a minute..." 10 45
 		make >> make.debug
 		echo "let's check for binary errors..."
 		sleep 1
 		echo -n "nodeusers: "
-		sleep 2
+		sleep 1
 		if [ -x ./nodeusers ]; then
 			echo "SUCCESS!"
 		else
@@ -198,17 +216,24 @@ echo -n "Shall I run the make command for you ? [Y/n]: "; read answer
 		fi
 		sleep 1
 		echo -n "uronode:   "
-		sleep 2
+		sleep 1
 		if [ -x ./uronode ]; then
 			echo "SUCCESS!"
 		else
 			echo "FAILED!"
 		fi
 		sleep 1
+		echo -n "axdigi:    "
+		sleep 1
+		if [ -x ./axdigi ]; then
+			echo "SUCCESS!"
+		fi
+		sleep 1
 		echo -n "flexd:     "
-		sleep 2
+		sleep 1
 		if [ -x ./flexd ]; then
 			echo "SUCCESS!"
+		sleep 1
 		else
 			echo "FAILED! - perhaps you didn't want flexnet?"
 			echo "This is not an error if you chose NO to flexnet."
@@ -217,9 +242,20 @@ echo -n "Shall I run the make command for you ? [Y/n]: "; read answer
 			echo "Process complete!"
 			echo ""
 		fi
-		sleep 2
-		echo "Check the file make.debug if you had errors."
-		echo "If no errors, type: make install or make upgrade" 
-		echo "and edit your files in /etc/ax25/"
+		sleep 1
+		whiptail --title "URONode" --msgbox "Check the file make.debug if you had errors. If no errors, type: make install or make upgrade and edit your files in /etc/ax25/\n\n**WARNING: if you haven't already, add the following to your startup scripts:\n/usr/sbin/axdigi &                        to insure cross-port digipeating.\n\nFor help and release news join the forum at\nhttps://www.n1uro.net/forum\n\nEnjoy URONode - 73 de Brian N1URO" 20 50
+
+#		echo "Check the file make.debug if you had errors."
+#		echo "If no errors, type: make install or make upgrade" 
+#		echo "and edit your files in /etc/ax25/"
+#		echo "**WARNING: if you haven't already, add the following to your"
+#		echo "startup scripts:"
+#		echo "/usr/sbin/axdigi &"
+#		echo "to insure cross-port digipeating."
+#		echo ""
+#		echo "For support and release news join the forum"
+#		echo "at https://www.n1uro.net/forum"
+#		echo ""
+#		echo "Enjoy URONode! 73 de N1URO."
         fi
 exit 0

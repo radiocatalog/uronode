@@ -1,4 +1,4 @@
-URONode README file	April 12, 2003
+URONode README file	September 09, 2013
 
 Note: Please read the CHANGES file for detailed information
 about the changes from AWZNode to URONode and what I've
@@ -84,7 +84,10 @@ Other features:
   info text
 
 The official FTP Site of URONode is:
-ftp://ftp.uroweb.net/pub/ax25/
+ftp://ftp.n1uro.net/packet/
+
+The official Forums site is:
+https://www.n1uro.net/forum
 
 Please check out the file INSTALL to compile and install URONode.
-Also please read the CHANGES file for all version history changes.
+Also please read the CHANGES.* file for all version history changes.

@@ -56,45 +56,45 @@ static char buf[300];
 #define FILE_TO_BUF(FILE) {					\
     static int n, fd = -1;					\
     if (fd == -1 && (fd = open(FILE, O_RDONLY)) == -1) {	\
-	close(fd);						\
-	return 0;						\
+      close(fd);						\
+      return 0;							\
     }								\
     lseek(fd, 0L, SEEK_SET);					\
     if ((n = read(fd, buf, sizeof buf - 1)) < 0) {		\
-	close(fd);						\
-	fd = -1;						\
-	return 0;						\
+      close(fd);						\
+      fd = -1;							\
+      return 0;							\
     }								\
     buf[n] = '\0';						\
-}
+  }
 
 #define SET_IF_DESIRED(x,y)  if (x) *(x) = (y)	/* evals 'x' twice */
 
 int uptime(double *uptime_secs, double *idle_secs) {
-    double up=0, idle=0;
+  double up=0, idle=0;
     
-    FILE_TO_BUF(UPTIME_FILE)
+  FILE_TO_BUF(UPTIME_FILE)
     if (sscanf(buf, "%lf %lf", &up, &idle) < 2) {
-	printf("Bad data in %s\n", UPTIME_FILE );
-	return 0;
+      printf("Bad data in %s\n", UPTIME_FILE );
+      return 0;
     }
-    SET_IF_DESIRED(uptime_secs, up);
-    SET_IF_DESIRED(idle_secs, idle);
-    return up;	/* assume never be zero seconds in practice */
+  SET_IF_DESIRED(uptime_secs, up);
+  SET_IF_DESIRED(idle_secs, idle);
+  return up;	/* assume never be zero seconds in practice */
 }
 
 int loadavg(double *av1, double *av5, double *av15) {
-    double avg_1=0, avg_5=0, avg_15=0;
+  double avg_1=0, avg_5=0, avg_15=0;
     
-    FILE_TO_BUF(LOADAVG_FILE)
+  FILE_TO_BUF(LOADAVG_FILE)
     if (sscanf(buf, "%lf %lf %lf", &avg_1, &avg_5, &avg_15) < 3) {
-	printf("Bad data in %s\n", LOADAVG_FILE );
-	return 0;
+      printf("Bad data in %s\n", LOADAVG_FILE );
+      return 0;
     }
-    SET_IF_DESIRED(av1,  avg_1);
-    SET_IF_DESIRED(av5,  avg_5);
-    SET_IF_DESIRED(av15, avg_15);
-    return 1;
+  SET_IF_DESIRED(av1,  avg_1);
+  SET_IF_DESIRED(av5,  avg_5);
+  SET_IF_DESIRED(av15, avg_15);
+  return 1;
 }
 
 /* The following /proc/meminfo parsing routine assumes the following format:
@@ -110,35 +110,35 @@ int loadavg(double *av1, double *av5, double *av15) {
    labels which do not *begin* with digits, though.
 */
 
-#define MAX_ROW 3	/* these are a little liberal for flexibility */
-#define MAX_COL 7
+#define MAX_ROW 27	/* these are a little liberal for flexibility */
+#define MAX_COL 2
 
 unsigned** meminfo(void) {
-    static unsigned *row[MAX_ROW + 1];		/* row pointers */
-    static unsigned num[MAX_ROW * MAX_COL];	/* number storage */
-    char *p;
-    int i, j, k, l;
+  static unsigned *row[MAX_ROW + 1];		/* row pointers */
+  static unsigned num[MAX_ROW * MAX_COL];	/* number storage */
+  char *p;
+  int i, j, k, l;
     
-    FILE_TO_BUF(MEMINFO_FILE)
+  FILE_TO_BUF(MEMINFO_FILE)
     if (!row[0])				/* init ptrs 1st time through */
-	for (i=0; i < MAX_ROW; i++)		/* std column major order: */
-	    row[i] = num + MAX_COL*i;		/* A[i][j] = A + COLS*i + j */
-    p = buf;
-    for (i=0; i < MAX_ROW; i++)			/* zero unassigned fields */
-	for (j=0; j < MAX_COL; j++)
-	    row[i][j] = 0;
-    for (i=0; i < MAX_ROW && *p; i++) {		/* loop over rows */
-	while(*p && !isdigit(*p)) p++;		/* skip chars until a digit */
-	for (j=0; j < MAX_COL && *p; j++) {	/* scanf column-by-column */
-	    l = sscanf(p, "%u%n", row[i] + j, &k);
-	    p += k;				/* step over used buffer */
-	    if (*p == '\n' || l < 1)		/* end of line/buffer */
-		break;
-	}
+      for (i=0; i < MAX_ROW; i++)		/* std column major order: */
+	row[i] = num + MAX_COL*i;		/* A[i][j] = A + COLS*i + j */
+  p = buf;
+  for (i=0; i < MAX_ROW; i++)			/* zero unassigned fields */
+    for (j=0; j < MAX_COL; j++)
+      row[i][j] = 0;
+  for (i=0; i < MAX_ROW && *p; i++) {		/* loop over rows */
+    while(*p && !isdigit(*p)) p++;		/* skip chars until a digit */
+    for (j=0; j < MAX_COL && *p; j++) {	/* scanf column-by-column */
+      l = sscanf(p, "%u%n", row[i] + j, &k);
+      p += k;				/* step over used buffer */
+      if (*p == '\n' || l < 1)		/* end of line/buffer */
+	break;
     }
-/*    row[i+1] = NULL;	terminate the row list, currently unnecessary */
-    return row;					/* NULL return ==> error */
-}
+  }
+  /*    row[i+1] = NULL;	terminate the row list, currently unnecessary */
+  return row;					/* NULL return ==> error */
+} 
 
 int system_user_count(void)
 {
@@ -157,7 +157,7 @@ int who(void)
 }
 
 int read_utmp (filename)
-        char *filename;
+     char *filename;
 {
   FILE *utmp;
   struct stat file_stats;
@@ -195,7 +195,7 @@ int list_entries (n)
 #ifdef USER_PROCESS
           && this->ut_type == USER_PROCESS
 #endif
-         )
+	  )
         {
           char trimmed_name[sizeof (this->ut_name) + 1];
           int i;

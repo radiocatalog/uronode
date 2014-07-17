@@ -1,2 +1,3 @@
 This is a new system running URONode.
-*** please edit /etc/ax25/uronode.info to change this text.
+*** please edit /etc/ax25/uronode.info to change this text to display
+    information about your system.

@@ -1,7 +1,6 @@
 # /etc/ax25/uronode.users	URONode example configuration file
-# Mail & Shell for Sysop and users
+# Shell access for Sysop users
 
-# callsign:password:linux username:settings
-# where <settings> can be mail, shell or both separated by a semicolon
-# xx0xx:password:user:mail, shell
-# yy#yy:password:user:mail
+# callsign:password:local linux username:shell
+# xx#xx:password:xx#xx:shell
+# yy#yy:password:thomas:shell

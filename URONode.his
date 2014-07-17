@@ -1,0 +1,49 @@
+** Note: this file is depreciated, refer to CHANGES.*
+
+URONode was spawned off of the original linuxnode by Tomi Manninen OH2BNS
+Before URONode was FlexNode by Roy PE1RJA, and then by Stefano Noferi IZ5AWZ
+who called it AWZNode. I took over the code willingly and on my own mainly
+as a project I could do under C program coding in April 2003 after it 
+appeared that AWZNode was no longer being developed. 
+
+My first goal was to make it appear and act more like TheNet X1J and spent
+most of my time configuring the node to behave as such which I felt I did
+quite successfully. While doing that I thought I'd try to add in email
+features by using the old PMS system written by Alan Cox, who has a lot
+of code in the main linux kernel for it's IP stack (most of which is taken
+directly out of KA9Q nos). While I was successful in doing that, Morgan
+SM6TKY reported that the code was old and exploitable... unfortunately I had
+a period where I couldn't devote the time into getting it repaired quickly 
+and URONode sat and suffered with a note explaining that certain features
+should not be used or enabled. As a quick fix, I simply commented out the
+found exploits and did some more cosmetics to the code and released a patch.
+
+Still with users wanting EMAIL as a feature to the software, this inspired me
+to pick up with the dropped axMail code and bring that more up to date. axMail
+was originally started by Heikki Hannikainen, and then mailbox routines were
+added by Marius Petrescu, however system configs were lacking. I took the 
+code and added in the routines which are in there now so that new users
+are properly created within the basic linux filesystem schema, and passwords
+can be created (optional) so that a web front-end such as NeoMail can be
+used in conjunction with axMail giving users the choice of the web or RF
+packet to do their SMTP based EMAIL with. It was and always will be an optional
+add-on module for URONode, and other flavors of *node for linux.
+
+These two packages together, along with F6FBB make for one heck of a feature
+packed system a sysop can piece together on one server. Because of such, 
+URONode has become very popular in the NorthEast USA and in Central East
+Florida within the EastNet FlexNet network and with the Florida MARS 
+networks. With this, I've taken the look and feel of URONode to try and
+match that of a FlexNet interface.
+
+The latest version of URONode under-went many face lifts! The node not only
+auto-senses the incoming connection but delivers an interface which clones
+that of the type of system they're connecting in from. A user connecting
+in via IP will actually get a prompt that looks and acts similar to a
+Unix bash prompt with custom aliased commands!.. and to top that all off
+I've added an ansi schema to the IP interface!!
+
+URONode is used world-wide in Europe, Africa, Asia, and in North America.
+A web bbs is available at https://www.n1uro.net/forum where release notes
+for URONode are posted. If the functionality of URONode isn't enough to
+get interest in packet growing, the stability of URONode should!

@@ -1,6 +1,9 @@
 # /etc/ax25/uronode.routes     URONode example configuration file
-#
-# URONode shows links with this order.
+# This is used for quick ax25 connects so users need not add an interface
+# when making a connect. You also need a statement in here for flexd to
+# poll your flexnet neighbor.
+
+# URONode shows links with this order. Examples below:
 
 # Direct Routing 
 # route <call> <alias> <port> d 'description'

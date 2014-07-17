@@ -1,7 +1,7 @@
 
 USAGE
         Connect <call | alias> [s|d]                   For NET/ROM or Links
-        Connect <port> <call> [via <digi1> ...] [s|d]  For AX25
+        Connect <intf> <call> [via <digi1> ...] [s|d]  For AX25
 	Connect <call> <address> [<digi>] [d|s]        For ROSE
 	Connect <destination> [s|d]                    For FlexNet
 
@@ -19,5 +19,7 @@ DESCRIPTION
         If a single `s' is entered as the last parameter, then when
         the remote host disconnects you will be returned to this node.
         If a single `d' is entered as the last parameter, you will
-        be disconnected from this node too. Default behaviour (neither
-        `s' nor `d' entered) depends on sysop configuration.
+        be disconnected from this node too. Default behaviour depends
+	on how the user connects in:
+	NetRom - defaults to disconnect
+	all others - defaults to reconnect

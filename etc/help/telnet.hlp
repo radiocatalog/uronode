@@ -15,11 +15,12 @@ DESCRIPTION
 
         If a single `s' is entered as the last parameter, then when
         the remote host disconnects you will be returned to this node.
-        If a single `d' is entered as the last parameter, you will
-        be disconnected from this node too. Default behaviour (neither
-        `s' nor `d' entered) depends on sysop configuration.
+	This is only valid if the user connects into your node via
+	NetRom, otherwise the user is automatically reconnected to
+	the node.
 
 EXAMPLES
         telnet aripisa.ampr.org
         telnet aripisa.ampr.org 1024
-        telnet 44.134.208.29
+        telnet 44.134.208.29 s
+	telnet 44.88.0.9 23 s

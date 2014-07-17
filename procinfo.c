@@ -3,8 +3,8 @@
 #include <errno.h>
 #include <string.h>
 
-#include <netax25/kernel_ax25.h>
-#include <netax25/kernel_rose.h>
+#include <netax25/ax25.h>
+#include <netrose/rose.h>
 #include <netax25/axlib.h>
 #include <netax25/axconfig.h>
 #include <netax25/mheard.h>
@@ -199,28 +199,28 @@ struct ax_routes *read_ax_routes(void)
       
       switch(*new_el->conn_type) {
       case CONN_TYPE_DIRECT: 
-      { 
-      break;
-      }
+	{ 
+	  break;
+	}
       case CONN_TYPE_NODE:
-      {
-      safe_strncpy(new_el->digis[0], strupr(strtok(NULL, " \t\n\r")), 9);
+	{
+	  safe_strncpy(new_el->digis[0], strupr(strtok(NULL, " \t\n\r")), 9);
       
-      break;
-      }
+	  break;
+	}
       case CONN_TYPE_DIGI:
-      {
-      k=0;      
-      while((cp=strtok(NULL, " \t\n\r"))!=NULL&&k<AX25_MAX_DIGIS) 
-	safe_strncpy(new_el->digis[k++],strupr(cp),9);
-      while(k<AX25_MAX_DIGIS) strcpy(new_el->digis[k++],"\0");
-      break;
-      }
+	{
+	  k=0;      
+	  while((cp=strtok(NULL, " \t\n\r"))!=NULL&&k<AX25_MAX_DIGIS) 
+	    safe_strncpy(new_el->digis[k++],strupr(cp),9);
+	  while(k<AX25_MAX_DIGIS) strcpy(new_el->digis[k++],"\0");
+	  break;
+	}
       default: 
-      {
-      return NULL;
-      break;
-      }
+	{
+	  return NULL;
+	  break;
+	}
       }
 
       
@@ -272,7 +272,7 @@ struct ax_routes *find_route(char *dest_call, struct ax_routes *list)
       break;
     }
  
-     }
+  }
   if (list==NULL) free_ax_routes(axrt);
   return p;
 }

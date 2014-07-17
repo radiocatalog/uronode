@@ -1,0 +1,445 @@
+28/11/2008 v1.0.8
+*notes lost, sorry.
+
+27/05/2009 v1.0.9
+**production copy stolen. See LICENSE for who did this and my response.
+
+11/05/2013 v2.0
+Clean up of some code... I had a copy of 1.0.8 from 2008 I recovered. I 
+did
+have a version 1.0.9 in production but can't seem to locate it for some
+reason so starting from memory using 1.0.8. Thanks to Brett WA7V for
+supplying me with some teaser code :-)
+
+Updated version! We're on 2.0... finally! (yea, big news right? Maybe
+not!)
+
+Moved the "Who" commmand to the list of basic internal node commands.
+I can't recall why on earth I had it defined with MOTD. Perhaps it may
+come to me later but for now I can't recall. I may have to move it
+somewhere else, but I believe it has to do something with logging
+features or something along those lines. For now, you need to define
+MOTD as a compile selective to have the <Who (call)> defined.
+
+Fixed the sysop shell warning, this needed to be a tad more specific
+in my point of view... then again who am I? Also cleaned up the return
+prompt as it could be confusing if the incoming connection was done via
+NetRom. I removed the default FlexNet Identifier out. Now it just says:
+"Welcome back.".
+
+In regards to the "Who" command; I see what was going on here and where
+I left off with it! Logging and the "Who" command pretty much go hand in
+hand - so they're combined. The initial design of FlexNode was to have a
+MOTD based off of the logging of when the user last was on, otherwise if
+they did not exist, push the "new user" screen to them. The down and
+dirty quick fix is to simply remove it from netrom connections into the
+system! Who cares if you get a MOTD on a flex/ax25 or a telnet connect
+into the system!
+
+With the above said, I changed the sequence of "configure" to ask if the
+sysop/admin wishes to log user connects into the system. In the future I
+will either move this to be included with protocols or I may simply hard
+code it in as a defaulted option, and move the "Who" command as being
+defined into TCP/IP functions. For now, it's hard coded in as a selected
+option but will NOT display for NetRom connects.
+
+While I was at it, I changed some of the routines in the configure script.
+Nothing major but did improve upon a few things. While doing this, and
+running "make upgrade" I noticed that flexd.conf was being overwritten!
+OUCH! I'm surprised this went on for as long as it did. I *think* I did
+this to force people to add the new lines in flexd.conf that K2BJG/SK had
+asked me to do.
+
+Created a man page for flexd.conf(5)! I'm surprised no one asked me why this
+was missing! It explains further how to create the file. Keep in mind, this
+also works on Xnet as well as Flexnet. If this doesn't help you figure out
+how to create this file or edit the sample one... I don't honestly know what
+to tell you. In doing such, it also forced me to change the generated
+Makefile so that "install upgrade" and "install man" installs it.
+
+Changed the licensing! This is (I'll admit) very personal and _must_
+remain as is! I could fill a TB hard disk with reasons and debates
+as to why it's no longer GPL code. Please insure you are in an area
+where you can use this code. Thank you.
+
+Fixed an ANSI bug I had in the "Users" command which was driving me nuts!
+On NetRom, it would change the prompt to magenta which it shouldn't. What
+I did as a fix was to force a removal of ANSI on the prompt for NetRom
+based connects... simple enough. There may be other ANSIs for me to fix
+and I'll cross those bridges when I get to them. Found another in gateway.c
+and fixed the netrom ANSI to properly reflect that once a connection was
+made, it was "systems GO" (green) without changing the Node's ID string.
+
+Created a COLORS file which somewhat explains the hows/whys of not only
+how I came up with a schema, but when it should and should NOT be used. 
+It may also be used as a quick reference guide for the local sysop. It's 
+a nice little cheat sheet one may print and keep near their keyboard if 
+they want.
+
+Added text to both the colors.hlp and help.hlp file for a users better
+understanding of the color schema and how to gain colors to their terminal
+if they so choose to have it. See my wishlist below for more information on
+where I wish to go with this.
+
+Added an item to the Wish List located further below in this file. With so
+many spend-thrifty hams, do I really need to go through the code and match
+it with the most up-to-date version(s) of GCC for compiling? I originally
+developed the code using GCC version 2.95, now I'm compiling it on version
+4.2.4 and it's not showing any errors during compile. If you have a specific
+version of GCC you're using, please submit that and proper hardware for me
+to run it on and I'll be more than happy to march forward :-)
+
+Changed the inactivity timeout message so that it does NOT show
+the FlexNet node call and gives a more specific message as to why the user
+was disconnected. This was a call I originally edited and have now cleaned
+up in node.c. There may be more of such messages. I can only test so much
+and for so long :)
+
+Made some more ANSI cleanups - in regards to Status and Users commands. I
+had them as magenta and they should only be bright white as they don't
+fit into any real category except for local system informations. For these
+I had to make routine changes as well as ANSI changes in user.c and in
+command.c. Also fixed the ANSI for version in NetRom. It currently had none.
+This was done in command.c. Also cleaned up Links and Routes ANSI in command.c
+and other places where needed. Originally I had the Routes as yellow which
+even though it points the ax25-interface that NetRom is encapsulated under,
+it's really more for NetRom "route"-ing... so changed it to cyan to keep with
+the schema.
+
+Found a disaster in ANSI routines for the Links command and the variant
+switches along with it! The ANSI ran to the table which I did not want
+to have happen and I believe I was very diligent in cleaning this up
+in ver 1.0.8 or 1.0.9. In any event, I recall doing this and now I have
+repeated my work... thus taken time away from more important tasks 
+*sigh*.
+
+These were worked in router.c. I also cleaned up other places where ANSI
+ran over other strings that it shouldn't, and where it may have engaged
+prior to where it should. Such instances are when it would highlight over
+the Node-ID string (ex: MYNODE:mycall-5}). This really made my skin crawl
+and I *know* I fixed this before... who knows perhaps I made a cleaner
+routine than I had.
+
+I recall doing a LOT of code clean-up, and it appears I need to revisit this
+again. When I'm done, hopefully I can get rid of a few hundred lines of code
+that's simply commented out for testing purposes only. The sizes of your
+binaries should not be affected by this and I believe I've been diligent
+to clean up the configure script to somewhat automate this process for you.
+This task will be excessively time consuming! If anything it'd be an excuse
+for a maintenance release!
+
+Fixed a minor routine in ipc.c in regards to the Msg command. I deliberately
+did NOT add ANSI to this because in a way the Msg command I feel is a tad
+intrusive such as with an instant message, however I did clean up how an
+incoming message was handled to the recipient. It now (in my opinion)
+shows a cleaner screen.
+
+I found Craig Small's old axdigi code and made an elf compile. In layman's
+terms, it's a static binary and should run as-is for you. This binary
+claims to be fully automagic in regards to crossport digipeating unless you
+make changes to your interfaces in which you should restart it. This binary
+also should NOT require /etc/ax25/axdigi.conf anymore. I have the other
+binary so if you think you need it, let me know.
+
+Added an install for axdigi in Makefile.in under "install bin".  Previously
+this file was not included, now it is. I may write a shell script to launch
+the daemons for you... keep an eye on this file for further info!
+
+26/05/2013 v2.1
+
+Fixed a bug in gateway.c where the finger "stop" ansi was white instead
+of red (for stop). This was one I missed not having proper routing yet
+to fully test. Thanks Brett WA7V for the link!!
+
+Made another change in gateway.c in regards to the handling of the
+flexnet destinations listing when using Flex/AX25 ONLY. There is a
+reason for this (believe it or not) and that's in the shell and netrom
+interfaces they both begin the destinations list with the string
+"Flexnet Destinations:". This may cause neighbor URONode/AWZNode/etc
+systems using flexd to improperly parse flexnet destinations from each
+other. At the moment, I don't have the facilities to properly test this
+but am hoping to work something out.
+
+Thanks to Bob K2JJT, I added an include for socket.h in ipc.c. While I
+never saw any errors here, I don't believe I've ever tested or compiled
+on a Slackware system... Bob uses Slack. K2JJT reported adding this to
+ipc.c helped him fix issues with his compile as it was griping about
+AF_NETROM. Adding it here made no difference so since it helps Slackware
+I'm all for being multi-distro compatable as much as humanly possible.
+
+In reviewing 2.0 changes, it had me look more into the shell function
+for sysops. I made a change that more defines which shell you may be
+in when you do a 'w' or a 'who' in a linux shell via the node. This
+was changed in system.c
+
+Made a patch to node.c where if called from a shell, it would coredump.
+Now, if it's called from a shell it simply exits back to the shell
+prompt. I believe the same is in other "node" variants to which
+the documentation directs the local sysop not to call the node from
+a prompt, however KI6ZHD felt this was an issue. Being harmless in
+nature to the function of my design I felt it wasn't harmful to add
+it in. This patch was provided by David Ranch KI6ZHD. Thanks to him
+for providing this, and eliminating any accidental core files on your
+hard drives, and to Steven, K6SPI for coding the patch.
+
+Thanks to David KI6ZHD for motivating me to do something I wanted to do
+but put it way on the back burner, and to Barry K2MF for his elite C
+skills. MHeard now will only print up to the 20 most recent heards. With
+the initial routine, it would just dump either the global list heard
+or if the user selected a specific interface the entire list for that
+interface. At first, it worked fine for telnet and/or ax25/flex
+connections but in NetRom it was double spacing. This was fixed by me. I
+chose 20 to leave room for system headers and prompt returns. In a
+standard 80x25 terminal screen, with a full listing, this should fill
+the entire screen without a need for the end user to scroll up and
+should help keep some traffic down on a busy network.
+
+Made a change in gateway.c to eliminate the "trying state" message only
+in NetRom when trying to connect to a remote NetRom node. This should
+keep the node more in compliance with Software2000 specifications.
+
+There was chatter within the BPQ32 user group on Yahoo that URONode was
+not releasing any keep-alive timers. Please, this is NOT the duty of
+a node Front End to control what the native protocol stack is designed
+to do. This is totally sysop configurable. To flag this I strongly
+suggest the following be added to your scripts:
+echo "600000" > /proc/sys/net/ax25/ax0/idle_timeout
+echo "600000" > /proc/sys/net/ax25/ax1/idle_timeout
+echo "600000" > /proc/sys/net/ax25/ax2/idle_timeout
+and so on... one line for each ax25 interface. This will break the
+keep-alive virtual circuit Netrom AND IP will use for transport, and
+thus break your IP as well. If you're running IP through an ax25
+interface I suggest you leave this defaulted to 0 (disabled).
+
+Rewrote the auto-find routine in gateway.c in do_connect so that first
+order of preference for connects searches the destis table from flexd
+BEFORE checking the netrom nodes and mheard tables, THEN it will search
+for the destination in the netrom nodes if not found in the destis
+table and prior to searching the mheard list. If you don't use flexnet,
+then this shouldn't be an issue for you. As of this time, I'm unsure
+if this would create any bugs if you don't define FlexNet during
+the configure procedure. If it does, please file a report on the
+online forum at https://www.n1uro.net/forum for me!
+
+Made some changes in util.c and gateway.c in regards to duplicate ax25
+route connection attempts. If you attempt to connect twice through the
+same path, same call, etc, to clarify the error handling. This was
+something I worked with K2MF on in regards to MFNOS. This does not mean
+you can't make a connect on the same interface you came in on, you will
+get a loop warning but the connect will attempt. If you connect from
+the node, and try to connect to <callsign>, loop back into the node,
+and try to connect to the same <callsign> again, you will NOT be allowed
+to connect. URONode will tell you that a duplicate connection is not
+allowed.
+
+Cleaned up the do_routes routine in command.c. Shortened "Quality" to
+"Qual" and renamed "Destinations" to "Nodes". After all, netrom doesn't
+really use "Destinations", that's more a flexnet thing. Still more
+cleanup to do in there *sigh*.
+
+While I was at the do_routes, I noticed missing ansi in do_routes and
+do_nodes. This has been fixed (and was previously in 1.0.10). I also
+cleaned up the ansi routine in do_destinations in router.c to match
+that of the netrom counterpart routines in command.c. Again, this was
+done in 1.0.10 *double sigh*.
+
+Rather than include an i686 elf of Craig Small's axdigi cross-port
+digipeater which probably would NOT work on a Raspberry PI, I added
+it into the Makefile by default. I also added an additional routine
+in the configure script to check to insure that this file is made.
+
+I also had to update axdigi.c so that it wouldn't error on the newer
+(as if I run newer ha!) gcc. This was done for strcpy so that it
+wouldn't produce errors as it does. I suspect in the "OLD" days of
+linux/gcc it may have been OK as I consider Craig to be one of the
+"village elders" of the packet system on linux.
+
+Added a man page for axdigi. READ THIS VERY CAREFULLY!! To digi through
+linux you *must* know some specific information and you might have to
+educate your users on how exactly to cross-port digi through you if
+they intend to do such. It's not something normally visible to them!
+I may add a node-help file on digi...but for now please study the man
+page on how. It works and works very slick as I've been testing it for
+a couple of months. Mheard also will learn digi paths and use them to
+connect to digipeated nodes if need be.
+
+Cleaned up do_nodes in command.c. Shortened Quality to Qual, and the
+equivilant of Obs. This will use less chars per line when doing a
+node <node> or node * . I've been wanting to do this but saved
+it for one of those rainy day things. Guess today was that rainy day?
+
+Cleaned up more code and hope to have it finished before 2.1's final
+release. So far I'm doing flexd.c at this point. FYI; code cleanup will
+be a 2-fold process. First; I'll be formatting each file so it's at a
+level of consistency. Second, things I have commented out for testing
+that aren't needed may be permanently removed. I may leave a few things
+in in case someone desires to say add a 'Welcome." message to netrom
+(which is NOT Software2000 compliant!).
+
+Speaking of which, I see I introduced a bug when ANSI is defined for
+a specific user which violates Software2000 specs. I believe I did this
+as a fail-safe in the prompt routine however now I see it's not needed
+with all the other ANSI cleanups I've done. This change (deletion)
+was done in node.c where I forced a shutoff of ANSI upon NetRom connects
+only, as NetRom does not display the MOTD.
+
+I rewrote a bit of the reconnect string. The "reconnect" in uronode.conf
+should be set to OFF. All connections with the exception of NetRom WILL
+reconnect. NetRom defaults to off, however with the {S|D} flags you may
+manually request you stay connected. Eventually I will remove this flag
+in the file so it will become moot. Please change it now to OFF! This
+was done in gateway.c. Previously, these flags were moot in NetRom
+connects. With the default to OFF, this keeps the NetRom in URONode
+Software2000 compliant. A NetRom disconnect should *never* send any
+text back whether it's a user or robot/script. Now a user can request
+staying connected to URONode from a incoming NetRom connection. For
+clarity sake, this only affects the user IF they connect INTO URONode
+via NetRom. The "S" flag works for ax25/Flex/NetRom outbound connects.
+A user connecting INTO URONode via ax25/Flex/IP will still automatically
+be reconnected after an outbound connect.
+
+N1UAN reports make install fails to install the config files. He's
+correct. Changed Makefile.in so that "make install" also includes
+make installconf which run by itself will install just the config
+files for /etc/ax25.
+
+I'm also working on changing the configure script to have some
+"eye candy". This will be a continuing work in progress. You'll see it
+as it comes. You will need the package "whiptail" in order to see this
+new configuration routine. I don't know if this is standard amongst
+ALL distributions, however I do know it comes default in debian and
+debian based systems. If this *is* too much of an issue, I'll revert
+back to the old method.
+
+Almost forgot about an ANSI bug in extcmd.c where if you created an
+external command in the node and the user was in via NetRom, when the
+node issued "Welcome back." the ansi did NOT clear the color. I found
+this in ver 2.0 and thought I fixed it, apparently not (age catching
+up to me?) In any event, this is now fixed and working properly again.
+Since most people don't use the +512 Color flags I'm sure it was missed.
+
+Found a non-critical bug in cmdparse.s in regards to running external
+commands - where it would automatically input a line feed before it
+executed the command. This was the only routine which did this. A
+routine like this really got under my skin and I was determined to find
+and fix this finally... this was a routine I never changed, and that
+was halted today (28 July 2013). Instead of totally removing this line
+of code, I changed it to now display "Executing command... " and where
+ANSI is defined, it is, naturally, green.
+
+Found a non-critical bug in the Info command where it would show as
+the first string to the user: "Help command for help" then it would push
+the uronode.info file. This is very wrong. While the Info command does
+use the routine of do_help in command.c, Info is an independent internal
+command and this should not have occurred. This is now fixed with ANSI
+if permissions display ANSI.
+
+Updated the outdated INSTALL text document. It had some now misleading
+pieces of information in it as some paths and make options have been
+changed. Since no one has said anything to this, I'll assume no one
+RTFM? (not surprised! email me and say in the subject line: surprise!
+if you do!)
+
+Went through the example config files and heavily commented them so for
+new installs, it explains each line more specifically in hopes less
+misconfigured systems will be created. I also found some typos as to
+man page references - fixed. Also updated some of the help files in
+regards to the new changes in relation to the "stay" sub command when
+connecting out from URONode.
+
+Note: in node.c I modified the pre-provided segfault patch to now
+push text to the local console instructing the local sysop or user
+what/how to properly execute the node. This will (I hope) force
+some RTFM to occur. Syslog logging was also added in the event this
+occurs. Actually, after thinking about this, I figured I'd dummy it up
+a bit and have it launch a login anyway. This depends that the local
+administrator/sysop -properly configures their box- and does the
+following:
+1 - add a line in /etc/services to point tcp/3694 to uronode
+2 - add uronode as a service in inetd or xinetd
+3 - insure you have a local telnet client on the box
+4 - enjoy!
+You will be reminded about this during the login, and syslog will
+reflect a local console login as well.I strongly urge you not to open
+2 shells and tail your syslog in one while you try to run URONode from
+the console. Wink
+
+Cleaned up a minor routine in do_nodes which lays in command.c where
+under an incoming NetRom connect, a user who did "Nodes" received
+an extra line feed if the columns were all equal at 4 per row. This
+was a bit under my skin... fixed/changed. While I was at it, I changed
+the output string when doing "Nodes *" from 'Nodes:' to "Detailed
+nodes listing:' which actually makes more sense since it is a detailed
+list.
+
+Fixed a minor bug in the way the prompts were handled under certain
+telnet clients. This was reported also by Marius Petrescu yo2loj. Under
+telnet, I added a carriage return (/r) along with the line feed (/n).
+Thank you Marius for the report.
+
+In doing the above, I made an error in the non-ANSI telnet prompt where
+the (/r) was also chopping off the first letter of a callsign! OOPS!
+This was reported by Ted K1YON. Fixed.
+
+Slightly rewrote the way meminfo() was being handled. While I may have
+created a bug in 2.4 and lower kernels, this now should work in 2.6 and
+higher kernels. I guess the phrase "if it's not broke don't fix it"
+doesn't apply anymore?
+
+FINALLY - split the CHANGES file into a new page!! This makes it easier
+for me to input the change notes instead of having to scroll down for 30
+seconds Smile Call me lazy but don't call me late for supper! <G>
+
+04/09/2013 v2.2
+
+Made multiple .c file edits to reflect the new libax25-devel .h files.
+Currently these were pointing to the older kernel_*.h files and on newer
+linux systems was preventing compile. Now URONode should work fine.
+
+Added Marius Petrescu to the URONode team! With his c version of ripv2d, 
+Marius will (and already has) make a huge impact on the future of 
+URONode! Welcome Marius to the team! Made a reflection of this in the
+configure script.
+
+Marius brought to my attention the issue in the log timer routine where 
+it was forcing 32-bit. He supplied code to fix this in both system.c and
+flexd.c.
+
+While in discussions, Marius brought it to my attention that Ubuntu (and
+this includes Mint and any other Ubuntu backed distributions) where they
+run as he calls it a "fortified libc6" which segfaults on every (what it
+thinks is suspicious) buffer accesses to prevent overflows however this
+libc6 itself causes buffer overflowing. Why on earth did the Ubuntu team
+ever do this?? Anyway, we're investigating how we're going to handle 
+this issue. I personally have verified URONode to compile and work on 
+the new kernel 3.x series on Debian and Fedora.
+
+Known Critical Bugs:
+(see below 3 lines)
+
+Known NON-Critical Bugs:
+Status memory/swap reporting fix
+
+Wish-list:
+Who file sorter
+pactor - requested by sv1uy
+-----------
+
+Development Information (aka Disclaimer):
+URONode is developed on an IBM eSeries 330 eServer with dual 1.2GHz CPUs
+The OS is Debian Linux 4 using kernel 2.4.27, libax25 v0.0.11,
+ax25-tools v0.0.8 and ax25-apps v0.0.6. This software comes with
+absolutely NO guarantees so crash n burn at your own risk. We all may
+be surprised and find out that it actually DOES something useful!
+URONode may not run 100% depending on environmental conditions specific
+to your system.
+
+------------
+
+Comments/suggestions? email: n1uro@n1uro.ampr.org
+Gripes??? cat gripes > /dev/null Smile just kidding!
+
+This version will get you going for now. I'll post any changes to:
+ftp://ftp.n1uro.net/packet
+
+73 de Brian N1URO

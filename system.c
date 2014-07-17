@@ -24,8 +24,8 @@
 #include <unistd.h>
 
 #include "md2.c"
-#include <netax25/kernel_ax25.h>
-#include <netax25/kernel_rose.h>
+#include <netax25/ax25.h>
+#include <netrose/rose.h>
 #include <netax25/axlib.h>
 #include <netax25/axconfig.h>
 
@@ -125,7 +125,8 @@ void login_close(void)
   ut->ut_type=DEAD_PROCESS;
   memset(ut->ut_host,0,UT_HOSTSIZE);
   memset(ut->ut_user,0,UT_NAMESIZE);
-  time(&ut->ut_time);
+  time(&ut->ut_time); 
+/*  ut->ut_xtime = (unsigned int)time(NULL); */
   pututline(ut);
   endutent();
   if ((fp = fopen(_PATH_WTMP, "r+")) != NULL) {
@@ -133,11 +134,11 @@ void login_close(void)
     fwrite(ut, sizeof(utmpbuf), 1, fp);
     fclose(fp);
   }
- if (User.ul_type == AF_NETROM) {
-   axio_printf(NodeIo,"%s} Welcome back.\n", NodeId);
-   } else {
-   axio_printf(NodeIo,"Welcome back.");
- }
+  if (User.ul_type == AF_NETROM) {
+    axio_printf(NodeIo,"%s} Welcome back.\n", NodeId);
+  } else {
+    axio_printf(NodeIo,"Welcome back.");
+  }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -193,10 +194,11 @@ int login_open(struct passwd *pw, char *command)
     strcpy(utmpbuf.ut_line, ptyname+5);                    /* Devicename of tty */
     strcpy(utmpbuf.ut_id, ptyname+strlen(ptyname)-2);      /* Inittab id */
     strcpy(utmpbuf.ut_user, pw->pw_name);                  /* Username */
-    strcpy(utmpbuf.ut_host, "localhost:node");
+    strcpy(utmpbuf.ut_host, "local:uronode");
     utmpbuf.ut_addr=0x7f000000;
     time(&utmpbuf.ut_time);                                /* Time entry was made */
- 
+/*    utmpbuf.ut_xtime = (unsigned int)time(NULL); */
+
     setutent();
     pututline(&utmpbuf);
     endutent();
@@ -248,14 +250,14 @@ int login_open(struct passwd *pw, char *command)
       }
 
       /*      if (FD_ISSET(User.fd, &fds_err)) {    
-	syslog(LOG_DEBUG,"I/O end: error channel, user");
-	break;
-      }
+	      syslog(LOG_DEBUG,"I/O end: error channel, user");
+	      break;
+	      }
       
-      if (FD_ISSET(ptyfd, &fds_err)) {
-	syslog(LOG_DEBUG,"I/O end: error channel, application");
-	break;
-	} */
+	      if (FD_ISSET(ptyfd, &fds_err)) {
+	      syslog(LOG_DEBUG,"I/O end: error channel, application");
+	      break;
+	      } */
 
       if (FD_ISSET(STDIN_FILENO, &fds_read)) {
         alarm(SYSTEM_TIMEOUT);
@@ -265,8 +267,8 @@ int login_open(struct passwd *pw, char *command)
 	    syslog(LOG_DEBUG,"I/O end: stdio channel, user");
 	    break;
 	  } else {
-	    write(ptyfd, buf, cnt);
-	  }   
+	  write(ptyfd, buf, cnt);
+	}   
       }
       
       if (FD_ISSET(ptyfd, &fds_read)) {
@@ -294,51 +296,51 @@ int login_open(struct passwd *pw, char *command)
 
 int check_passwd(void)
 {
-char buffer[400]="",
-     tmp[100]="";
-int  pass[5],
-     level,i;
-long timet;
+  char buffer[400]="",
+    tmp[100]="";
+  int  pass[5],
+    level,i;
+  long timet;
 
   char answer[81]="";
   char buf[2048];
 
-unsigned char MD2digest[16];
-MD2_CTX context;
+  unsigned char MD2digest[16];
+  MD2_CTX context;
 
-	level=strlen(Password);
-	timet=time(NULL);
-	srandom((int) timet);
-	for(i=0;i<5;i++) pass[i]=(int) (level * (random()/(RAND_MAX+1.0)));
+  level=strlen(Password);
+  timet=time(NULL);
+  srandom((int) timet);
+  for(i=0;i<5;i++) pass[i]=(int) (level * (random()/(RAND_MAX+1.0)));
 	
-	sprintf(buffer,"%10.10ld%s",timet,Password);
-	MD2Init(&context);
-	MD2Update(&context,(unsigned char *)buffer,level+10);
-	MD2Final(MD2digest,&context);
+  sprintf(buffer,"%10.10ld%s",timet,Password);
+  MD2Init(&context);
+  MD2Update(&context,(unsigned char *)buffer,level+10);
+  MD2Final(MD2digest,&context);
 	
-	for(i=0;i<16;i++) sprintf(&tmp[i*2],"%02x",MD2digest[i]);
+  for(i=0;i<16;i++) sprintf(&tmp[i*2],"%02x",MD2digest[i]);
 
-	axio_printf(NodeIo,"%s %d %d %d %d %d [%010.10ld]\n",
-		PassPrompt,pass[0]+1,pass[1]+1,pass[2]+1,pass[3]+1,pass[4]+1,timet);
+  axio_printf(NodeIo,"%s %d %d %d %d %d [%010.10ld]\n",
+	      PassPrompt,pass[0]+1,pass[1]+1,pass[2]+1,pass[3]+1,pass[4]+1,timet);
 	
-sprintf(answer,"%c%c%c%c%c",Password[pass[0]],Password[pass[1]],Password[pass[2]],Password[pass[3]],Password[pass[4]]);
+  sprintf(answer,"%c%c%c%c%c",Password[pass[0]],Password[pass[1]],Password[pass[2]],Password[pass[3]],Password[pass[4]]);
 
   axio_flush(NodeIo);
   axio_gets(buf, sizeof(buf), NodeIo);
   
 
-	if(strlen(buf)==32) i=strcmp(buf,tmp);					/* yes, use md2 password, ignoring case */
-	else	i=strcmp(buf,answer);
+  if(strlen(buf)==32) i=strcmp(buf,tmp);					/* yes, use md2 password, ignoring case */
+  else	i=strcmp(buf,answer);
 
-if(i)	{
-	axio_printf(NodeIo,"Password incorrect!");
-	return 0;
-	}
+  if(i)	{
+    axio_printf(NodeIo,"Password incorrect!");
+    return 0;
+  }
   if (User.ul_type == AF_NETROM) {
-      axio_printf(NodeIo,"%s} ", NodeId);
+    axio_printf(NodeIo,"%s} ", NodeId);
   }
   axio_printf(NodeIo,"URONode Shell engaged - use EXTREME caution! \n\n");
-return 1;
+  return 1;
 } 
 
 /*---------------------------------------------------------------------------*/
@@ -356,7 +358,7 @@ int do_system(int argc, char **argv)
 
   if (pw==NULL) {
     if (User.ul_type == AF_NETROM) {
-        axio_printf(NodeIo,"%s} ", NodeId);
+      axio_printf(NodeIo,"%s} ", NodeId);
     } 
     node_msg("Permission denied\n");
     syslog(LOG_INFO, "system: %s attempted command %s", User.call, argv[0]);
@@ -364,29 +366,29 @@ int do_system(int argc, char **argv)
     return 1;
   }
   if (strncmp(argv[0],"sysop",strlen(argv[0]))==0) 
-  {
-    if (shell==1) {
-      User.state = STATE_EXTCMD;
-      User.dl_type = AF_UNSPEC;
-      strcpy(User.dl_name, "sysop");
-      strupr(User.dl_name);
-      update_user();
-      if (check_passwd()==0) return 0; 
-      login_open(pw, "/bin/bash");
-      axio_puts("",NodeIo);
-      return 0;
-    } else {
-    if (User.ul_type == AF_NETROM) {
-        axio_printf(NodeIo,"%s} ", NodeId);
+    {
+      if (shell==1) {
+	User.state = STATE_EXTCMD;
+	User.dl_type = AF_UNSPEC;
+	strcpy(User.dl_name, "sysop");
+	strupr(User.dl_name);
+	update_user();
+	if (check_passwd()==0) return 0; 
+	login_open(pw, "/bin/bash");
+	axio_puts("",NodeIo);
+	return 0;
+      } else {
+	if (User.ul_type == AF_NETROM) {
+	  axio_printf(NodeIo,"%s} ", NodeId);
 	}
-      node_msg("permission denied");
-      axio_puts("",NodeIo);
-      return 1;
-    };
-  }
+	node_msg("permission denied");
+	axio_puts("",NodeIo);
+	return 1;
+      };
+    }
   if (User.ul_type == AF_NETROM) {
-      axio_printf(NodeIo,"%s} ", NodeId);
-      }
+    axio_printf(NodeIo,"%s} ", NodeId);
+  }
   node_msg("unknown command");
 
   return 0;
@@ -436,8 +438,8 @@ int examine_user(void)
   if (cp==NULL) return 0;
   do {
     if (strcmp(cp, "shell")==0) {
-    shell=1;
-    add_internal_cmd(&Nodecmds, "SYSop",	1, do_system);
+      shell=1;
+      add_internal_cmd(&Nodecmds, "SYSop",	1, do_system);
     }
     cp=strtok(NULL, " ,;-/\t\n\r");
   } while(cp!=NULL);
@@ -446,15 +448,15 @@ int examine_user(void)
 }
 
 struct nodelastlog {
-        char ll_user[8];
-        long ll_time;
-        char ll_line[LAST_DATA_SIZE];
-        char ll_host[LAST_DATA_SIZE];
-        int  ll_count;
+  char ll_user[8];
+  long ll_time;
+  char ll_line[LAST_DATA_SIZE];
+  char ll_host[LAST_DATA_SIZE];
+  int  ll_count;
 };
 
 struct ipheardlastlog {
-	char ii_host[LAST_DATA_SIZE];
+  char ii_host[LAST_DATA_SIZE];
 };
 
 void lastlog(void)
@@ -503,7 +505,7 @@ void lastlog(void)
     break;
 #endif    
   case AF_INET:   strcpy(hostname, User.ul_name);
-  break;
+    break;
   case AF_UNSPEC: strcpy(hostname, User.call);
     strcat(hostname, " on local");
     break;
@@ -511,31 +513,31 @@ void lastlog(void)
     break;
   }
 
-  if ((last = open(DATA_NODE_LAST_FILE, O_RDWR, 0)) >= 0) {
+  if ((last = open(DATA_NODE_LAST_FILE, O_RDWR, 0)) >= 0) { 
     lseek(last, (off_t)UserId * sizeof(ll), L_SET);
     while (read(last, (char *)&ll, sizeof(ll)) == sizeof(ll) && ll.ll_time != 0) {
       if (strcmp(ll.ll_user,usercall)==0) {
 	escape = (check_perms(PERM_NOESC, 0L) == 0) ? -1 : EscChar;
 #ifdef HAVEMOTD
-/*
-	if (User.ul_type != AF_NETROM) {
-	axio_printf(NodeIo," Escape is: %s%c\n", escape < 32 ? "CTRL-" : "", escape < 32 ? (escape + 'A' - 1) : escape);
-        axio_printf(NodeIo,"Last login: %.*s ",24-5,(char *)ctime(&ll.ll_time));
-        if (*ll.ll_host != '\0') axio_printf(NodeIo,"\n      From: %.*s\n",(int)sizeof(ll.ll_host), ll.ll_host);
-        else                     axio_printf(NodeIo," on %.*s\n",(int)sizeof(ll.ll_line), ll.ll_line); 
-	}
-*/
+	/*
+	  if (User.ul_type != AF_NETROM) {
+	  axio_printf(NodeIo," Escape is: %s%c\n", escape < 32 ? "CTRL-" : "", escape < 32 ? (escape + 'A' - 1) : escape);
+	  axio_printf(NodeIo,"Last login: %.*s ",24-5,(char *)ctime(&ll.ll_time));
+	  if (*ll.ll_host != '\0') axio_printf(NodeIo,"\n      From: %.*s\n",(int)sizeof(ll.ll_host), ll.ll_host);
+	  else                     axio_printf(NodeIo," on %.*s\n",(int)sizeof(ll.ll_line), ll.ll_line); 
+	  }
+	*/
 #endif
         count=ll.ll_count;
         hit++;
         break;
       } else UserId++;
     }
-    lseek(last, (off_t)UserId * sizeof(ll), L_SET);
+    lseek(last, (off_t)UserId * sizeof(ll), L_SET); 
   }
-  memset((char *)&ll, 0, sizeof(ll));
+  memset((char *)&ll, 0, sizeof(ll)); 
   if ((hit==0) && (User.ul_type != AF_NETROM)) {
-    axio_printf(NodeIo,"Welcome, new user! Please use the Info command.\n\n");
+    axio_printf(NodeIo,"Welcome, new user! Please use the Info and ? commands.\n\n");
     count=0;
   }
   ll.ll_count=count+1;
@@ -555,65 +557,66 @@ int do_last(int argc, char **argv)
   char call[10], *cp;
 
   if ((last = open(DATA_NODE_LAST_FILE, O_RDONLY, 0)) <= 0) {
-            node_perror(DATA_NODE_LAST_FILE, errno);
-            return -1;
+    node_perror(DATA_NODE_LAST_FILE, errno);
+    return -1;
   }
 
   if (argc < 2) {
     if (User.ul_type == AF_NETROM) {
-        axio_printf(NodeIo,"%s} ", NodeId);
-	}
+      axio_printf(NodeIo,"%s} ", NodeId);
+    }
     axio_printf(NodeIo,"Usage: Who <callsign or *>");
     close(last);
     if (User.ul_type == AF_NETROM) {
-    	node_msg("");
-	}
+      node_msg("");
+    }
     return 0;
   }
 
   if (strcmp(argv[1],"*")==0) {
     cp=NULL;
     if (User.ul_type == AF_NETROM) {
-        axio_printf(NodeIo,"%s} ", NodeId);
+      axio_printf(NodeIo,"%s} ", NodeId);
     }
-	if (check_perms(PERM_ANSI, 0L) != -1) {
-	axio_printf(NodeIo, "\e[01;37m");
-	}
-    axio_printf(NodeIo,"Last online info for ALL:\n", call);
     if (check_perms(PERM_ANSI, 0L) != -1) {
-	axio_printf(NodeIo, "\e[0m");
+      axio_printf(NodeIo, "\e[01;37m");
+    }
+    axio_printf(NodeIo,"Logins for ALL:\n", call);
+    if (check_perms(PERM_ANSI, 0L) != -1) {
+      axio_printf(NodeIo, "\e[0m");
     }
   } else {
     if (!ax25_aton_entry(argv[1], call)) {
       strcpy(call,strupr(argv[1]));
       cp=strchr(call,'-');
       if (cp) *cp='\0';
-	cp=call;
-          if (User.ul_type == AF_NETROM) {
-	      axio_printf(NodeIo,"%s} ", NodeId);
-	      }
-	if (check_perms(PERM_ANSI, 0L) != -1) {
+      cp=call;
+      if (User.ul_type == AF_NETROM) {
+	axio_printf(NodeIo,"%s} ", NodeId);
+      }
+      if (check_perms(PERM_ANSI, 0L) != -1) {
         axio_printf(NodeIo, "\e[01;37m");
-	}
+      }
       axio_printf(NodeIo,"Last online information for %s:\n", call);
       if (check_perms(PERM_ANSI, 0L) != -1) {
         axio_printf(NodeIo, "\e[0m");
-        }
+      }
     } else {
-        if (User.ul_type == AF_NETROM) {
-	    axio_printf(NodeIo,"%s} ", NodeId);
-	}
+      if (User.ul_type == AF_NETROM) {
+	axio_printf(NodeIo,"%s} ", NodeId);
+      }
       axio_printf(NodeIo,"Usage: Who <callsign or *>\n");
       if (User.ul_type == AF_NETROM) {
       	node_msg("");
-	}
+      }
       close(last);
       return -1;
     }
   }
   
   lseek(last, (off_t)Entries * sizeof(ll), L_SET);
-  while (read(last, (char *)&ll, sizeof(ll)) == sizeof(ll) && ll.ll_time != 0) {
+  /*  while (Entries < 20 && (read(last, (char *)&ll, sizeof(ll)) == sizeof(ll) && ll.ll_time != 0)) {  */
+  while (read(last, (char *)&ll, sizeof(ll)) == sizeof(ll) && ll.ll_time !=0) {
     if (cp && strcasecmp(cp,ll.ll_user)!=0) continue;
     if (Entries==0) {
       axio_printf(NodeIo,"User       Last Online          Count  From\n");
@@ -629,15 +632,11 @@ int do_last(int argc, char **argv)
   lseek(last, (off_t)Entries * sizeof(ll), L_SET);
   
   close(last);
-/*  if (User.ul_type == AF_NETROM) {
-      axio_printf(NodeIo,"%s} ", NodeId);
-  }
-*/
   if (!cp && Entries==0) axio_printf(NodeIo,"No users in the lastlog database.");
   if (cp && Entries==0) axio_printf(NodeIo,"%s Never logged in.", call);
 
-if (User.ul_type == AF_NETROM) {
-	node_msg("");
-	}
+  if (User.ul_type == AF_NETROM) {
+    node_msg("");
+  }
   return 0;
 }

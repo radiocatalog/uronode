@@ -4,7 +4,7 @@ USAGE
 
 DESCRIPTION
         Returns information about the status of the Linux system which this 
-        FlexNode runs on. All information is taken directly from the 
+        URONode runs on. All information is taken directly from the 
         operating system.
 
         The "load average" values indicate the average amount of processes

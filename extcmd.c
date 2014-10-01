@@ -150,7 +150,13 @@ static int pipe_extcmd(struct cmd *cmdp, char **argv)
       axio_printf(NodeIo,"\e[01;31m");
     } 
     axio_printf(NodeIo,"Welcome back to %s.", FlexId);
+  } else if (User.ul_type == AF_ROSE) {
+    if (check_perms(PERM_ANSI, 0L) != -1) {
+      axio_printf(NodeIo,"\e[01;31m");
+    }
+    axio_printf(NodeIo,"Back to %s", RoseId);
   }
+
 #endif
   axio_end(iop);
  end:

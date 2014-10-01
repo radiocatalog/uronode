@@ -77,8 +77,3 @@ service uronode
         wait            = no
         instances       = 20
 }
-
-If you have received this from a pre-package such as an RPM, the authors
-of URONode will not support this as they will not make a pre-packaged
-URONode .rpm or .deb file.
-

@@ -133,7 +133,11 @@ static ax25io *connect_to(char **addr, int family, int escape, int compr)
     paclen = rs_config_get_paclen(NULL);
     eol = ROSE_EOL;
     /* Uncomment the below if you wish to have the node show a 'Trying' state */
-    /*    node_msg("%s Trying %s... Type <RETURN> to abort", User.dl_name); */
+	if (check_perms(PERM_ANSI, 0L) != -1) {
+          axio_printf(NodeIo, "\e[01;35m");
+	}
+        axio_printf(NodeIo,"Trying %s... press <Enter> to abort", User.dl_name); 
+	
     break;
 #endif		
 #ifdef HAVE_NETROM
@@ -433,7 +437,7 @@ static ax25io *connect_to(char **addr, int family, int escape, int compr)
     }
   }
   if (User.dl_type == AF_INET) {
-    if (User.ul_type == AF_NETROM) {
+    if ((User.ul_type == AF_NETROM) || (User.ul_type == AF_ROSE)) {
       axio_printf(NodeIo,"%s} ", NodeId);
     }
     if (check_perms(PERM_ANSI, 0L) != -1) {
@@ -444,21 +448,24 @@ static ax25io *connect_to(char **addr, int family, int escape, int compr)
       axio_printf(NodeIo,"\e[0;m");
     }
   }
-  else
-    if (family==AF_FLEXNET) {
+    else
+/*    if (family==AF_FLEXNET) {
       if (check_perms(PERM_ANSI, 0L) != -1) {
 	axio_printf(NodeIo,"\e[01;32m");
       }
       node_msg("\n*** connected to %s", User.dl_name);
       if (check_perms(PERM_ANSI, 0L) != -1) {
 	axio_printf(NodeIo,"\e[0;m");
-      }
-    }
-    else
-      if (family==AF_AX25) {
+      } 
+    }  
+    else */
+      if ((family==AF_AX25) || (family==AF_FLEXNET) || (family==AF_ROSE)) {
         if (check_perms(PERM_ANSI, 0L) != -1) {
 	  axio_printf(NodeIo,"\e[01;32m");
 	}
+	if ((family==AF_AX25) || (family==AF_FLEXNET)) {
+/*	  node_msg("\n"); */
+	  } 
 	node_msg("\n*** connected to %s", User.dl_name);
 	if (check_perms(PERM_ANSI, 0L) != -1) {
 	  axio_printf(NodeIo,"\e[0;m");
@@ -483,7 +490,7 @@ static ax25io *connect_to(char **addr, int family, int escape, int compr)
 	    axio_printf(NodeIo, "Connected to %s\n", User.dl_name);
 	  } 
 	  if ((User.ul_type == AF_AX25) || (User.ul_type == AF_ROSE)) {
-	    node_msg("*** connected to %s", User.dl_name);
+	    axio_printf(NodeIo,"*** connected to %s\n", User.dl_name); 
 	  } 
 	  if (check_perms(PERM_ANSI, 0L) != -1) {
 	    axio_printf(NodeIo,"\e[0;m");
@@ -767,9 +774,18 @@ int do_connect(int argc, char **argv)
       if (check_perms(PERM_ANSI, 0L) != -1) {
 	axio_printf(NodeIo,"\e[01;31m");
       }
-      axio_printf(NodeIo,"\n*** reconnected to %s", FlexId);
+      axio_printf(NodeIo,"\r*** reconnected to %s", FlexId);
       if (check_perms(PERM_ANSI, 0L) != -1) {
 	axio_printf(NodeIo,"\e[0;m");
+      }
+    }
+      if (User.ul_type == AF_ROSE) {
+      if (check_perms(PERM_ANSI, 0L) != -1) {
+        axio_printf(NodeIo,"\e[01;31m");
+      }
+      axio_printf(NodeIo,"\r*** reconnected to %s", RoseId);
+      if (check_perms(PERM_ANSI, 0L) != -1) {
+        axio_printf(NodeIo,"\e[0;m");
       }
     }
   if (User.ul_type == AF_INET) {

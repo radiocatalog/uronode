@@ -24,6 +24,7 @@ char *HostName		= NULL;
 char *NodeId		= NULL;
 char *NrPort		= NULL;		/* first netrom port */
 char *FlexId		= NULL;
+char *RoseId		= NULL;
 
 #ifdef HAVEMOTD
 char *Prompt		= "\n=> ";        /* Prompt by IZ5AWZ */
@@ -391,6 +392,14 @@ static int do_flexid(int argc, char **argv)
   return 0;
 }
 
+static int do_roseid(int argc, char **argv)
+{
+  if (argc < 2 )
+    return -1;
+  RoseId = ("%s ;" , strdup(argv[1]));
+  return 0;
+}
+
 static int do_prompt(int argc, char **argv)
 {
   if ((User.ul_type != AF_NETROM) || (User.ul_type != AF_INET)) {
@@ -447,6 +456,7 @@ int read_config(void)
   add_internal_cmd(&cfg_cmds, "loglevel",    8,  do_loglevel);
   add_internal_cmd(&cfg_cmds, "nodeid",      6,  do_nodeid);
   add_internal_cmd(&cfg_cmds, "flexid",      6,  do_flexid); 
+  add_internal_cmd(&cfg_cmds, "roseid",	     6,	 do_roseid);
   add_internal_cmd(&cfg_cmds, "prompt",      6,  do_prompt);
   add_internal_cmd(&cfg_cmds, "nrport",      6,  do_nrport);
   add_internal_cmd(&cfg_cmds, "reconnect",   8,  do_reconnect);

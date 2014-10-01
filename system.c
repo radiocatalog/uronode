@@ -86,9 +86,11 @@ int find_pty(char *ptyname)
 
   for(num = lastnum + 1; ; num++) {
     if (num >= NUMPTY) num = 0;
-    sprintf(master, "/dev/pty%c%x", 'p' + (num >> 4), num & 0xf);
+    sprintf(master, "/dev/pty%c%x", 'p' + (num >> 4), num & 0xf); 
+/*      sprintf(master, "/dev/pts/%x", num & 0xf); */
     if ((fd = open(master, O_RDWR | O_NONBLOCK, 0600)) >= 0) {
       sprintf(ptyname, "/dev/tty%c%x", 'p' + (num >> 4), num & 0xf);
+/*     sprintf(ptyname, "/dev/pts/%x", num & 0xf); */
       lastnum = num;
       return fd;
     }

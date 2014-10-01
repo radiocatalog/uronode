@@ -1,5 +1,5 @@
-#define VERSION                "URONode v2.1"
-#define COMPILING	       "September 9, 2013"
+#define VERSION                "URONode v2.2"
+#define COMPILING	       "October 01, 2014"
 
 #define STATE_IDLE	0
 #define STATE_TRYING	1
@@ -20,10 +20,10 @@
 #define PERM_TELNET_LOCAL	8	/* Telnet to "local" hosts	*/
 #define PERM_TELNET_AMPR	16	/* Telnet to 44.xx.xx.xx hosts	*/
 #define PERM_TELNET_INET	32	/* Telnet to other hosts	*/
-#define PERM_HIDDEN		64	/* Use hidden ports		*/
+#define PERM_ANSI		64	/* Ansi Color graphics		*/ 
 #define PERM_ROSE		128	/* ROSE gatewaying		*/
 #define PERM_NOESC		256	/* No escape character		*/
-#define PERM_ANSI		512	/* Ansi Color Graphics		*/
+#define PERM_HIDDEN		512	/* Use hidden ports - to be removed */
 
 #define PERM_TELNET (PERM_TELNET_LOCAL & PERM_TELNET_AMPR & PERM_TELNET_INET)
 
@@ -71,6 +71,7 @@ extern char *Email;
 extern char *HostName;
 extern char *NodeId;
 extern char *FlexId;
+extern char *RoseId;
 extern char *NrPort;
 extern char *Prompt;
 extern char *PassPrompt;

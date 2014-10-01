@@ -8,8 +8,8 @@
 #include <sys/file.h>
 
 #include <sys/socket.h>
-#include <netax25/kernel_ax25.h>
-#include <netax25/kernel_rose.h>
+#include <netax25/ax25.h>
+#include <netrose/rose.h>
 #include <netax25/axlib.h>
 
 #include "node.h"
@@ -74,7 +74,7 @@ char *print_node(const char *alias, const char *call)
 
   sprintf(node, "%s%s%s",
 	  !strcmp(alias, "*") ? "" : alias,
-	  !strcmp(alias, "*") ? "" : ":",
+	  !strcmp(call, "*") ? "" : ":", 
 	  call);
   return node;
 }

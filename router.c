@@ -139,7 +139,7 @@ int do_links(int argc, char **argv)
     case CONN_TYPE_DIGI:
       { strcpy(tipoconn,"Via Digi"); break; }
     }
-    axio_printf(NodeIo,"\n%-9s %-9s %-7s %-8s %s", p->dest_call, p->alias, p->dev, tipoconn, p->description);
+    axio_printf(NodeIo,"\n%-9s %-9s %-7s %-10s %s", p->dest_call, p->alias, p->dev, tipoconn, p->description);
     if (User.ul_type == AF_NETROM) {
       node_msg("");
     }

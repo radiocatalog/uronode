@@ -65,7 +65,7 @@ static void alarm_handler(int sig)
   if (User.ul_type == AF_NETROM) {
     node_msg("%s} Inactivity timeout! Closing circuit... ", NodeId);
   }
-  if (User.ul_type == AF_AX25)  {
+  if ((User.ul_type == AF_AX25) || (User.ul_type == AF_ROSE)) {
     node_msg("Inactivity timeout! Disconnecting you... ");
   }
   if (User.ul_type ==  AF_INET) {
@@ -177,6 +177,7 @@ int main(int argc, char *argv[])
     break;
 #endif		
   case AF_INET:
+  case AF_INET6:
     strcpy(User.ul_name, inet_ntoa(saddr.sin.sin_addr));
     paclen = 1024;
     p = INET_EOL;
@@ -254,8 +255,8 @@ int main(int argc, char *argv[])
     node_log(LOGLVL_LOGIN, "Login denied for %s @ %s", User.call, User.ul_name);
     node_logout("Login denied");
   } else if (strcmp(pw, "*") != 0) {
-    node_msg("*** Password required! If you don't have a password please email \n%s for a password you wish to use.", Email);
-    axio_printf(NodeIo,"Password: ");
+    node_msg("*** Password required! If you don't have a password please email\r\n%s for a password you wish to use.", Email);
+    axio_printf(NodeIo,"\rPassword: ");
     if (User.ul_type == AF_INET) {
       axio_tn_will_echo(NodeIo);
       axio_eolmode(NodeIo, EOLMODE_BINARY);
@@ -307,7 +308,14 @@ int main(int argc, char *argv[])
 	while (fgets(buf, 256, fp) != NULL) axio_puts(buf,NodeIo);
 	axio_puts ("\n",NodeIo);
 	axio_flush(NodeIo);
-      }
+      } 
+    } else if (User.ul_type == AF_ROSE) {
+	node_msg("%s - Welcome to %s", VERSION, RoseId);
+        if ((fp = fopen(HAVEMOTD, "r")) != NULL) {
+        while (fgets(buf, 256, fp) != NULL) axio_puts(buf,NodeIo);
+        axio_puts ("\n",NodeIo);
+        axio_flush(NodeIo);
+      }      
     }
   lastlog();
 #endif
@@ -331,14 +339,14 @@ int main(int argc, char *argv[])
 	      first_time = 0;
 	      if (User.ul_type != AF_NETROM) {
 		/* node_prompt("3"); */
-		if (User.ul_type == AF_AX25) {
+		if ((User.ul_type == AF_AX25) || (User.ul_type == AF_ROSE)) {
 		  node_prompt();
 		}
 	      }
 	    }
-	  else if (User.ul_type != AF_NETROM) {
+	  else if ((User.ul_type != AF_NETROM) && (User.ul_type != AF_ROSE)) {
 	    node_prompt();
-	  } else if (User.ul_type == AF_NETROM) {
+	  } else if ((User.ul_type == AF_NETROM) || (User.ul_type == AF_ROSE)) {
 	    axio_printf(NodeIo,"\n");
 	  }
 	}
@@ -372,6 +380,8 @@ int main(int argc, char *argv[])
 	  /* 			node_msg("%s Unknown command. Type ? for a list", NodeId); */
 	  if (User.ul_type == AF_NETROM) {
 	    node_msg("What?\007"); 
+	  } else if (User.ul_type == AF_ROSE) {
+	    axio_printf(NodeIo,"Que?\007");
 	  } else if (User.ul_type == AF_INET) {
 	    axio_printf(NodeIo, "Huh?\007");
 	  } else {

@@ -10,8 +10,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#include <netax25/ax25.h>
-#include <netrose/rose.h>
+#include <netax25/kernel_ax25.h>
+#include <netax25/kernel_rose.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/ip.h>
 
@@ -29,6 +29,7 @@
 #define MINIMUM_POLL_TIME 300
 #define FLEXD_CONF_FILE "/etc/ax25/flexd.conf"
 #define FLEXD_TEMP_PATH "/var/ax25/flex/"
+#define FLEXD_PID_FILE "/var/run/flexd.pid"
 
 int poll_time=DEFAULT_POLL_TIME;
 char flexgate[10]="\0";
@@ -405,14 +406,32 @@ void alarm_handler(int sig)
   alarm(poll_time); 
 }
 
+/* Pidfile routines supplied by Jaroslav OK2JRQ */
+void quit_handler(int sig)
+{
+  signal(SIGTERM, SIG_IGN);
+
+  unlink(FLEXD_PID_FILE);
+
+  signal(SIGTERM, SIG_DFL);
+  raise(SIGTERM);
+}
+
 int main(int argc, char *argv[])
 {       
+  FILE *pidfile;
+
   signal(SIGPIPE, SIG_IGN);
 
   if (ax25_config_load_ports() == 0) {
     fprintf(stderr, "flexd error: No AX25 port data configured\n");
     return 1;
   }
+
+  signal(SIGTERM, quit_handler);
+  pidfile = fopen(FLEXD_PID_FILE, "w");
+  fprintf(pidfile, "%d\n", (int)getpid());
+  fclose(pidfile);
 
   read_conf();
 
@@ -425,6 +444,7 @@ int main(int argc, char *argv[])
   
   signal(SIGHUP, hup_handler);
   signal(SIGALRM, alarm_handler);
+  signal(SIGTERM, quit_handler);
   alarm(poll_time); 
   
   for(;;) pause();

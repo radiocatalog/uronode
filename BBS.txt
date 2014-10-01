@@ -1,0 +1,6 @@
+Note in regards to PBBS forwarding:
+If you do compressed forwarding with other PBBS systems, insure you flag
+your connection so that you do NOT have ANSI turned on for that interface
+AND that you disable the escape character. See: man uronode.perms
+for the proper flags. This insures that compression will stay enabled
+and that a compressed ctrl+t is not sent via compressed ascii codes.

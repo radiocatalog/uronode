@@ -1,0 +1,13 @@
+# Processor architecture
+ARCH		= i686
+
+# Paths
+ETC_DIR		= /etc/ax25
+SBIN_DIR	= /usr/sbin
+BIN_DIR		= /usr/bin
+LIB_DIR		= /usr/lib
+MAN_DIR		= /usr/share/man
+VAR_DIR		= /var/ax25
+
+# Is Zlib available?
+ZLIB		= -lz

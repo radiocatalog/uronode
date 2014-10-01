@@ -85,15 +85,17 @@ void node_prompt(const char *fmt, ...)
     axio_printf(NodeIo,"\r\n%s@%s:/uronode$ ", User.call, HostName);
   }
   if ((User.ul_type == AF_AX25) && (check_perms(PERM_ANSI, 0L) != -1)) {
-    axio_printf(NodeIo,"\e[01;33m");
+    axio_printf(NodeIo,"\b\e[01;33m");
   }
   if (User.ul_type == AF_AX25) {
     axio_printf(NodeIo,"%s",Prompt);
   }
-  /*	if ((User.ul_type == AF_AX25) && (check_perms(PERM_ANSI, 0L) != -1)) {
-	axio_printf(NodeIo,"\e[0m \b");
-	}  
-  */
+  if ((User.ul_type == AF_ROSE) && (check_perms(PERM_ANSI, 0L) == -1))  {
+    axio_printf(NodeIo,"\r-=> ");
+  }
+  if ((User.ul_type == AF_ROSE) && (check_perms(PERM_ANSI, 0L) != -1)) {
+   axio_printf(NodeIo,"\b\r\e[01;35m-=>\e[0m  \b");
+  }
   axio_flush(NodeIo);
 }
 
@@ -112,13 +114,22 @@ void node_logout(char *reason)
   if (User.ul_type == AF_NETROM) {
     axio_printf(NodeIo,"");
   } 
+  if (User.ul_type == AF_ROSE) {
+      if (check_perms(PERM_ANSI, 0L) != -1) {
+      axio_printf(NodeIo, "\e[03;36m");
+    }   
+    axio_printf(NodeIo, "%s, thank you for connecting to the %s\nURONode ROSE network node. Come back again soon, 73! ", User.call, RoseId);
+    if (check_perms(PERM_ANSI, 0L) != -1) {
+      axio_printf(NodeIo, "\e[0;m\b");
+    }
+  } else 
   if ((User.ul_type == AF_FLEXNET) || (User.ul_type == AF_AX25)) {
     if (check_perms(PERM_ANSI, 0L) != -1) {
       axio_printf(NodeIo, "\e[03;36m");
-    }
-    axio_printf(NodeIo, "%s de %s\n73!  ", User.call, FlexId);
+    } 
+    axio_printf(NodeIo, "%s de %s\n73! ", User.call, FlexId);
     if (check_perms(PERM_ANSI, 0L) != -1) {
-      axio_printf(NodeIo, "\e[0;m");
+      axio_printf(NodeIo, "\e[0;m\b");
     }
   }
 #endif
@@ -858,11 +869,11 @@ int do_version(int argc, char **argv)
 {
   if (User.ul_type != AF_NETROM) {
     if (check_perms(PERM_ANSI, 0L) != -1) {
-      axio_printf(NodeIo,"\e[01;37mShell    : %s\n\e[01;35mHostname : %s\n\e[01;33max25/Flex: %s\n\e[01;36mNetRom   : %s\e[0;m", VERSION, HostName, FlexId, NodeId); 
+      axio_printf(NodeIo,"\e[01;37mShell    : %s\n\e[01;35mHostname : %s\n\e[01;33max25/Flex: %s\n\e[01;36mNetRom   : %s\n\e[01;35mRose     : %s \e[0;m", VERSION, HostName, FlexId, NodeId, RoseId); 
       return 0;
     }
     if (check_perms(PERM_ANSI, 0L) == -1) {
-      axio_printf(NodeIo,"Shell    : %s\nHostname : %s\nax25/Flex: %s\nNetRom   : %s", VERSION, HostName, FlexId, NodeId);
+      axio_printf(NodeIo,"Shell    : %s\nHostname : %s\nax25/Flex: %s\nNetRom   : %s\nRose     : %s", VERSION, HostName, FlexId, NodeId, RoseId);
       return 0;
     }
     /*

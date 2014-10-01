@@ -1,3 +1,4 @@
+
 28/11/2008 v1.0.8
 *notes lost, sorry.
 
@@ -377,10 +378,6 @@ telnet clients. This was reported also by Marius Petrescu yo2loj. Under
 telnet, I added a carriage return (/r) along with the line feed (/n).
 Thank you Marius for the report.
 
-In doing the above, I made an error in the non-ANSI telnet prompt where
-the (/r) was also chopping off the first letter of a callsign! OOPS!
-This was reported by Ted K1YON. Fixed.
-
 Slightly rewrote the way meminfo() was being handled. While I may have
 created a bug in 2.4 and lower kernels, this now should work in 2.6 and
 higher kernels. I guess the phrase "if it's not broke don't fix it"
@@ -408,13 +405,91 @@ flexd.c.
 While in discussions, Marius brought it to my attention that Ubuntu (and
 this includes Mint and any other Ubuntu backed distributions) where they
 run as he calls it a "fortified libc6" which segfaults on every (what it
-thinks is suspicious) buffer accesses to prevent overflows however this
+thinks is suspicious) buffer accesseD to prevent overflows however this
 libc6 itself causes buffer overflowing. Why on earth did the Ubuntu team
 ever do this?? Anyway, we're investigating how we're going to handle 
 this issue. I personally have verified URONode to compile and work on 
 the new kernel 3.x series on Debian and Fedora.
 
+In "fixing" the prompt bug earlier reported by Marius, I made an error in 
+the non-ANSI telnet prompt where the (/r) was also chopping off the first 
+letter of a callsign! OOPS! This was reported by Ted K1YON. Fixed.
+
+** Key news of this release: ROSE is a LOT more user friendly, AND it also
+has the ability to display color screens to the end user. This now means
+that URONode is an 8-prompt system! 4 main prompts, and 4 color prompts.
+The prompt system is designed to show the end user what protocol/method
+they used to connect into URONode with. Also proper SSIDs are displayed
+to match that of how the end user connected. I did this because seeing
+other nodes, they don't and when (as a user) connect into, for example,
+a NetRom node who's ssid is -12 and the node displays something 
+-=totally=- different, I often wonder if I connected to the proper node.
+
+The new prompt schema is:
+telnet   :	user@<sysop>.ampr.org:/uronode$
+netrom   :	<none> - this keeps in spec with Software2000
+flex/ax25:	=> 
+rose     :	-=> 
+
+Each matches with its own colors as well if you run the ansi flag. The
+goodbye message for rose is also different than it is for flex/ax25 and
+telnet links. The new RoseID flag is used as a personalized message to
+the remote user to say a nice goodbye, and to remind them of your Rose
+information. The (V)ersion command also has a rose column added to show
+the remote user your rose information. An example of this is included
+in the uronode.conf.5 man page.
+
+With such, a new uronode.conf file string called RoseID has been created.
+Details are in the file. You must keep the single quotes ' ' around the
+string for it to display properly. You have been warned. Also, I've added
+a default ExtCmd called ROSe so those who connect remotely can get rose
+addresses for now. I'm sure I'll be changing this in the future.
+
+Also, I decided to eliminate the permissions flag for use of hidden interfaces.
+Reason being is if a sysop flags an interface to be hidden, they did so for a
+specific reason. With that, I moved the ANSI flag from 512 in it's place to
+64. This was also changed in the man page uronode.perms.5.
+
+In regards to PBBS forwarding, I -=URGE=- you to read BBS.txt. Since
+there's no need for me to rewrite it, please heed my warning here. This
+is not something critical, just informational to help you improve your
+link with URONode systems.
+
+Fixed a cosmetic bug in regards to windows->linux emulation where when
+logging in, sentences were not getting properly wrapped. This was done
+in node.c. Other emulations such as PuTTY do not give you in windows
+full linux-type emulation. Higher profile programs such as SecureCRT
+will. For a free/shareware program I suggest MobiXterm. This also
+gives you a raw Xserver emulated screen. Of course, there are no issues
+if you use a standard linux console.
+
+Added a .pid file to flexd, code supplied by Jaroslav, OK2JRQ and other
+patches such as installer edits, etc. The only patches he supplied that I
+have yet to add is the install location patch, and one he feels is good
+for non-interactive. Source installs need to be interactive, if not you
+would not be compliling - just my honest opinion. I can see in the case
+of a possible distro package this may not be desired. The distros for now
+can hash that out on their own. 
+
+Many more cosmetic bugs fixed/changed. Moreso in ROSE but I did find a
+few others in there which needed my attention. I have noticed windows terminal
+based programs such as PuTTY have an issue determining \n based line feeds
+vs \r carriage returns in C code. This mainly seems to affect the various
+8 prompts. It seems if I put both in the code, Windows is happy but *nx
+may issue an added line-feed. I had thought I cleaned these all up but
+I introduced a couple old ones and some new ones with the ROSE work.
+
+01/10/2014 -2.2 released!
+
 Known Critical Bugs:
+SYSop command does NOT spawn a shell anymore. This is due to the changes
+with the UNIX98 file system. I'm debating on whether or not I wish to 
+continue to keep this or possibly eliminate this (for possible security
+reasons). I see both PROs and CONs with it. Note: this ONLY affects those
+systems which force the use of /dev/ptmx in which one needs to use SOCAT
+to create static /dev/tty*# and /dev/pty*# pipes. This only affects the
+Kernel 3-series
+
 (see below 3 lines)
 
 Known NON-Critical Bugs:
@@ -423,10 +498,11 @@ Status memory/swap reporting fix
 Wish-list:
 Who file sorter
 pactor - requested by sv1uy
+callsign sort in netrom - requested by ve2pkt
 -----------
 
 Development Information (aka Disclaimer):
-URONode is developed on an IBM eSeries 330 eServer with dual 1.2GHz CPUs
+URONode wass developed on an IBM eSeries 330 eServer with dual 1.2GHz CPUs
 The OS is Debian Linux 4 using kernel 2.4.27, libax25 v0.0.11,
 ax25-tools v0.0.8 and ax25-apps v0.0.6. This software comes with
 absolutely NO guarantees so crash n burn at your own risk. We all may
@@ -441,5 +517,8 @@ Gripes??? cat gripes > /dev/null Smile just kidding!
 
 This version will get you going for now. I'll post any changes to:
 ftp://ftp.n1uro.net/packet
+
+Join our support mail list graciously donated by TAPR!
+http://www.tapr.org/mailman/listinfo/uronode
 
 73 de Brian N1URO

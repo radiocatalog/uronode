@@ -5,8 +5,8 @@
  * Some global #defines for programmers to use for conditional compilation
  */
 #define HAVE_AX25	1
-#define HAVE_FLEX	1
-#define HAVE_ROSE               1
+#undef HAVE_FLEX
+#undef HAVE_ROSE
 #define HAVE_NETROM	1
 #define HAVE_ZLIB	1
 #define HAVE_MHEARD	1

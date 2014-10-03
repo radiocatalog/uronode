@@ -481,6 +481,21 @@ I introduced a couple old ones and some new ones with the ROSE work.
 
 01/10/2014 -2.2 released!
 
+02/10/2014 - 2.2.1
+
+Improperly packaged an old flexd.c! This one should compile. This is NOT
+the one I want, I've been fighting with flexd for a while now.
+
+uronode.conf may not update. If it does, you will need to redo yours from
+scratch. Look at the one in the etc/ directory in the source and add the
+line for RoseId. This is required. Thanks for the above reports from
+VE1JOT and SP2LOB.
+
+Removed the need to have quotes around the RoseId string in URONode.conf. I 
+found it unneccessary to have to do this. Keep the string togther ex: 
+callsign-ssid@1000,200000 now is fine. I also find this cleaner.
+
+
 Known Critical Bugs:
 SYSop command does NOT spawn a shell anymore. This is due to the changes
 with the UNIX98 file system. I'm debating on whether or not I wish to 
@@ -488,7 +503,8 @@ continue to keep this or possibly eliminate this (for possible security
 reasons). I see both PROs and CONs with it. Note: this ONLY affects those
 systems which force the use of /dev/ptmx in which one needs to use SOCAT
 to create static /dev/tty*# and /dev/pty*# pipes. This only affects the
-Kernel 3-series
+Kernel 3-series in which the older /dev/pty# system is no longer used and
+a master ptyx is used.
 
 (see below 3 lines)
 
@@ -502,7 +518,7 @@ callsign sort in netrom - requested by ve2pkt
 -----------
 
 Development Information (aka Disclaimer):
-URONode wass developed on an IBM eSeries 330 eServer with dual 1.2GHz CPUs
+URONode was developed on an IBM eSeries 330 eServer with dual 1.2GHz CPUs
 The OS is Debian Linux 4 using kernel 2.4.27, libax25 v0.0.11,
 ax25-tools v0.0.8 and ax25-apps v0.0.6. This software comes with
 absolutely NO guarantees so crash n burn at your own risk. We all may

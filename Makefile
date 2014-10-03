@@ -1,9 +1,9 @@
-all: nodeusers uronode axdigi flexd
+all: nodeusers uronode axdigi  
 
 CC = gcc
 LD = gcc
-CFLAGS = -static -Wstrict-prototypes -O2 -g
-LDFLAGS = -static
+CFLAGS = -s -Wstrict-prototypes -O2 -g
+LDFLAGS =
 LIBS = -lax25 -lax25io
 
 include Makefile.include
@@ -36,7 +36,7 @@ installbin: all
 	install -m 755 	-s -p	uronode		$(SBIN_DIR)
 	install -m 755  -s -p	nodeusers	$(SBIN_DIR)
 	install -m 755  -s -p	axdigi		$(SBIN_DIR)
-	install -m 755  -s -p	flexd		$(SBIN_DIR)
+#	install -m 755  -s -p	flexd		$(SBIN_DIR)
 
 installhelp:
 	install -m 755    -D -d		 $(VAR_DIR)
@@ -78,7 +78,7 @@ clean:
 
 distclean: clean
 	rm -f .depend Makefile.include config.h
-	rm -f uronode nodeusers axdigi flexd
+	rm -f uronode nodeusers axdigi  
 	rm -f Makefile make.debug
 
 depend:

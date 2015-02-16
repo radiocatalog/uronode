@@ -1,4 +1,5 @@
-URONode README file	September 09, 2013
+Please check out the file INSTALL to compile and install URONode.
+Also please read the CHANGES.* file for all version history changes.URONode README file	September 09, 2013
 
 Note: Please read the CHANGES file for detailed information
 about the changes from AWZNode to URONode and what I've
@@ -35,8 +36,8 @@ If you decide to use URONode, send me a mail.
 Routing features include: (in order preferance)
 - netrom routing
 - fixed routes
-	Create and/or modify /etc/ax25/node.routes, the format of this file
-        is in the example file etc/node.route.ex.
+	Create and/or modify /usr/local/etc/ax25/uronode.routes, the format of 
+	this file is in the example file uronode.route.ex.
 	Now fixed link nodes in this file have an alias and 3 connection 
 	modes, can be queried using the Links command and can be 
 	connected directly using: Connect <call>|<alias> (ie. without 
@@ -46,12 +47,12 @@ Routing features include: (in order preferance)
         reachable destinations, these destinations are stored on the local
         disk and can be queried using the Dest command and can be connected
         directly using: Connect <destination>
-	Config file: /etc/ax25/flexd.conf:
+	Config file: flexd.conf:
 	MyCall <call>            # the callsign used during the connection
 	PollInterval <interval>  # how often the destinations are downloaded
 	FlexGate <call>          # the neighbouring flexnet node
 	The pollinterval is specified in seconds and the callsign after
-        flexgate must be defined in /etc/ax25/node.routes !!
+        flexgate must be defined in uronode.routes !!
 - mheard based routing
         When users are using your node the mheard tables are filled with
         callsigns, callsigns heard on ports can be connected directly with
@@ -62,13 +63,10 @@ Other features:
   and optionally to the shell. Config file: /etc/ax25/node.users
   <call>:<password>:<username>:[mail][,shell]
   call : the callsign of the user that is allowed to access special features
-  password : a string pasword for MD2 standard authentication
+  password : a string pasword
   username : the (real)-username on the linux side
   options : mail  - the user has permission to access his or her mailbox
             shell - the user has permission to access the shell
-  The password check is used when the user want to access the shell with
-  "sys" command, the node prints out a Prompt, 5 numbers and a 10-digits 
-  number for MD2.
   Users with the mail option enabled will receive messages like "New mail
   has arrived", mostly when the stated condition is met ;-)
 - all users can send messages to a callsign associated in the kernel table
@@ -84,10 +82,14 @@ Other features:
   info text
 
 The official FTP Site of URONode is:
+https://sourceforge.net/projects/uronode/?source=directory
 ftp://ftp.n1uro.net/packet/
 
 The official Forums site is:
-https://www.n1uro.net/forum
+http://www.tapr.org/mailman/listinfo/uronode
+
+URONode is also a part of Fedora 20 and higher. 
+"yum install uronode" to install the .rpm package.
 
 Please check out the file INSTALL to compile and install URONode.
 Also please read the CHANGES.* file for all version history changes.

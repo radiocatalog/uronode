@@ -14,17 +14,23 @@
 #define	PROC_AX25_CALLS_FILE	"/proc/net/ax25_calls"
 
 /*
- * mheard specific (we need to get this out of here!!!!)
- */
-#define	DATA_MHEARD_FILE	"@VAR_DIR@/mheard/mheard.dat"
-
-/*
  * node specific
  */
 #define	CONF_NODE_FILE		"@ETC_DIR@/uronode.conf"
 #define	CONF_NODE_PERMS_FILE	"@ETC_DIR@/uronode.perms"
 @HAVEMOTD@		@MOTDPATH@
 #define	CONF_NODE_INFO_FILE	"@ETC_DIR@/uronode.info"
+#define AX_ROUTES_FILE          "@ETC_DIR@/uronode.routes"
+#define CONF_USERS_FILE         "@ETC_DIR@/uronode.users"
+#define FLEXD_CONF_FILE         "@ETC_DIR@/flexd.conf"
+#define FLEXD_TEMP_PATH         "@VAR_DIR@/flex/"
+#define FLEXD_PID_FILE		"/var/run/flexd.pid"
+#define FLEX_GT_FILE            "@VAR_DIR@/flex/gateways"
+#define FLEX_DST_FILE           "@VAR_DIR@/flex/destinations"
+#define DATA_MHEARD_FILE        "@VAR_DIR@/mheard/mheard.dat"
 #define	DATA_NODE_LOGIN_FILE	"@VAR_DIR@/node/loggedin"
 #define	DATA_NODE_HELP_DIR	"@VAR_DIR@/node/help/"
+#define DATA_NODE_LAST_FILE     "@VAR_DIR@/node/lastlog"
+#define DATA_NODE_IP_FILE       "@VAR_DIR@/node/iplog"
+
 #endif

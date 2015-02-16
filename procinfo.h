@@ -4,14 +4,7 @@
 #define PROC_NR_FILE  "/proc/net/nr"
 #define PROC_DEV_FILE "/proc/net/dev"
 
-#define FLEX_GT_FILE  "/var/ax25/flex/gateways"
-#define FLEX_DST_FILE "/var/ax25/flex/destinations"
-
-#define AX_ROUTES_FILE "/etc/ax25/uronode.routes"
-
-#ifndef DATA_MHEARD_FILE
-#define DATA_MHEARD_FILE "/var/ax25/mheard/mheard.dat"
-#endif
+/* VE3TOK 30Nov2014 - A number of defines moved to config.h  */
 
 #define CONN_TYPE_DIRECT 'D'
 #define CONN_TYPE_NODE 'N'
@@ -56,7 +49,7 @@ struct flex_gt {
 };
 
 /*
- * /var/ax25/flex/destinations: (example)
+ * /usr/local/var/ax25/flex/destinations: (example)
  * callsign  ssid    rtt  gateway
  * 9A0XZG    0-15   2575    00001
  * DB0AAA    0-0      63    00001

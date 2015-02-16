@@ -14,6 +14,7 @@
 #include <netax25/axconfig.h>
 #include <netax25/mheard.h>
 
+#include "config.h"   /* Bob VE3TOK 30Nov2014 */
 #include "procinfo.h"
 #include "node.h"
 

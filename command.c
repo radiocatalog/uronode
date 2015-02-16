@@ -94,7 +94,7 @@ void node_prompt(const char *fmt, ...)
     axio_printf(NodeIo,"\r-=> ");
   }
   if ((User.ul_type == AF_ROSE) && (check_perms(PERM_ANSI, 0L) != -1)) {
-   axio_printf(NodeIo,"\b\r\e[01;35m-=>\e[0m  \b");
+   axio_printf(NodeIo,"\r\e[01;35m-=>\e[0m  \b");
   }
   axio_flush(NodeIo);
 }
@@ -118,7 +118,7 @@ void node_logout(char *reason)
       if (check_perms(PERM_ANSI, 0L) != -1) {
       axio_printf(NodeIo, "\e[03;36m");
     }   
-    axio_printf(NodeIo, "%s, thank you for connecting to the %s\nURONode ROSE network node. Come back again soon, 73! ", User.call, RoseId);
+    axio_printf(NodeIo, "%s, thank you for connecting to the %s\nURONode ROSE network node. Come back again soon, 73!\r ", User.call, RoseId);
     if (check_perms(PERM_ANSI, 0L) != -1) {
       axio_printf(NodeIo, "\e[0;m\b");
     }

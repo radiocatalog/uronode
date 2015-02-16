@@ -3,6 +3,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include <syslog.h>
+#include <errno.h>
 #include "config.h"
 #include "axcalluser.h"
 
@@ -13,8 +15,11 @@ int axcalluserid(char *call)
   int id;
   int userid = -1;
   FILE *f = fopen(PROC_AX25_CALLS_FILE,"r");
-  if (f) {
-    fgets(username,79,f);
+  if (f) {                                     /* VE3TOK, 18Nov2014, return value usage */
+    if (fgets(username,79,f) == NULL) {
+       syslog(LOG_DEBUG, "Can't get username: %s", strerror(errno));
+       return 1;
+    }
     while (fscanf(f," %d %9s",&id,callsign) != EOF) {
       char *a,*b;
       for (a=call,b=callsign;

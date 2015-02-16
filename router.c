@@ -154,11 +154,12 @@ int do_links(int argc, char **argv)
   return 0;
 }
 
+/* ssid buffer increased by 1 by VE3TOK */
 int do_dest(int argc, char **argv)
 {
   struct flex_dst *fdst, *p;
   struct flex_gt *flgt, *q;
-  char ssid[5];
+  char ssid[6];
   int i=0;
 
   axio_puts("",NodeIo);

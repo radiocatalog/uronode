@@ -77,8 +77,8 @@ int main(int argc, char *argv[])
 	  return 0;
 	}
     }		
-	
-  if ((skt = socket(AF_INET, SOCK_PACKET, htons(ETH_P_AX25))) == -1)
+/* Change to keep code more modern - N1URO */
+  if ((skt = socket(PF_PACKET, SOCK_PACKET, htons(ETH_P_AX25))) == -1)
     {
       perror("socket");
       return(1);

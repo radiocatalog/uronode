@@ -222,7 +222,7 @@ static ax25io *connect_to(char **addr, int family, int escape, int compr)
      * Invert the SSID only if user is coming in with AX.25
      * and going out on the same port he is coming in via.
      */
-    if (User.ul_type == AF_AX25 && !strcasecmp(addr[0], User.ul_name))
+/*    if (User.ul_type == AF_AX25 && !strcasecmp(addr[0], User.ul_name)) */
       invert_ssid(call, User.call);
     sprintf(path, "%s %s", call, ax25_config_get_addr(addr[0]));
     ax25_aton(path, &sa.ax);
@@ -584,8 +584,9 @@ int do_connect(int argc, char **argv)
       family = AF_AX25;
   }
   else if (argc == 2) { /* Determine destination */
-    static char call[2];
-    strcpy(call, strupr(argv[1]));
+    /* call buffer increased by VE3TOK */
+    static char call[10];
+    strncpy(call, strupr(argv[1]), 10);
 
     /*    if (find_node(argv[1], NULL)!=NULL) { 
 	  family = AF_NETROM;
@@ -680,7 +681,7 @@ int do_connect(int argc, char **argv)
       if (User.ul_type == AF_NETROM) {
 	axio_printf(NodeIo,"%s} ", NodeId);
       }
-      axio_printf(NodeIo,"%s not in Desti, Nodes, or MHeard tables.", call);
+      axio_printf(NodeIo,"Remote not in Desti, NetRom, or MHeard tables. Retry your entry.");
       family = AF_UNSPEC;
       //      free_flex_dst(flx);
       //      free_ax_routes(ax);

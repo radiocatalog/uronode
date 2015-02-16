@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <syslog.h>
 #include <ctype.h>
 #include <unistd.h>
 #include <signal.h>
@@ -193,7 +194,10 @@ int main(int argc, char *argv[])
       /*			axio_flush(NodeIo); */
       if(NodeIo!=NULL)
 	axio_flush(NodeIo);
-	system("telnet 127.0.0.1 3694");
+	if (system("telnet 127.0.0.1 3694") < 0 ) {                        /* VE3TOK - 18Nov2014, return value */
+           syslog(LOG_DEBUG, "Can't \"execute telnet 127.0.0.1 3694\"");
+           return 1;
+        }
 	node_log(LOGLVL_ERROR,"Closing console telnet session.", -1);
       return -1;
     }

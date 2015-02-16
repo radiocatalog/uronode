@@ -495,8 +495,52 @@ Removed the need to have quotes around the RoseId string in URONode.conf. I
 found it unneccessary to have to do this. Keep the string togther ex: 
 callsign-ssid@1000,200000 now is fine. I also find this cleaner.
 
+12/10/2014 - v5.1
+URONode release ver 51 is out!.. um.. I mean its main developer *sigh*
 
-Known Critical Bugs:
+21/12/2014 - v2.3
+
+Added Bob Tenty ve3tok to the development team and created a subversion
+server. Please welcome Bob to the team!
+
+Bob Tenty ve3tok reports when NOT using the official ax25 packages and
+on Ubuntu, the node when compiled natively may buffer overflow. He made
+changes to buffers in gateway.c, router.c, and flexd.c which prevent this.
+I have incorporated these changes and there's no ill effect on non Ubuntu
+distros.
+
+Fixed a bug I introduced into the ROSE ansi prompt where it wasn't
+executing a proper \n because I inadvertantly removed it. Restored.
+
+Fixed a warning in the axdigi code. Now that I'm on a more modern system
+I can fix these things as now I can see them better. This was also brought
+to my attention by Tomasz SP2L... thanks Tomasz!
+
+Figured out a way to compile and have it NOT segfault under Ubuntu. While
+I'll admit for the time being it's somewhat of a hack, but it *does* work
+for Ubuntu. There are warnings on Ubuntu compiles that don't exist on other
+platforms - interesting to say the least - but I think I see a relation
+between the warnings and the pervious Makefile. The prior statement is being
+left in as a comment deliberately as I hope to try and revert back to
+the previous method.
+
+**IMPORTANT: Per distro downstreams, I've been asked to change the paths
+of the URONode installs. Now your uronode and binaries will be placed in
+/usr/local/sbin instead of /usr/sbin. Config files will be in 
+/usr/local/etc/ax25 instead of /usr/ax25/. Node files will now be in
+/usr/local/var/ax25/node or flexd instead of /var/ax25/node or flexd.
+If you're a thrifty ham such as myself, you'll already have symlinks created
+for easier management, so that /etc/ax25 is symlinked into /usr/local/etc/ax25
+and so forth. Local files I can think of that would need editing if you use
+my standard config:
+/usr/local/bin/ax25
+/etc/xinetd.d/uronode
+/etc/xinetd.d/telnet (?)
+/etc/ax25/ax25d.conf
+
+Added a compile flag to keep Ubuntu happy. This and other routines were at the
+suggestions of YO2LOJ and VE3TOK.
+
 SYSop command does NOT spawn a shell anymore. This is due to the changes
 with the UNIX98 file system. I'm debating on whether or not I wish to 
 continue to keep this or possibly eliminate this (for possible security
@@ -506,7 +550,57 @@ to create static /dev/tty*# and /dev/pty*# pipes. This only affects the
 Kernel 3-series in which the older /dev/pty# system is no longer used and
 a master ptyx is used.
 
-(see below 3 lines)
+I did notice UBUNTU made changes to their libraries last year (2013) in
+which URONode compiled but failed to execute any direct disk read/write
+routines. In any event, they fixed this bug late fall 2014 (at least in
+12.0.4LTS). One of the nice things about Ubuntu doing this is that you 
+can add a line in your grub configuration to have the kernel create a
+number of satic pseudo terminals upon boot. Debian, however, breaks this
+ruleset. I contacted my downstream and he hasn't responded. This would
+help a sysop gain a shell... however also creates a possible backdoor.
+
+Edited gateway.c so that the callsign-ssid is force altered on outbound
+ax25 connect requests regardless of how the inbound connect was initiated.
+VE1JOT reports that when a user telnets in, and gateway ax25 connects out,
+the callsign-0 is kept. This should be altered to a -15. This was always 
+true when inbound connects were ax25 and also outbound connects the same.
+VE1JOT reports this is troublesome, and in some cases causing DM frames
+to occur. While I tested this and found this not to be true on my own
+system, I did make a code adjustment to handle this.
+
+Fixed a bug in config.h which may cause flexd not to find the proper
+config lines. When I changed file paths I missed a couple. Now the system as 
+a whole should be consistant in regards to config files.
+
+Removed the need for MyGate and MyRange in flexd.conf! This was added by
+the request of K2BJG/SK so that the flexgate itself would be listed. Actually
+it is in the LINKS file. Unfortunately when trying to connect to a listed
+flexgate, it would try to digi via itself! Not good. While I was at it, I
+also increased the buffer from 512 to 1024. This may help with those gates
+that insist on making L A R G E MOTDs.
+
+
+14/02/2015 - v2.3.1
+Happy Valentine's day to the one we all love: Our Compilers!
+This is a critical security patch! I URGE you *all* to recompile.
+If anything, hopefully you've all patched your systems against GHOST.
+For those who wish to test their system I have a tool on my ftp site
+which can do this for you.
+
+Through Paul G4APL, Andy G0HXT reported a condition on Ubuntu-based 
+systems in which a user may enter a malformed NetRom connect string
+into URONode and the node will buffer overflow. I fixed this in
+gateway.c limiting the string for searching connects on the first parameter.
+Also changed the error output to the user so that they may know the error
+may be their own.
+
+Made edits to all the man pages and the INSTALL file as suggested by Tomasz
+SP2L. I also grepped for certain strings in other files and made a change
+to the README file as well.
+
+Changed the version in node.h to reflect this security patch.
+
+
 
 Known NON-Critical Bugs:
 Status memory/swap reporting fix
@@ -514,10 +608,9 @@ Status memory/swap reporting fix
 Wish-list:
 Who file sorter
 pactor - requested by sv1uy
-callsign sort in netrom - requested by ve2pkt
 -----------
 
-Development Information (aka Disclaimer):
+Original Development Information (aka Disclaimer):
 URONode was developed on an IBM eSeries 330 eServer with dual 1.2GHz CPUs
 The OS is Debian Linux 4 using kernel 2.4.27, libax25 v0.0.11,
 ax25-tools v0.0.8 and ax25-apps v0.0.6. This software comes with
@@ -525,6 +618,10 @@ absolutely NO guarantees so crash n burn at your own risk. We all may
 be surprised and find out that it actually DOES something useful!
 URONode may not run 100% depending on environmental conditions specific
 to your system.
+
+URONode is GLPv2 code, and tested by it's main author on the following
+platforms: Raspberry Pi ver. B, Debian 7.7 on a Core-i3, Ubuntu 12.0.4LTS
+on a Core-i3, Fedora ver. 19
 
 ------------
 

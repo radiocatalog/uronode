@@ -27,17 +27,13 @@
 
 #define DEFAULT_POLL_TIME 600
 #define MINIMUM_POLL_TIME 300
-#define FLEXD_CONF_FILE "/etc/ax25/flexd.conf"
-#define FLEXD_TEMP_PATH "/var/ax25/flex/"
-#define FLEXD_PID_FILE "/var/run/flexd.pid"
 
 int poll_time=DEFAULT_POLL_TIME;
 char flexgate[10]="\0";
 char mycall[10]="\0";
-char mygate[7]="\0";
-char myrange[6]="\0";
 struct ax_routes *gw;
 int s;
+void (*sigterm_defhnd)(int);
 
 void read_conf(void)
 {
@@ -86,26 +82,6 @@ void read_conf(void)
       }
       safe_strncpy(mycall, cp, 9);
     }
-    if(strcasecmp(cp,"mygate")==0) { /* set connect call for download */
-      cp=strtok(NULL, " \t\n\r");
-      if(cp==NULL) {
-	fprintf(stderr, "flexd config: MyGate needs an argument\n");
-	fclose(fp);
-	fclose(fgt);
-	exit(1);
-      }
-      safe_strncpy(mygate, cp, 9);
-    }
-    if(strcasecmp(cp,"myrange")==0) { /* set connect call for download */
-      cp=strtok(NULL, " \t\n\r");
-      if(cp==NULL) {
-	fprintf(stderr, "flexd config: MyRange needs an argument\n");
-	fclose(fp);
-	fclose(fgt);
-	exit(1);
-      }
-      safe_strncpy(myrange, cp, 9);
-    }
     if(strcasecmp(cp,"flexgate")==0) { /* set flexnet gateway */
       cp=strtok(NULL, " \t\n\r");
       if(cp==NULL) {
@@ -141,7 +117,7 @@ void read_conf(void)
 int download_dest(char *gateway, char *fname)
 {
   FILE *tmp;
-  char buffer[256], port[14], path[AX25_MAX_DIGIS*10];
+  char buffer[1024], port[14], path[AX25_MAX_DIGIS*10];
   char *addr, *commands[10], *dlist[9]; /* Destination + 8 digipeaters */
   fd_set read_fd;
   int n, addrlen, cmd_send=0, cmd_ack=0, c, k;
@@ -261,7 +237,7 @@ int download_dest(char *gateway, char *fname)
 	close(s);
 	return 1;
       }
-      break;
+     break;
     }
   }
   
@@ -340,7 +316,7 @@ int parse_dest(char *gateway, char *fname)
   }
   
   fputs("callsign  ssid     rtt  gateway\n", fdst);
-  fprintf(fdst, "%s	  %s	     3	  00000\n", mygate, myrange); 
+/*   fprintf(fdst, "%s	  %s	     0	  00000\n", mygate, myrange); */
   while(fgets(buf, sizeof(buf), tmp)) {
     cp=strtok(buf, " \t\n\r");
     if(cp==NULL) continue; /* empty line */
@@ -406,32 +382,26 @@ void alarm_handler(int sig)
   alarm(poll_time); 
 }
 
-/* Pidfile routines supplied by Jaroslav OK2JRQ */
-void quit_handler(int sig)
+void quit_handler(int sig) 
 {
   signal(SIGTERM, SIG_IGN);
 
   unlink(FLEXD_PID_FILE);
-
-  signal(SIGTERM, SIG_DFL);
+  
+  signal(SIGTERM, sigterm_defhnd);
   raise(SIGTERM);
 }
 
 int main(int argc, char *argv[])
 {       
-  FILE *pidfile;
+  FILE *pidfile; 
 
-  signal(SIGPIPE, SIG_IGN);
+ signal(SIGPIPE, SIG_IGN);
 
   if (ax25_config_load_ports() == 0) {
     fprintf(stderr, "flexd error: No AX25 port data configured\n");
     return 1;
   }
-
-  signal(SIGTERM, quit_handler);
-  pidfile = fopen(FLEXD_PID_FILE, "w");
-  fprintf(pidfile, "%d\n", (int)getpid());
-  fclose(pidfile);
 
   read_conf();
 
@@ -440,11 +410,18 @@ int main(int argc, char *argv[])
     return 1;
   }
 
+  signal(SIGTERM, quit_handler);
+  pidfile = fopen(FLEXD_PID_FILE, "w");
+  fprintf(pidfile, "%d\n", (int)getpid());
+  fclose(pidfile);
+
   update_flex();
   
   signal(SIGHUP, hup_handler);
   signal(SIGALRM, alarm_handler);
-  signal(SIGTERM, quit_handler);
+  sigterm_defhnd = signal(SIGTERM, quit_handler);
+  if (sigterm_defhnd == SIG_ERR)
+    sigterm_defhnd = SIG_DFL;
   alarm(poll_time); 
   
   for(;;) pause();

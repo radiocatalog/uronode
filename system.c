@@ -23,7 +23,6 @@
 #include <termios.h>
 #include <unistd.h>
 
-#include "md2.c"
 #include <netax25/ax25.h>
 #include <netrose/rose.h>
 #include <netax25/axlib.h>
@@ -31,10 +30,8 @@
 
 #include "node.h"
 #include "procinfo.h"
+#include "config.h"  /* VE3TOK - Dec20, 2014 */
 
-#define DATA_NODE_LAST_FILE "/var/ax25/node/lastlog"
-#define DATA_NODE_IP_FILE "/var/ax25/node/iplog"
-#define CONF_USERS_FILE "/etc/ax25/uronode.users"
 #define USER_NOBODY "nobody"
 
 #define NUMPTY 176
@@ -307,21 +304,12 @@ int check_passwd(void)
   char answer[81]="";
   char buf[2048];
 
-  unsigned char MD2digest[16];
-  MD2_CTX context;
-
   level=strlen(Password);
   timet=time(NULL);
   srandom((int) timet);
   for(i=0;i<5;i++) pass[i]=(int) (level * (random()/(RAND_MAX+1.0)));
 	
   sprintf(buffer,"%10.10ld%s",timet,Password);
-  MD2Init(&context);
-  MD2Update(&context,(unsigned char *)buffer,level+10);
-  MD2Final(MD2digest,&context);
-	
-  for(i=0;i<16;i++) sprintf(&tmp[i*2],"%02x",MD2digest[i]);
-
   axio_printf(NodeIo,"%s %d %d %d %d %d [%010.10ld]\n",
 	      PassPrompt,pass[0]+1,pass[1]+1,pass[2]+1,pass[3]+1,pass[4]+1,timet);
 	
@@ -331,7 +319,7 @@ int check_passwd(void)
   axio_gets(buf, sizeof(buf), NodeIo);
   
 
-  if(strlen(buf)==32) i=strcmp(buf,tmp);					/* yes, use md2 password, ignoring case */
+  if(strlen(buf)==32) i=strcmp(buf,tmp);
   else	i=strcmp(buf,answer);
 
   if(i)	{

@@ -1,31 +1,41 @@
 #!/bin/sh
 
+_sleep()
+{
+  [ "$NON_INTERACTIVE" = 1 ] || sleep "$@"
+}
+
+_whiptail()
+{
+  [ "$NON_INTERACTIVE" = 1 ] || whiptail "$@"
+}
+
 echo "Cleaning the directory for a fresh configuration..."
-sleep 2
+_sleep 2
 make distclean > make.debug
 
-ETC_DIR=/etc/ax25
-SBIN_DIR=/usr/sbin
-BIN_DIR=/usr/bin
-LIB_DIR=/usr/lib
-MAN_DIR=/usr/share/man
-VAR_DIR=/var/ax25
+ETC_DIR=/usr/local/etc/ax25
+SBIN_DIR=/usr/local/sbin
+BIN_DIR=/usr/local/bin
+LIB_DIR=/usr/local/lib
+MAN_DIR=/usr/local/share/man
+VAR_DIR=/usr/local/var/ax25
 
 echo "Welcome to the configuration utility for URONode. This configure script"
 echo "will very simply and easily guide you into installling URONode with as"
 echo "very little trouble as possible. All you need to really do is simply"
 echo "answer the following questions below properly. If you make a mistake"
 echo "just break out of it (ctrl+c) and rerun ./configure. Let's get started!"
-sleep 1
+_sleep 1
 echo " "
-sleep 1
+_sleep 1
 echo -n "you need gcc to build URONode: "
 GCC=`which gcc`
-sleep 2
+_sleep 2
 if [ -e "$GCC" ]
    then
    echo -n "saw $GCC... "
-   sleep 1
+   _sleep 1
    echo "GCC found! Congratulations!!"
 else
    echo "gcc not found!"
@@ -38,10 +48,10 @@ else
    exit 1
 fi
 echo -n "Your machine architecture is: "
-sleep 1
+_sleep 1
 ARCH=`uname -m`
 echo $ARCH
-sleep 1
+_sleep 1
 echo -n "Checking for the existence of the Zlib headers... "
 ZLIB=""
 HAVEZLIB="#undef HAVE_ZLIB"
@@ -76,7 +86,12 @@ fi
 	MOTDPATH=
 #	echo -n "Include support for the AX.25 protocol ? [Y/n]: "; read answer
 #	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
-	whiptail --title "URONode Options:" --yesno "Support AX25?" 7 22
+	if [ "$NON_INTERACTIVE" = 1 ]
+	then
+		echo "$@" | grep -vqe "--without-ax25"
+	else
+		whiptail --title "URONode Options:" --yesno "Support AX25?" 7 22
+	fi
 	if [ $? -ne 1 ]
 	then
 		HAVEAX25="#define HAVE_AX25	1"
@@ -84,8 +99,13 @@ fi
 	#
 #        echo -n "Include support for the FlexNet protocol ? [Y/n]: "; read answer
 #        if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
-	whiptail --title "URONode Options:" --yesno "Support FlexNet?" 7 22
 
+	if [ "$NON_INTERACTIVE" = 1 ]
+	then
+		echo "$@" | grep -vqe "--without-flexnet"
+	else
+		whiptail --title "URONode Options:" --yesno "Support FlexNet?" 7 22
+	fi
 	if [ $? -ne 1 ]
         then
                 HAVEAX25="#define HAVE_AX25	1"
@@ -96,7 +116,12 @@ fi
         # 
 #	echo -n "Include support for the NetRom protocol ? [Y/n]: "; read answer
 #	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
-	whiptail --title "URONode Options:" --yesno "Support NetRom?" 7 22
+	if [ "$NON_INTERACTIVE" = 1 ]
+	then
+		echo "$@" | grep -vqe "--without-netrom"
+	else
+		whiptail --title "URONode Options:" --yesno "Support NetRom?" 7 22
+	fi
 	if [ $? -ne 1 ]
 	then
 		HAVEAX25="#define HAVE_AX25	1"
@@ -105,7 +130,12 @@ fi
 	#
 #	echo -n "Include support for the Rose protocol ? [Y/n]: "; read answer
 #	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
-	whiptail --title "URONode Options:" --yesno "Support ROSE?" 7 22
+	if [ "$NON_INTERACTIVE" = 1 ]
+	then
+		echo "$@" | grep -vqe "--without-rose"
+	else
+		whiptail --title "URONode Options:" --yesno "Support ROSE?" 7 22
+	fi
 	if [ $? -ne 1 ]
 	then
 		HAVEAX25="#define HAVE_AX25	1"
@@ -114,7 +144,12 @@ fi
 	#
 #	echo -n "Include support for MHeard ports listen ? [Y/n]: "; read answer
 #	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
-	whiptail --title "URONode Options:" --yesno "Support MHeard?" 7 22
+	if [ "$NON_INTERACTIVE" = 1 ]
+	then
+		echo "$@" | grep -vqe "--without-mheard"
+	else
+		whiptail --title "URONode Options:" --yesno "Support MHeard?" 7 22
+	fi
 	if [ $? -ne 1 ]
 	then
 		HAVEAX25="#define HAVE_AX25	1"
@@ -123,7 +158,12 @@ fi
 	#
 #	echo -n "Include support for TCP/IP functions ? [Y/n]: "; read answer
 #	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
-	whiptail --title "URONode Options:" --yesno "Support TCP/IP?" 7 22
+	if [ "$NON_INTERACTIVE" = 1 ]
+	then
+		echo "$@" | grep -vqe "--without-tcpip"
+	else
+		whiptail --title "URONode Options:" --yesno "Support TCP/IP?" 7 22
+	fi
 	if [ $? -ne 1 ]
 	then
 		HAVETCPIP="#define HAVE_TCPIP	1"
@@ -168,72 +208,74 @@ sed -e "s~@ETC_DIR@~$ETC_DIR~g; \
 echo "Creating dependancy files..."
 make depend > /dev/null 2>&1
 echo "Configuration successful!!"
-sleep 1
+_sleep 1
 echo "about the authors..."
-sleep 3
+_sleep 3
 echo "URONode is a combined effort of years worth of work. Those who's code"
 echo "is included in this flavor of a linux based node are:"
-sleep 1
+_sleep 1
 echo "Brian Rogers N1URO (current maintainer), "
-sleep 1
+_sleep 1
 echo "Marius Petrescu YO2LOJ (current team member),"
-sleep 1
+_sleep 1
+echo "Bob Tenty VE3TOK (current team member),"
+_sleep 1
 echo "Stefano Noferi IZ5AWZ (AWZNode)"
-sleep 1
+_sleep 1
 echo -n "Tomi Manninen OH2BNS, "
-sleep 1
+_sleep 1
 echo -n "Alan Cox GW4PTS, "
-sleep 1
+_sleep 1
 echo "and Roy Van Zundert PE1RJA"
 echo ""
-sleep 1
+_sleep 1
 echo "Special thanks to: Morgan, sm6tky for his security report"
 echo "and Barry K2MF for his input on some of my routines and supplying"
 echo "some source code."
-sleep 1
+_sleep 1
 echo ""
 #echo -n "Shall I run the make command for you ? [Y/n]: "
-	whiptail --title "Shall I make URONode?" --yesno "Yes to make or No to exit" 7 30 
+	_whiptail --title "Shall I make URONode?" --yesno "Yes to make or No to exit" 7 30 
 #	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
-	if [ $? -ne 1 ]
+	if [ "$NON_INTERACTIVE" != 1 -a $? -ne 1 ]
         then
 #		echo "Making URONode! Please be patient."
-#		sleep 1
+#		_sleep 1
 #		echo "compile errors will be in make.debug."
 #		echo ""
-#		sleep 1
+#		_sleep 1
 #		echo "You may not see anything until the process is complete..."
-		whiptail --title "Making URONODE..." --msgbox "Making. Check make.debug for errors. Hit OK to continue. You may not see anything for a minute..." 10 45
+		_whiptail --title "Making URONODE..." --msgbox "Making. Check make.debug for errors. Hit OK to continue. You may not see anything for a minute..." 10 45
 		make >> make.debug
 		echo "let's check for binary errors..."
-		sleep 1
+		_sleep 1
 		echo -n "nodeusers: "
-		sleep 1
+		_sleep 1
 		if [ -x ./nodeusers ]; then
 			echo "SUCCESS!"
 		else
 			echo "FAILED!"
 		fi
-		sleep 1
+		_sleep 1
 		echo -n "uronode:   "
-		sleep 1
+		_sleep 1
 		if [ -x ./uronode ]; then
 			echo "SUCCESS!"
 		else
 			echo "FAILED!"
 		fi
-		sleep 1
+		_sleep 1
 		echo -n "axdigi:    "
-		sleep 1
+		_sleep 1
 		if [ -x ./axdigi ]; then
 			echo "SUCCESS!"
 		fi
-		sleep 1
+		_sleep 1
 		echo -n "flexd:     "
-		sleep 1
+		_sleep 1
 		if [ -x ./flexd ]; then
 			echo "SUCCESS!"
-		sleep 1
+		_sleep 1
 		else
 			echo "FAILED! - perhaps you didn't want flexnet?"
 			echo "This is not an error if you chose NO to flexnet."
@@ -242,8 +284,8 @@ echo ""
 			echo "Process complete!"
 			echo ""
 		fi
-		sleep 1
-		whiptail --title "URONode" --msgbox "Check the file make.debug if you had errors. If no errors, type: make install or make upgrade and edit your files in /etc/ax25/\n\n**WARNING: if you haven't already, add the following to your startup scripts:\n/usr/sbin/axdigi &                        to insure cross-port digipeating.\n\nFor help and release news join the forum at\nhttps://www.n1uro.net/forum\n\nEnjoy URONode - 73 de Brian N1URO" 20 50
+		_sleep 1
+		_whiptail --title "URONode" --msgbox "Check the file make.debug if you had errors. If no errors, type: make install (new install) or make upgrade (existing install) and edit your files in /usr/local/etc/ax25/\n\n**WARNING: if you haven't already, add the following to your startup scripts:\n/usr/local/sbin/axdigi & \nto insure cross-port digipeating.\n\nFor help and release news join the forum at\nhttps://www.n1uro.net/forum\n\nEnjoy URONode - 73 de Brian N1URO" 20 50
 
 #		echo "Check the file make.debug if you had errors."
 #		echo "If no errors, type: make install or make upgrade" 

@@ -2,7 +2,8 @@ all: nodeusers uronode axdigi @FLEXNET@
 
 CC = gcc
 LD = gcc
-CFLAGS = -s -Wstrict-prototypes -O2 -g
+# CFLAGS = -O2 -g -s -Wstrict-prototypes
+CFLAGS = -O2 -g -Wno-unused-result -Wstrict-prototypes
 LDFLAGS =
 LIBS = -lax25 -lax25io
 
@@ -32,7 +33,6 @@ install: installbin installman installhelp installconf
 	install -m 644    -p etc/gateways	 $(VAR_DIR)/flex
 	
 installbin: all
-	install -m 755 	-s -p	calibrate	$(SBIN_DIR)
 	install -m 755 	-s -p	uronode		$(SBIN_DIR)
 	install -m 755  -s -p	nodeusers	$(SBIN_DIR)
 	install -m 755  -s -p	axdigi		$(SBIN_DIR)
@@ -63,7 +63,6 @@ installman:
 	install -m 644	  -p man/axdigi.8.gz	 $(MAN_DIR)/man8
 
 upgrade: installman
-	install -m 755 -p calibrate     $(SBIN_DIR)
 	install -m 755 -p uronode       $(SBIN_DIR)
 	install -m 755 -p nodeusers     $(SBIN_DIR)
 	install -m 755 -p flexd		$(SBIN_DIR)

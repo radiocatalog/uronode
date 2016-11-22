@@ -1,0 +1,36 @@
+.TH NODEUSERS 1 "28 April 1998" Linux "Linux Programmer's Manual"
+.SH NAME
+nodeusers \- URONode user information lookup program
+.SH SYNOPSIS
+.B nodeusers [-a] [-i] [-l]
+.SH DESCRIPTION
+.LP
+.B Nodeusers 
+displays information about current URONode users.
+.SH OPTIONS
+.TP 10
+.BI \-a
+Tells nodeusers to use a plain <CR> as end-of-line. This is useful
+if nodeusers is called from ax25d.
+.TP 10
+.BI \-i
+Tells nodeusers to use a <CR><LF> pair as end-of-line sequence and also
+to wait for one line of input before sending the user data. This
+should be used if nodeusers is used in an internet environment (eg. as
+a fingerd replacement).
+.TP 10
+.BI \-l
+Enables logging of errors to the system logging facility.
+.SH FILES
+.LP
+.TP 5
+.B /var/ax25/node/loggedin
+Database of current users.
+.SH "SEE ALSO"
+.BR uronode (8)
+.SH AUTHOR
+Brian Rogers N1URO <n1uro@n1uro.com>
+.br
+Stefano Noferi IZ5AWZ <iz5awz@radio-ge.cnuce.cnr.it>
+.br
+Tomi Manninen OH2BNS <tpmannin@cc.hut.fi>

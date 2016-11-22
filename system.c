@@ -124,7 +124,7 @@ void login_close(void)
   ut->ut_type=DEAD_PROCESS;
   memset(ut->ut_host,0,UT_HOSTSIZE);
   memset(ut->ut_user,0,UT_NAMESIZE);
-  time(&ut->ut_time); 
+  time((time_t *)&ut->ut_time); 
 /*  ut->ut_xtime = (unsigned int)time(NULL); */
   pututline(ut);
   endutent();
@@ -195,7 +195,7 @@ int login_open(struct passwd *pw, char *command)
     strcpy(utmpbuf.ut_user, pw->pw_name);                  /* Username */
     strcpy(utmpbuf.ut_host, "local:uronode");
     utmpbuf.ut_addr=0x7f000000;
-    time(&utmpbuf.ut_time);                                /* Time entry was made */
+    time((time_t *)&utmpbuf.ut_time);                                /* Time entry was made */
 /*    utmpbuf.ut_xtime = (unsigned int)time(NULL); */
 
     setutent();
@@ -429,7 +429,7 @@ int examine_user(void)
   do {
     if (strcmp(cp, "shell")==0) {
       shell=1;
-      add_internal_cmd(&Nodecmds, "SYSop",	1, do_system);
+//      add_internal_cmd(&Nodecmds, "SYSop",	1, do_system);
     }
     cp=strtok(NULL, " ,;-/\t\n\r");
   } while(cp!=NULL);

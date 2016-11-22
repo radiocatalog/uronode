@@ -1,0 +1,117 @@
+.TH URONODE.PERMS 5 "28 April 1998" Linux "Linux Programmer's Manual"
+.SH NAME
+uronode.perms \- URONode permissions file.
+.SH DESCRIPTION
+.LP
+.B URONode.perms
+file is read at program startup with the knowledge of users username
+(call), connection type (AX.25, NET/ROM, ROSE, TCP/IP), peers IP address
+(for TCP/IP) and port name (for AX.25). The first entry matching this
+information is taken and user is asked for password and given permissions
+according to it.
+.LP
+The lines within
+.B uronode.perms
+must either be a comment line, which starts with a # in the first column, or
+a permission entry in the following format, each field being delimited by
+white space:
+.sp
+.RS
+username type portname password permissions
+.RE
+.sp
+The field descriptions are:
+.sp
+.TP 14
+.B username
+This is matched against users username (call) without SSID. An asterisk
+(*) matches any username.
+.TP 14
+.B type
+This is matched against the type of the connection to user.
+Possible values for this field are:
+.RS 14
+.TP
+.B *
+matches any type of connection.
+.TP
+.B ax25
+matches users coming in with AX.25 and FlexNet.
+.TP
+.B netrom
+matches users coming in with NET/ROM.
+.TP
+.B rose
+matches users coming in with ROSE.
+.TP
+.B local
+matches TCP/IP connections where users host is in "local" network
+as defined in uronode.conf(5).
+.TP
+.B ampr
+matches TCP/IP connections where users host is in amprnet (44.0.0.0/8).
+.TP
+.B inet
+matches TCP/IP connections where users host is neither in "local"
+network nor in amprnet.
+.TP
+.B host
+matches users starting URONode from
+shell.
+.RE
+.TP 14
+.B portname
+If user is coming in with AX.25 this field is matched against the
+local port name the user is coming in via. An asterisk (*) matches
+any port name.
+.TP 14
+.B password
+If the previous three fields match and this field is not a single
+asterisk (*) the user is asked for a password. The password is
+then matched against this field.
+.TP 14
+.B permissions
+This field represents a a bitmask of operations the user is permitted
+to do. It is a sum of the values listed here:
+.RS 14
+.TP
+.B 1
+permits logging in even if no other permissions are given.
+.TP
+.B 2
+permits outgoing AX.25 and Flexnet connects.
+.TP
+.B 4
+permits outgoing NET/ROM connects.
+.TP
+.B 8
+permits telneting to hosts in the "local" network as defined in
+uronode.conf(5).
+.TP
+.B 16
+permits telneting to hosts in amprnet.
+.TP
+.B 32
+permits telneting to hosts neither in the "local" network nor in amprnet.
+.TP
+.B 64
+ANSI Color flag. Enable per interface to allow the user to have ANSI color
+graphics on their terminal. A "*" for the interface will flag color ON for
+all interfaces for that callsign. Suggested to leave OFF unless requested
+by the end user... but looks kewl in a shell terminal.
+.TP
+.B 128
+permits outgoing ROSE connects.
+.TP
+.B 256
+The no-escape flag. Disables the escape mechanism for this user.
+.TP
+.RE
+.SH FILES
+.LP
+/usr/local/etc/ax25/uronode.perms
+.SH "SEE ALSO"
+.BR uronode (8),
+.BR uronode.conf (5),
+.BR axports (5),
+.BR ax25 (4).

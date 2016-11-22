@@ -53,8 +53,9 @@ void init_nodecmds(void)
 #ifdef HAVE_FLEX
   add_internal_cmd(&Nodecmds, "Desti",    1, do_dest);
 #endif
-#ifdef HAVE_MHEARD
-  add_internal_cmd(&Nodecmds, "MHeard",   2, do_mheard);
+#ifdef HAVE_JHEARD
+  add_internal_cmd(&Nodecmds, "Jheard",   1, do_jheard);
+  add_internal_cmd(&Nodecmds, "JLong",    2, do_jlong);
 #endif
 #ifdef HAVE_NETROM
   add_internal_cmd(&Nodecmds, "Nodes",    1, do_nodes);
@@ -96,7 +97,13 @@ void node_prompt(const char *fmt, ...)
   if ((User.ul_type == AF_ROSE) && (check_perms(PERM_ANSI, 0L) != -1)) {
    axio_printf(NodeIo,"\r\e[01;35m-=>\e[0m  \b");
   }
-  axio_flush(NodeIo);
+  if ((User.ul_type ==AF_INET6)  && (check_perms(PERM_ANSI, 0L) == -1)) {
+    axio_printf(NodeIo, "\nSystemD - %s@%s: ",User.call, HostName);
+  }
+  if ((User.ul_type ==AF_INET6)  && (check_perms(PERM_ANSI, 0L) != -1)) {
+    axio_printf(NodeIo, "\n\e[01;31mSystemD \e[0m- \e[01;34m%s@\e[0m%s: ",User.call, HostName);
+  }
+/*  axio_flush(NodeIo); */
 }
 
 void node_logout(char *reason)
@@ -784,26 +791,27 @@ int do_status(int argc, char **argv)
   axio_printf(NodeIo,"Load average:      %.2f, %.2f, %.2f\n", av[0], av[1], av[2]);
   axio_printf(NodeIo,"Users:             %d node, %d system\n", user_count(), system_user_count());
 
-  if (!(mem = meminfo()) || mem[meminfo_main][meminfo_total] == 0) {
+//  if (!(mem = meminfo()) || meminfo("memtotal") == 0) {
     /* cannot normalize mem usage */
-    axio_printf(NodeIo,"Cannot get memory information!\n"); 
-  } else  {
-    ma = mem[meminfo_main][meminfo_total];
-    mu = (mem[meminfo_main][meminfo_total] - mem[meminfo_free][meminfo_total]);
-    mf = mem[meminfo_free][meminfo_total];
+//    axio_printf(NodeIo,"Cannot get memory information!\n"); 
+//  } else  
+  if (load_meminfo()) {
+    ma = meminfo("memtotal");
+    mu = (meminfo("memtotal") - meminfo("memfree"));
+    mf = meminfo("memfree");
     axio_printf(NodeIo,"Memory:            Available  Used       Free       perc. Used\n");
     axio_printf(NodeIo,"------------------ ---------- ---------- ---------- ----------\n");
     axio_printf(NodeIo,"Physical:          %-7d kB %-7d kB %-7d kB %3d %%\n", ma, mu, mf, (mu*100)/ma);
     
-    if  (!(mem = meminfo()) || mem[meminfo_stotal][meminfo_total] != 0) 
-{ 
-    sa = mem[meminfo_stotal][meminfo_total]; 
-    su = (mem[meminfo_stotal][meminfo_total] - mem[meminfo_sfree][meminfo_total]);
-    sf = mem[meminfo_sfree][meminfo_total];
-    axio_printf(NodeIo,"Swap:              %-7d kB %-7d kB %-7d kB %3d %%\n",sa,su,sf,(su*100)/sa);   
+    if  (meminfo("swaptotal") != 0)  
+ { 
+    sa = meminfo("swaptotal"); 
+    su = (meminfo("swaptotal") - meminfo("swapfree"));
+    sf = meminfo("swapfree");
+    axio_printf(NodeIo,"    Swap:          %-7d kB %-7d kB %-7d kB %3d %%\n",sa,su,sf,(su*100)/sa);   
     } 
     else 
-/*    axio_printf(NodeIo,"Cannot get swap information!\n"); */
+    axio_printf(NodeIo,"Cannot get swap information or swap not active!\n"); 
       axio_printf(NodeIo," ");
     
   }
@@ -958,6 +966,11 @@ int nuser_list(int argc, char **argv)
       sprintf(buf, "\nTelnet (%.9s @ %.16s)",
 	      u.call, u.ul_name);
       break;
+
+    case AF_INET6:
+       sprintf(buf, "\nTelnet6 (%.9s @ SystemD)", u.call);
+       break;
+
     case AF_UNSPEC:
       sprintf(buf, "\nHost (%.9s on local)",
 	      u.call);

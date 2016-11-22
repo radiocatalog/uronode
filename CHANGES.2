@@ -1,4 +1,3 @@
-
 28/11/2008 v1.0.8
 *notes lost, sorry.
 
@@ -600,38 +599,102 @@ to the README file as well.
 
 Changed the version in node.h to reflect this security patch.
 
+21/11/2015 - v2.4
 
+Made a change to gatway.c in which during an incoming ax.25 connect, if
+the user gateways out to another node/rose/flex/etc and does NOT request
+to "s"tay on the node, they will be disconnected from the node upon
+disconnect at the remote. No termination message from the node will be
+displayed either as to not conflict with a possible exit message from
+the remote. If the user DOES request to remain on the node, they will
+be presented with the return message and a disconnect will also generate
+a disconnect message. This should make the node a bit more HF friendly.
 
-Known NON-Critical Bugs:
-Status memory/swap reporting fix
+Made a change in node.c and in command.c in regards to the prompts.
+This idea came via Mitch AB4MW. In the main loop, the buffer was already
+called to flush. By eliminating certain flush routines and only calling
+them where they're truly required, the functions now have their own
+buffer flushing and the prompts have their own.  This also should help
+reduce the number of frames required while keeping the prompts themselves
+intact. I have noticed for quite a while that it was possible to send
+a colored prompt BUT the ANSI reset code took it's own frame to follow
+the prompt leaving the user's input in color. While it didn't harm any
+functionality, it just looked a little sloppy.
 
-Wish-list:
-Who file sorter
-pactor - requested by sv1uy
------------
+Mitch AB4MW caught a bug in node.c line 330ish where the ansi code was
+missing the "m" at the end of the sequence. This is fixed. I never noticed
+this in the terminal (xterm), however it appears to affect others.
 
-Original Development Information (aka Disclaimer):
-URONode was developed on an IBM eSeries 330 eServer with dual 1.2GHz CPUs
-The OS is Debian Linux 4 using kernel 2.4.27, libax25 v0.0.11,
-ax25-tools v0.0.8 and ax25-apps v0.0.6. This software comes with
-absolutely NO guarantees so crash n burn at your own risk. We all may
-be surprised and find out that it actually DOES something useful!
-URONode may not run 100% depending on environmental conditions specific
-to your system.
+Paul G4APL convinced me on a minor issue where if a user requested his login
+be password protected that under the condition of NetRom ONLY the logins 
+failed to return any clue that the user properly authenticated in. It appears 
+as if the user is in a hung mode, and they need to break out of the session. 
+While this was not true, I concur that it does appear that way which can be 
+a tad confusing. Of course, if a user did "?" the command list would appear.
+I made a change in node.c so that ONLY if a user had to password authenticate
+to an incoming NetRom connect, once they did so the user will now be presented
+with a "ALIAS:CALL} Welcome." message. If the user does NOT have a password
+for NetRom, than the standard rules (as per Software2000 spec) apply. Note:
+I've not only added this for the end user but also in keeping with Software-
+2000 specs, I can't recall any situation where a user may wish to password
+his NetRom connections. While this login greeting upon a successful 
+authentication to the remote NetRom node may be out of spec, I had to first
+ask myself if requiring a password at a remote NetRom node is in spec? 
+Needless to say, in my past conversations with W0RLI (RLI BBS Fame and SK)
+we've decided that the specs were written with PBBS scripts in mind and
+that a robot forwarding session needs no extra frames to confuse it... so
+with that in mind, I can't think of a situation where a user who's call is
+also their pbbs may want to password themselves so I'm hoping this is a
+moot issue.
 
-URONode is GLPv2 code, and tested by it's main author on the following
-platforms: Raspberry Pi ver. B, Debian 7.7 on a Core-i3, Ubuntu 12.0.4LTS
-on a Core-i3, Fedora ver. 19
+Many dupe texts found by SP2L, removed. Thanks Tom.
 
-------------
+Added pidfile creation and daemonize routine for axdigi. No longer will you
+need to load it by calling "/usr/local/sbin/axdigi &", now you may simply
+call it using "/usr/local/sbin/axdigi".
 
-Comments/suggestions? email: n1uro@n1uro.ampr.org
-Gripes??? cat gripes > /dev/null Smile just kidding!
+Fixed a bug in flexd where if you had to kill it, "killall -TERM flexd"
+failed... you had to "kill -9 #####" via the process id. Now the killall
+string will properly work.
 
-This version will get you going for now. I'll post any changes to:
-ftp://ftp.n1uro.net/packet
+Added a README.flexd file for binary errors in regards to flexd failing to
+run on some systems. If you manually compile, this will help you if your
+flexd errors within two cycles of attempting to import remote routes.
 
-Join our support mail list graciously donated by TAPR!
-http://www.tapr.org/mailman/listinfo/uronode
+Removed the gzipped status of man pages, did some spell checks to others
+and added a flexd.8 manpage. This request came to me from Dave at Debian
+for downstream purposes.
 
-73 de Brian N1URO
+Considering more folks are beginning to use URONode on HF frequencies such
+as Net105, I've decided that a 60 second login timer on a 300 baud link may
+be too slow so I've extended this to a 3 minute login timer. Hopefully a 3
+minute login process will be long enough for those on HF frequencies to
+continue to enjoy URONode and the ability to telnet from an incoming ax25
+connection to say an amprnet connection to a remote URONode elsewhere. While
+I don't really expect or would imagine folks would route IP via HF (however
+it *can* be done!) I would think this should help this sort of a scenario
+so that users don't get logged off before even being able to log on!
+
+VE1JOT suggested that on busier frequencies where there may be a lot of
+beaconing that's via digipeated paths, a way to disable the MHeard auto
+router. Now when running the configure script, you will now be presented
+with such an option. The problem stems from the MHeard daemon from the
+ax25-tools package will pick up whatever path is last heard (which is
+actually correct behavior) but on some of the HF packet nets this will
+make the MHeard database to overwrite the last path to what may be a
+direct site. Sysops can do 2 things here in this case now:
+1) disable the AutoRouter for ax25 during configure.
+2) adding the remote node into uronode.routes as a direct static route.
+
+While working on this, I also noticed config.h was a tad sloppy and this
+got under my skin, so I cleaned this up while I was at it, along with
+deciding for now to make an official release for the upcoming holiday
+season. As for a developer's note, I did the above before but did a real
+bone-headed move and wiped out my email amongst other things by accident.
+Fortunatey I maintain monthly backups and restored from that. For me this
+meant minimum recreations of work lost. As for URONode, I only lost the
+suggestion by VE1JOT and other clean ups.
+
+---
+see CHANGES.1 for prior changes, or CHANGES.3 for the latest changes.
+

@@ -9,7 +9,8 @@ DESCRIPTION
         between the local and remote hosts is shown.
 
         If an optional length is specified the data portion of the
-        packet is filled with length number of bytes.
+        packet is filled with length number of bytes up to 128.
 
-EXAMPLE
+EXAMPLES
         ping aripisa.ampr.org
+	ping n1uro.ampr.org 128

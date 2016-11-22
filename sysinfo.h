@@ -1,8 +1,12 @@
 #ifndef SYSINFO_H
 #define SYSINFO_H
 
-int        loadavg(double *av1, double *av5, double *av15);
-int        uptime (double *uptime_secs, double *idle_secs);
+extern int loadavg(double *av1, double *av5, double *av15);
+extern int uptime (double *uptime_secs, double *idle_secs);
+extern int load_meminfo(void);
+// extern int meminfo(const char *s);
+/*
+
 
 unsigned** meminfo(void);
 
@@ -16,11 +20,12 @@ enum meminfo_row { meminfo_main = 0, meminfo_free, meminfo_buffers,
 		meminfo_nfs_unstab, meminfo_bounce, meminfo_climit,
 		meminfo_cas, meminfo_vmtotal, meminfo_vmused, 
 		meminfo_vmchunk 
+
 };
 
 enum meminfo_col { meminfo_total = 0
 }; 
 
 unsigned read_total_main(void);
-
+*/
 #endif /* SYSINFO_H */

@@ -1,0 +1,9 @@
+
+USAGE
+        Jheard [<interface>]
+
+DESCRIPTION
+        Gives a list of the last 20 heard AX25 stations on all interfaces
+	and, if specified, on the specified interface.
+        Use the "INterfaces" command to get a list of available 
+	interfaces.

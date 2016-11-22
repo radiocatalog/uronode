@@ -1,5 +1,11 @@
 #!/bin/sh
 
+echo -n "Use interactive mode? [Y/n]: "; read answer
+if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+   then NON_INTERACTIVE=0;
+       else NON_INTERACTIVE=1;
+fi
+
 _sleep()
 {
   [ "$NON_INTERACTIVE" = 1 ] || sleep "$@"
@@ -14,12 +20,13 @@ echo "Cleaning the directory for a fresh configuration..."
 _sleep 2
 make distclean > make.debug
 
-ETC_DIR=/usr/local/etc/ax25
-SBIN_DIR=/usr/local/sbin
-BIN_DIR=/usr/local/bin
-LIB_DIR=/usr/local/lib
-MAN_DIR=/usr/local/share/man
-VAR_DIR=/usr/local/var/ax25
+[ "$ETC_DIR" ] || ETC_DIR=/usr/local/etc/ax25
+[ "$SBIN_DIR" ] || SBIN_DIR=/usr/local/sbin
+[ "$BIN_DIR" ] || BIN_DIR=/usr/local/bin
+[ "$LIB_DIR" ] || LIB_DIR=/usr/local/lib
+[ "$DATA_DIR" ] || DATA_DIR=/usr/local/share
+[ "$MAN_DIR" ] || MAN_DIR=/usr/local/share/man
+[ "$VAR_DIR" ] || VAR_DIR=/usr/local/var/ax25
 
 echo "Welcome to the configuration utility for URONode. This configure script"
 echo "will very simply and easily guide you into installling URONode with as"
@@ -47,6 +54,25 @@ else
    echo "and rerun ./configure to continue."
    exit 1
 fi
+_sleep 1
+echo -n "you need make to make URONode: "
+MAKE=`which make`
+_sleep 2
+if [ -e "$MAKE" ]
+   then
+   echo -n "saw $MAKE... "
+   _sleep 1
+   echo "MAKE found! Congratulations!!"
+else
+   echo "make not found!"
+   echo " "
+   echo "You need this utility to make URONode."
+   echo "Please install make, and rerun this ./configure script."
+   echo "If you have a copy of make installed, please insure you have"
+   echo "it in your path and rerun ./configure to continue."
+   exit 1
+fi
+
 echo -n "Your machine architecture is: "
 _sleep 1
 ARCH=`uname -m`
@@ -80,7 +106,8 @@ fi
 	IN="#"
 	HAVENETROM="#undef HAVE_NETROM"
 	HAVEROSE="#undef HAVE_ROSE"
-	HAVEMHEARD="#undef HAVE_MHEARD"
+	HAVEMHEARD="#undef HAVE_JHEARD"
+	HAVEAUTOROUTE="#undef HAVE_AUTOROUTE"
 	HAVETCPIP="#undef HAVE_TCPIP"
 	HAVEMOTD="#undef HAVE_MOTD"
 	MOTDPATH=
@@ -139,7 +166,7 @@ fi
 	if [ $? -ne 1 ]
 	then
 		HAVEAX25="#define HAVE_AX25	1"
-		HAVEROSE="#define HAVE_ROSE               1"
+		HAVEROSE="#define HAVE_ROSE	1"
 	fi
 	#
 #	echo -n "Include support for MHeard ports listen ? [Y/n]: "; read answer
@@ -153,9 +180,24 @@ fi
 	if [ $? -ne 1 ]
 	then
 		HAVEAX25="#define HAVE_AX25	1"
-		HAVEMHEARD="#define HAVE_MHEARD	1"
+		HAVEMHEARD="#define HAVE_JHEARD	1"
 	fi
 	#
+#       echo -n "Include support for ax25 AutoRouter ? [Y/n]: "; read answer
+#       if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
+        if [ "$NON_INTERACTIVE" = 1 ]
+        then
+                echo "$@" | grep -vqe "--without-autorouter"
+        else
+                whiptail --title "URONode Options:" --yesno "Support AutoRouter?" 7 23
+        fi
+        if [ $? -ne 1 ]
+        then
+                HAVEAX25="#define HAVE_AX25	1"
+                HAVEAUTOROUTE="#define HAVE_AUTOROUTE	1"
+        fi
+        #
+
 #	echo -n "Include support for TCP/IP functions ? [Y/n]: "; read answer
 #	if [ "$answer" = "Y" -o "$answer" = "y" -o "$answer" = "" ]
 	if [ "$NON_INTERACTIVE" = 1 ]
@@ -184,6 +226,7 @@ sed -e "s~@ARCH@~$ARCH~g; \
 	s~@SBIN_DIR@~$SBIN_DIR~g; \
 	s~@BIN_DIR@~$BIN_DIR~g; \
 	s~@VAR_DIR@~$VAR_DIR~g; \
+	s~@DATA_DIR@~$DATA_DIR~g; \
 	s~@MAN_DIR@~$MAN_DIR~g; \
 	s~@ZLIB@~$ZLIB~g" <Makefile.include.in >Makefile.include
 
@@ -195,11 +238,13 @@ sed -e "s~@ETC_DIR@~$ETC_DIR~g; \
 	s~@BIN_DIR@~$BIN_DIR~g; \
 	s~@VAR_DIR@~$VAR_DIR~g; \
 	s~@MAN_DIR@~$MAN_DIR~g; \
+	s~@DATA_DIR@~$DATA_DIR~g; \
 	s~@HAVEAX25@~$HAVEAX25~g; \
 	s~@HAVEFLEX@~$HAVEFLEX~g; \
 	s~@HAVENETROM@~$HAVENETROM~g; \
 	s~@HAVEROSE@~$HAVEROSE~g; \
 	s~@HAVEMHEARD@~$HAVEMHEARD~g; \
+	s~@HAVEAUTOROUTE@~$HAVEAUTOROUTE~g; \
 	s~@HAVETCPIP@~$HAVETCPIP~g; \
 	s~@HAVEMOTD@~$HAVEMOTD~g; \
 	s~@MOTDPATH@~$MOTDPATH~g; \
@@ -231,7 +276,8 @@ echo ""
 _sleep 1
 echo "Special thanks to: Morgan, sm6tky for his security report"
 echo "and Barry K2MF for his input on some of my routines and supplying"
-echo "some source code."
+echo "some source code. If you did not use interactive mode, you must"
+echo "run make manually."
 _sleep 1
 echo ""
 #echo -n "Shall I run the make command for you ? [Y/n]: "
@@ -270,6 +316,13 @@ echo ""
 		if [ -x ./axdigi ]; then
 			echo "SUCCESS!"
 		fi
+		 _sleep 1
+                echo -n "calibrate: "
+                _sleep 1
+                if [ -x ./calibrate ]; then
+                        echo "SUCCESS!"
+                fi
+
 		_sleep 1
 		echo -n "flexd:     "
 		_sleep 1

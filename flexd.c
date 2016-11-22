@@ -23,6 +23,7 @@
 #include <netax25/daemon.h>
 
 #include "config.h"
+#include "node.h"
 #include "procinfo.h"
 
 #define DEFAULT_POLL_TIME 600
@@ -31,6 +32,8 @@
 int poll_time=DEFAULT_POLL_TIME;
 char flexgate[10]="\0";
 char mycall[10]="\0";
+char prompt1[1]="\0";
+char prompt2[1]="\0";
 struct ax_routes *gw;
 int s;
 void (*sigterm_defhnd)(int);
@@ -64,7 +67,7 @@ void read_conf(void)
     if(strcasecmp(cp,"pollinterval")==0) { /* set poll interval */
       cp=strtok(NULL, " \t\n\r");
       if(cp==NULL) {
-	fprintf(stderr, "flexd config: PollInterval needs an argument\n");
+	fprintf(stderr, "flexd config: Poll Interval needs an argument\n");
 	fclose(fp);
 	fclose(fgt);
 	exit(1);        
@@ -109,7 +112,7 @@ void read_conf(void)
       }
     }
   }	 
-
+  fprintf(stderr,"FlexD started.\n");
   fclose(fgt);
   fclose(fp);
 }
@@ -117,7 +120,7 @@ void read_conf(void)
 int download_dest(char *gateway, char *fname)
 {
   FILE *tmp;
-  char buffer[1024], port[14], path[AX25_MAX_DIGIS*10];
+  char buffer[512], port[14], path[AX25_MAX_DIGIS*10];  /* Increased buffer to 512 from 256 - ve3tok 31 Mar, 2016 */
   char *addr, *commands[10], *dlist[9]; /* Destination + 8 digipeaters */
   fd_set read_fd;
   int n, addrlen, cmd_send=0, cmd_ack=0, c, k;
@@ -139,7 +142,7 @@ int download_dest(char *gateway, char *fname)
   }
 
   if ((addr = ax25_config_get_addr(port)) == NULL) {
-    sprintf(buffer, "flexd connect: invalid AX.25 port name - %s\r\n", port);
+    sprintf(buffer, "flexd connect: invalid AX.25 port name - %s\n", port);
     write(STDOUT_FILENO, buffer, strlen(buffer));
     return 1;
   }
@@ -148,7 +151,7 @@ int download_dest(char *gateway, char *fname)
    * Open the socket into the kernel.
    */
   if ((s = socket(AF_AX25, SOCK_SEQPACKET, 0)) < 0) {
-    sprintf(buffer, "flexd connect: cannot open AX.25 socket, %s\r\n", strerror(errno));
+    sprintf(buffer, "flexd connect: cannot open AX.25 socket, %s\n", strerror(errno));
     write(STDOUT_FILENO, buffer, strlen(buffer));
     return 1;
   }
@@ -163,7 +166,7 @@ int download_dest(char *gateway, char *fname)
   addrlen=sizeof(struct full_sockaddr_ax25);
   
   if (bind(s, (struct sockaddr *)&axbind, addrlen) != 0) {
-    sprintf(buffer, "flexd connect: cannot bind AX.25 socket, %s\r\n", strerror(errno));
+    sprintf(buffer, "flexd connect: cannot bind AX.25 socket, %s\n", strerror(errno));
     write(STDOUT_FILENO, buffer, strlen(buffer));
     close(s);
     return 1;
@@ -176,14 +179,14 @@ int download_dest(char *gateway, char *fname)
   axconnect.fsa_ax25.sax25_family = AF_AX25;
   
   if (fcntl(s, F_SETFL, O_NONBLOCK) == -1) {
-    sprintf(buffer, "flexd connect: fcntl on socket: %s\r\n", strerror(errno));
+    sprintf(buffer, "flexd connect: fcntl on socket: %s\n", strerror(errno));
     write(STDOUT_FILENO, buffer, strlen(buffer));
     close(s);
     return 1;
   }
 
   if (ax25_aton_arglist((const char **)dlist, &axconnect) == -1) {
-    sprintf(buffer, "flexd connect: invalid destination callsign or digipeater\r\n");
+    sprintf(buffer, "flexd connect: invalid destination callsign or digipeater\n");
     write(STDOUT_FILENO, buffer, strlen(buffer));
     close(s);
     return 1;
@@ -192,16 +195,16 @@ int download_dest(char *gateway, char *fname)
   if (connect(s, (struct sockaddr *)&axconnect, addrlen) == -1 && errno != EINPROGRESS) {
     switch (errno) {
     case ECONNREFUSED:
-      strcpy(buffer, "*** Connection refused - aborting\r\n");
+      strcpy(buffer, "*** Connection refused - aborting\n");
       break;
     case ENETUNREACH:
-      strcpy(buffer, "*** No known route - aborting\r\n");
+      strcpy(buffer, "*** No known route - aborting\n");
       break;
     case EINTR:
-      strcpy(buffer, "*** Connection timed out - aborting\r\n");
+      strcpy(buffer, "*** Connection timed out - aborting\n");
       break;
     default:
-      sprintf(buffer, "*** Cannot connect, %s\r\n", strerror(errno));
+      sprintf(buffer, "*** Cannot connect, %s\n", strerror(errno));
       break;
     }
     
@@ -223,7 +226,9 @@ int download_dest(char *gateway, char *fname)
       break;
     }
     if (FD_ISSET(s, &read_fd)) {
-      int ret, retlen;
+//      int ret, retlen;
+	int ret = 0;
+	int retlen = 0;
       char *cp;
       
       /* See if we got connected or if this was an error */
@@ -231,12 +236,12 @@ int download_dest(char *gateway, char *fname)
       if (ret != 0) {
 	cp = strdup(strerror(ret));
 	strlwr(cp);
-	sprintf(buffer, "flexd connect: Failure with %s: %sr\r\n", gateway, cp);
+	sprintf(buffer, "flexd connect: Failure with %s\nError: %s\n", gateway, cp);
 	write(STDOUT_FILENO, buffer, strlen(buffer));
 	free(cp);
 	close(s);
 	return 1;
-      }
+      } 
      break;
     }
   }
@@ -270,10 +275,12 @@ int download_dest(char *gateway, char *fname)
     
     if (FD_ISSET(s, &read_fd)) {
       if ((n = read(s, buffer, 512)) == -1) break;
+//	if ((n = read(s, buffer, 256)) == -1) break;
       for(c=0;c<n;c++) { 
 	if (buffer[c]=='\r') buffer[c]='\n';
 	if (buffer[c]=='=' && c<n-1 && buffer[c+1]=='>') {
-	  /* fprintf(stderr, "flex interact: ack[%d]\n", cmd_ack); */
+//	if (buffer[c]=='%s' && c<n-1 && buffer [c+1]=='%s', prompt1, prompt2) {
+// 	  fprintf(stderr, "flex interact: ack[%d]\n", cmd_ack);
 	  cmd_ack++;
 	}
       }
@@ -283,7 +290,7 @@ int download_dest(char *gateway, char *fname)
     if (cmd_ack!=0) {
       if (commands[cmd_send]!=NULL) {
 	write(s, commands[cmd_send], 2);
-	/* fprintf(stderr, "flexd interact: send[%d]: %s\n", cmd_send, commands[cmd_send]); */
+//	fprintf(stderr, "flexd interact: send[%d]: %s\n", cmd_send, commands[cmd_send]); 
 	cmd_send++;
       }
       cmd_ack=0;
@@ -367,7 +374,9 @@ void hup_handler(int sig)
 {
   signal(SIGHUP, SIG_IGN);
   
+  fprintf(stderr, "SIGHUP caught by FlexD, restarting... \n");
   read_conf();
+  update_flex();
   
   signal(SIGHUP, hup_handler); /* Restore hangup handler */
 }
@@ -387,14 +396,33 @@ void quit_handler(int sig)
   signal(SIGTERM, SIG_IGN);
 
   unlink(FLEXD_PID_FILE);
-  
+  fprintf(stderr, "FlexD quitting.\n\r");
   signal(SIGTERM, sigterm_defhnd);
   raise(SIGTERM);
+  return;
 }
 
 int main(int argc, char *argv[])
 {       
   FILE *pidfile; 
+
+  if (argc > 1)
+    {
+        if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "-h") ==0)
+          {
+           printf("FlexD version %s.\n\r", VERSION);
+	   printf("Copywrite (c) 2000-2003 by Roy PE1RJA and Stefano IZ5AWZ\n\r");
+           printf("Copywrite (c) 2003 - present by Brian Rogers - N1URO.\n\r");
+           printf("FlexD is free sofware and you are welcome to redistribute it\n\r");
+           printf("under the terms of GNU General Public Licence as published\n\r");
+           printf("by Free Software Foundation; either version 2 of the License, or\n\r");
+           printf("(at your option) any later version.\n\r");
+           printf("\n\r");
+           printf("FlexD comes with NO WARRANTY. Use at your own risk.\n\r");
+           return 0;
+        }
+   }
+
 
  signal(SIGPIPE, SIG_IGN);
 
@@ -410,22 +438,19 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  signal(SIGTERM, quit_handler);
   pidfile = fopen(FLEXD_PID_FILE, "w");
   fprintf(pidfile, "%d\n", (int)getpid());
   fclose(pidfile);
-
   update_flex();
   
   signal(SIGHUP, hup_handler);
   signal(SIGALRM, alarm_handler);
   sigterm_defhnd = signal(SIGTERM, quit_handler);
-  if (sigterm_defhnd == SIG_ERR)
-    sigterm_defhnd = SIG_DFL;
+//  if (sigterm_defhnd == SIG_ERR)
+//    sigterm_defhnd = SIG_DFL;
   alarm(poll_time); 
   
   for(;;) pause();
 
   return 0;
 }
-

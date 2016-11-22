@@ -1,0 +1,8 @@
+
+USAGE
+        JLong <interface>
+
+DESCRIPTION
+        Gives a list of ALL heard AX25 stations on all interfaces.
+	This may be a VERY LONG LIST. If you're on HF you may timeout.
+	Add an interface to see a long list for just that interface.

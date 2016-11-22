@@ -1,0 +1,14 @@
+To get URONode to answer IP socket requests via SystemD do the following:
+
+- copy the SystemD files into /lib/systemd/system
+- run: systemctl enable uronode
+- run: systemctl enable ax25
+- run: chkconfig uronode on
+- run: chkconfig ax25 on
+- run: systemctl daemon-reload
+- in /etc/xinetd.d/uronode (or node) set disable to yes
+  (or comment out your line in /etc/inetd.conf)
+- run: systemctl restart xinetd
+- reboot
+
+

@@ -1,0 +1,31 @@
+.TH FLEXD 8 "FLEXNET ROUTING DAEMON" Linux "Linux System Managers Manual"
+.SH NAME
+flexd \- flexnet routing daemon backend for URONode.
+.SH SYNOPSIS
+.B routing daemon
+.SH DESCRIPTION
+.LP
+.B Flexd
+is a simple flexnet routing daemon back end. The purpose of this daemon is to
+import pc/FlexNet destinations into URONode for auto-ax25 routing. It's
+quite normal sometimes for flexd to generate an error upon bootup if it
+can't make a connect to the neighbor flex node in flexd.conf. When it 
+can connect, it will do so automatically.
+.SH COMMANDS
+There are no commands for flexd. The runtime parameters are in flexd.conf
+.SH FILES
+.LP
+.TP 5 
+.B /usr/local/etc/ax25/flexd.conf
+flexd configuration file.
+.br
+.SH AUTHOR
+Brian Rogers N1URO <n1uro@n1uro.com>
+.SH THANKS TO
+Stefano Noferi IZ5AWZ <iz5awz@radio-gw.cnuce.cnr.it>
+.br
+Tomi Manninen OH2BNS <tpmannin@cc.hut.fi>
+.br 
+Alan Cox GW4PTS <gw4pts@gw4pts.ampr.org>
+.br 
+Roy PE1RJA <roy@esrac.ele.tue.nl>

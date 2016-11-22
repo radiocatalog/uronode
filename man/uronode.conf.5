@@ -1,0 +1,252 @@
+.TH URONODE.CONF 5 "28 April 1998" Linux "Linux Programmer's Manual"
+.SH NAME
+uronode.conf \- URONode configuration file.
+.SH DESCRIPTION
+.LP
+.B uronode.conf
+file is read by URONode at program startup and is used to modify the
+behaviour of the node. The URONode node.conf is no compatible with
+the LinuxNode file, as it add new entries: FlexId Prompt and PassPromt.
+.LP
+The lines within
+.B uronode.conf
+must either be a comment line, which starts with a # in the first column, or
+one of the commands listed below. Commands and arguments are delimited
+by white space. Arguments can contain white space if they are enclosed
+in double quotes. Also C-style escapes (\\n, \\x0A, \\012 etc.) are parsed
+within double quotes. Tabs may also be used for delimiting columns.
+.sp
+Available configuration commands are:
+.TP 14
+.B Alias <NAme> \(lq<command> [<args...>]\(rq
+Sets up a command alias. The number of uppercase characters at the
+beginning of <NAme> specifies how much the user may abbreviate the
+command. The uppercase part should be long enough to separate the command
+from other commands starting with the same letters. If there are no
+uppercase letters in the beginning, the whole name is converted to upper
+case and user can not abbreviate the command.
+The command and arguments are subject to
+.B parameter expansion
+(see below).
+.TP 14
+.B ConnTimeout <timeout>
+When user is connected to another system via this system and the
+connection is idle (no data flowing in either direction) for <timeout>
+seconds the connection is dropped and user disconnected from node.
+Default is 3600 seconds
+(1 hour).
+.TP 14
+.B Email	<your@node.ampr.org>
+This is your amprnet or commercial email address that's displayed
+to users on interfaces you require having a password on to access
+your node, highly suggested on inet interfaces. You may leave
+off the <>'s. If you do not have an Email line in node.conf
+then your email address to users will display as (null) and
+will make you look sloppy :-)
+.TP 14
+.B EscapeChar <escape>
+Specifies the escape character. <escape> should be the decimal 
+representation of the ASCII code of the wanted escape character.
+Setting escape character to \-1 disables the feature altogether.
+The default is 20 (ctrl-t).
+.sp
+Note that the escape mechanism breaks 8-bit transparency of URONode
+and you should either disable it or set the no-escape flag in node.perms
+for the forwarding stations if (compressed) forward is run trough
+URONode.
+.TP 14
+.B ExtCmd <NAme> <flags> <uid> <exec> <args...>
+.RS
+.TP 10
+.B NAme
+This is the name under which the command appears at nodes command list.
+The number of uppercase characters at the beginning of <NAme> specifies
+how much the user may abbreviate the command.
+The uppercase part should be long enough to separate the command
+from other commands starting with the same letters. If there are no
+uppercase letters in the beginning, the whole name is converted to upper
+case and user can not abbreviate the command.
+.TP 10
+.B flags
+This is a sum of flags that control the way the external
+command is executed. Currently two flags are implemented:
+.RS
+.TP 5
+.B 1
+Run command through pipe. Without this flag node just fork()s and exec()s
+the specified command and then waits for it to terminate. The command must
+it self be aware about the underlying protocol. It must handle packetising
+and any end of line conversions. With this flag however node sets up a pipe
+between it self and the command and handles packetising and end of line
+conversions for it.
+.TP 5
+.B 2
+Reconnected to flag. If this flag is set, the user gets a reconnected to
+prompt after the external command is finished.
+.RE
+.TP 10
+.B uid
+This is the userid that the following command should run under when
+executing.
+.TP 10
+.B exec
+This is the executable that should be executed.
+.TP 10
+.B args...
+These are the optional arguments that are passed to the executable.
+The arguments are subject to
+.SM
+.B "parameter expansion"
+(see below).
+.RE
+.TP 14
+.B HiddenPorts <portname> ...
+Marks <portname> as hidden. Hidden ports are not shown to users in
+Links, Mheard, Ports and Routes commands and can not be used to make
+AX.25 downlink connections unless user is specially permitted to do
+so (see node.perms(5)). Up to 32 hidden ports can be specified with
+this command.
+.TP 14
+.B HostName <hostname>
+This is the visible hostname of the node. It will be shown at telnet
+login and in the node welcome message.
+.TP 14
+.B IdleTimeout <timeout>
+After <timeout> seconds of inactivity while waiting for a command user
+is disconnected from node. Default is 900 seconds (15 mins).
+.TP 14
+.B LocalNet <network>
+Defines a "local" network. Users telneting from hosts in this network
+are treated separately (see node.perms(5)). <network> is a KA9Q NOS
+style network address consisting of a dotted quad ip address of the
+network and a number of significant bits separated by a slash. Note
+that 127.0.0.0/8 (loopback net) is also considered "local" by default.
+.TP 14
+.B LogLevel <loglevel>
+Specifies what node should log. The available levels are:
+.RS
+.TP 5
+.B 0
+Don't log anything.
+.TP 5
+.B 1
+Log only critical errors.
+.TP 5
+.B 2
+Log errors and logins/logouts.
+.TP 5
+.B 3
+Log errors, logins/logouts and all gateway commands.
+.LP
+Default is to log only critical errors.
+.RE
+.TP 14
+.B NodeId <nodeid>
+This is the node id that is shown in every message from node. Default
+is "URONode".
+.TP 14
+.B FlexID <flexid>
+This is typically your ax25 callsign-ssid that links to flexnet and/or
+to your user interface set by the sysop in ax25d.conf.
+.TP 14
+.B RoseID <rosecall@dnic,######>
+This is your node's rosecall-ssid and your full dnic number typically
+consisting of your country code, area code, and phone extension. An
+example is: 3100,860906. The full string would be for this part of
+the conf file using my config: RoseID n1uro-8@3100860906 or if you do not
+use rose enter: RoseID none
+.TP 14
+.B NrPort <portname>
+This is the name of the netrom port that is used when making outgoing
+netrom connects. Normally it should match the portname that is used
+in ax25d.conf to listen for incoming netrom calls. Default is the first
+netrom port.
+.TP 14
+.B ReConnect on|off
+ReConnect flag. If this is on, users gatewaying to another host
+get reconnected to this node after the remote host closes connection.
+If it's off connection to the user will also be closed. User can
+override the default behaviour with a single `s' or `d' at the end
+of the gatewaying command (connect or telnet). Default is off.
+.TP 14
+.B Prompt <NodePrompt>
+This is the prompt string of the node. It's delimited by double quotes.
+You can use also a "\\n" character for a multi-lines prompt.
+.TP 14
+.B PassPrompt <PasswordPrompt>
+This is the prompt string for sysop password request.  It's delimited by 
+double quotes. You can use also a "\\n" character for a multi-lines prompt.
+.SH PARAMETER EXPANSION
+.LP
+The arguments passed to the real command by the Alias and ExtCmd
+commands are subject to parameter expansion. If a word starts with a %,
+it is expanded. The following formats are expanded:
+.TP 14
+.B %parameter
+This is substituted with the value of
+.B parameter
+.
+.TP 14
+.B %{parameter}
+The same as above.
+.TP 14
+.B %{parameter:default}
+If
+.B parameter
+is defined this is susbtituted with the value of it. If not, the default
+value is substituted. This currently applies only to positional parameters
+0...9.
+.LP
+The following parameters are defined:
+.LP
+.TP 8
+.B 0...9
+The positional parameters.
+.TP 8
+.B U
+The username (callsign) of the remote station in upper case without the SSID.
+.TP 8
+.B u
+The username (callsign) of the remote station in lower case without the SSID.
+.TP 8
+.B S
+The username (callsign) of the remote station in upper case with the SSID.
+.TP 8
+.B s
+The username (callsign) of the remote station in lower case with the SSID.
+.TP 8
+.B P
+The nodename (callsign) of the remote station (NET/ROM), the portname the
+user is coming in via (AX.25) or the ip address of the remote host (TCP).
+In upper case without the SSID.
+.TP 8
+.B p
+The nodename (callsign) of the remote station (NET/ROM), the portname the
+user is coming in via (AX.25) or the ip address of the remote host (TCP).
+In lower case without the SSID.
+.TP 8
+.B R
+The nodename (callsign) of the remote station (NET/ROM), the portname the
+user is coming in via (AX.25) or the ip address of the remote host (TCP).
+In upper case with the SSID.
+.TP 8
+.B r
+The nodename (callsign) of the remote station (NET/ROM), the portname the
+user is coming in via (AX.25) or the ip address of the remote host (TCP).
+In lower case with the SSID.
+.TP 8
+.B t
+The type of the user connection (ax25, netrom, rose, inet, host) in lower case.
+.TP 8
+.B T
+The type of the user connection (ax25, netrom, rose, inet, host) in upper case.
+.LP
+Anything else after a % is substituted with a %.
+.SH FILES
+.LP
+/usr/local/etc/ax25/uronode.conf
+.SH "SEE ALSO"
+.BR uronode (8),
+.BR uronode.perms (5),
+.BR axports (5),
+.BR ax25 (4).

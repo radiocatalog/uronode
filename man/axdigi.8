@@ -1,0 +1,52 @@
+.TH AXDIGI 8 "28 April 2013" Linux "Linux Programmer's Manual"
+.SH NAME
+axdigi \- axdigi file.
+.SH DESCRIPTION
+.LP
+.B axdigi
+This executable should be loaded in your startup script with the command:
+/usr/local/sbin/axdigi (or path to where you installed it). This file enables
+cross-port digipeating within your linux's ax25 stack.
+.LP
+Special Conditions:
+.B axdigi
+In order to digipeat, you or the user *must* know your SSID associated
+with the ifconfig <interface> that is the direct link to the outbound
+path they wish to digi to. axdigi will handle the appropriate digipeat
+accordingly. If you have multiple ax25 interfaces, you should somehow
+list them for the users in the axports description so they will see
+them when doing an "Interface" command while on URONode. If the user
+wishes to log off URONode and digi through, then they must use the
+interface's SSID associated with the OUTBOUND path to their destination.
+.sp
+commands are:
+.TP 14
+.B C <destination> via <your interface-SSID>
+If the user heard station A1BCD-7 on your ax0 interface, and that
+interface's SSID is: W1XYZ-9 (NOT the FlexID of URONode!) then the user
+would enter:
+c a1bcd-7 via w1xyz-9 
+even if their inbound interface might be ax1 and it's ifconfig shows 
+your SSID as w1xyz-10!
+.TP 14
+.B Detailed information
+If you have 3 ax25 interfaces ifconfigured as:
+ax0 - w1xyz-9
+ax1 - w1xyz-10
+ax2 - w1xyz-11
+
+User k2lmn would enter your node via ax2 and they wish to digi to
+a1bcd-7 which is heard on ax0 they would simply enter:
+c a1bcd-7 via w1xyz-9 to connect. Axdigi handles the crossport
+functions. If they tried:
+c a1bcd-7 via w1xyz-11
+the connect would fail because it would attempt to digi OUT on your
+ax2 interface. This may get tricky so expect a need to educate your
+users on this. Unfortunately, linux lacks native cross-port digipeating
+at this time so this is a work-around.
+.SH FILES
+.LP
+/usr/local/sbin/axdigi
+.SH "SEE ALSO"
+.BR axports (5),
+.BR ax25 (4).

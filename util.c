@@ -39,7 +39,7 @@ void node_msg(const char *fmt, ...)
   if (User.ul_type == AF_NETROM) {
   axio_printf(NodeIo,"%s} ", NodeId);
   }
-  if ((User.ul_type == AF_INET) && (check_perms(PERM_ANSI, 0L) != -1)) {
+  if ((User.ul_type == AF_INET) || (User.ul_type == AF_INET6) && (check_perms(PERM_ANSI, 0L) != -1)) {
   axio_printf(NodeIo,"\n\e[01;31m%s\e[0m@\e[01;34m%s\e[0m:/uronode$ ",User.call, HostName);
   } 
   if ((User.ul_type == AF_INET) && (check_perms(PERM_ANSI, 0L) == -1)) {
@@ -47,6 +47,12 @@ void node_msg(const char *fmt, ...)
   }
   if (User.ul_type == AF_AX25) {
   axio_printf(NodeIo,"%s",Prompt);
+  }
+  if ((User.ul_type ==AF_INET6)  && (check_perms(PERM_ANSI, 0L) == -1)) {
+  axio_printf(NodeIo, "\nSystemD - %s@%s: ",User.call, Hostname);
+  }
+  if ((User.ul_type ==AF_INET6)  && (check_perms(PERM_ANSI, 0L) != -1)) {
+  axio_printf(NodeIo, "\n\e[01;31mSystemD \e[0m- \e[01;34m%s@\e[0m%s: ",User.call, Hostname);
   }
   }
 */

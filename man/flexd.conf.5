@@ -1,0 +1,51 @@
+.TH FLEXD.CONF 5 "28 April 2013" Linux "Linux Programmer's Manual"
+.SH NAME
+flexd.conf \- flexd configuration file.
+.SH DESCRIPTION
+.LP
+.B flexd.conf
+file is read by flexd at program startup and is used to modify the
+behaviour of the robot.
+.LP
+The lines within
+.B flexd.conf
+must either be a comment line, which starts with a # in the first column, or
+one of the commands listed below. Commands and arguments are delimited
+by white space. Arguments can contain white space if they are enclosed
+in double quotes. Also C-style escapes (\\n, \\x0A, \\012 etc.) are parsed
+within double quotes.
+.sp
+Available configuration commands are:
+.TP 14
+.B MyCall	<xx#xx>
+Sets up the callsign AND ssid you wish to use to connect to your flexnet
+neighbor for destinations import. Do NOT use an ssid of your ax25 interface
+which you'll be polling from as you may create a loop between your system
+and the flexnet neighbor.
+An example: MyCall	kb1uuu-13
+.TP 14
+.B PollInterval	<time/secs>
+This string tells the robot how many times in SECONDS to poll your flexnet
+neighbor and import their destination table. In my production environment
+300 (or 5 minutes) seemed to be fine. I would NOT go below 180 (3 minutes)
+as you may create more traffic than needed.
+.TP 14
+.B FlexGate	<xx#xx-##>
+This is the callsign of your flexnet neighbor. The robot will read this 
+callsign-ssid and attempt a connect to it every ## minutes assigned in
+PollInterval <time/mins>. Be sure you do NOT configure it to connect to
+a service linked within the flexnet neighbor such as a BBS! You will NOT
+receive any destinations to your system that way and the BBS will think
+you're attempting a feed.
+.TP 14
+
+
+
+.SH FILES
+.LP
+/usr/local/etc/ax25/flexd.conf
+.SH "SEE ALSO"
+.BR uronode (8),
+.BR uronode.perms (5),
+.BR axports (5),
+.BR ax25 (4).

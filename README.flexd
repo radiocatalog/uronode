@@ -1,0 +1,30 @@
+If you find that your flexd isn't properly working, scroll down to line 120
+where it says:
+char  buffer[256], port[14], path[AX25_MAX_DIGIS*10]
+and adjust the buffer per your neighbor's screens. The formula is:
+2 data frames: 256
+3 data frames: 512
+4 data frames: 1024
+
+Unfortunately the configure script can't autosense this because in some
+cases, flexd doesn't already exist yet. To determine how many frames you're
+receiving, use the (ax)listen tool and count the frames after making a manual
+connect. Ex:
+ax2: fm N1URO-15 to N1URO-1 ctl SABM+ 
+ax2: fm N1URO-1 to N1URO-15 ctl UA- 
+ax2: fm N1URO-1 to N1URO-15 ctl I00^ pid=F0(Text) len 256 
+0000  PC/FlexNet V3.3g - Welcome to the N1URO FlexNet-Digi. This node 
+0040  is located at .Unionville, Hartford County, Connecticut [FN31ns]
+0080  . This version of pc/Flexnet.and all related services are hosted
+00C0   under the Linux operating system. Enjoy!..Basic commands are:.<
+ax2: fm N1URO-1 to N1URO-15 ctl I01^ pid=F0(Text) len 176 
+0000  A>rea destinations file.<C>onnect <desti>.<D>estinations list..<
+0040  H>elp (more detailed command list).<L>inks.list...<M>ailBox (BBS
+0080  URO:N1URO-4).<Q>uit this node..<T>alk <call>..=>
+
+Here I made a manual connect from my URONode to my pc/FlexNet node.
+After the protocol handshakes there's 2 frames prior to the => prompt.
+So using the formula above, my line needs to be 256 for the buffer size.
+
+Hope this may help those with flexd errors.
+73 de Brian N1URO

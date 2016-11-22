@@ -47,7 +47,7 @@ static STRUCT_UTMP *utmp_contents;
 #define S_IWGRP 020
 #endif
 
-static char buf[300];
+static char buf[800];
 
 /* This macro opens FILE only if necessary and seeks to 0 so that successive
    calls to the functions are more efficient.  It also reads the current
@@ -110,36 +110,36 @@ int loadavg(double *av1, double *av5, double *av15) {
    labels which do not *begin* with digits, though.
 */
 
-#define MAX_ROW 27	/* these are a little liberal for flexibility */
+#define MAX_ROW 20	/* these are a little liberal for flexibility */
 #define MAX_COL 2
 
-unsigned** meminfo(void) {
-  static unsigned *row[MAX_ROW + 1];		/* row pointers */
-  static unsigned num[MAX_ROW * MAX_COL];	/* number storage */
-  char *p;
-  int i, j, k, l;
+//unsigned** meminfo(void) {
+//  static unsigned *row[MAX_ROW + 1];		/* row pointers */
+//  static unsigned num[MAX_ROW * MAX_COL];	/* number storage */
+//  char *p;
+//  int i, j, k, l;
     
-  FILE_TO_BUF(MEMINFO_FILE)
-    if (!row[0])				/* init ptrs 1st time through */
-      for (i=0; i < MAX_ROW; i++)		/* std column major order: */
-	row[i] = num + MAX_COL*i;		/* A[i][j] = A + COLS*i + j */
-  p = buf;
-  for (i=0; i < MAX_ROW; i++)			/* zero unassigned fields */
-    for (j=0; j < MAX_COL; j++)
-      row[i][j] = 0;
-  for (i=0; i < MAX_ROW && *p; i++) {		/* loop over rows */
-    while(*p && !isdigit(*p)) p++;		/* skip chars until a digit */
-    for (j=0; j < MAX_COL && *p; j++) {	/* scanf column-by-column */
-      l = sscanf(p, "%u%n", row[i] + j, &k);
-      p += k;				/* step over used buffer */
-      if (*p == '\n' || l < 1)		/* end of line/buffer */
-	break;
-    }
-  }
+//  FILE_TO_BUF(MEMINFO_FILE)
+//    if (!row[0])				/* init ptrs 1st time through */
+//      for (i=0; i < MAX_ROW; i++)		/* std column major order: */
+//	row[i] = num + MAX_COL*i;		/* A[i][j] = A + COLS*i + j */
+//  p = buf;
+//  for (i=0; i < MAX_ROW; i++)			/* zero unassigned fields */
+//    for (j=0; j < MAX_COL; j++)
+//      row[i][j] = 0;
+//  for (i=0; i < MAX_ROW && *p; i++) {		/* loop over rows */
+//    while(*p && !isdigit(*p)) p++;		/* skip chars until a digit */
+//    for (j=0; j < MAX_COL && *p; j++) {	/* scanf column-by-column */
+//      l = sscanf(p, "%u%n", row[i] + j, &k);
+//      p += k;				/* step over used buffer */
+//     if (*p == '\n' || l < 1)		/* end of line/buffer */
+//	break;
+//    }
+//  }
   /*    row[i+1] = NULL;	terminate the row list, currently unnecessary */
-  return row;					/* NULL return ==> error */
-} 
-
+//  return row;					/* NULL return ==> error */
+//} 
+//
 int system_user_count(void)
 {
   int users;
@@ -241,3 +241,30 @@ char *xmalloc (n)
     p = fixup_null_alloc (n);
   return p;
 }
+
+int load_meminfo(void)
+{
+        FILE_TO_BUF(MEMINFO_FILE)
+        return 1;
+}
+
+int meminfo(const char *s)
+{
+        char *cp;
+        int len;
+
+        len = strlen(s);
+        cp = buf;
+        while (1) {
+                if (strncasecmp(cp, s, len) == 0) {
+                        cp += len;
+                        if (*cp == ':')
+                                return atoi(++cp);
+                }
+                if ((cp = strchr(cp, '\n')) == NULL)
+                        break;
+                cp++;
+        }
+        return -1;
+}
+

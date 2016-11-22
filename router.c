@@ -95,9 +95,24 @@ int do_links(int argc, char **argv)
     }
     return 0;
   }
-  
-  
-  
+/*  
+   // "links r" 
+  if ((*argv[1]=='r') && (strlen(argv[1])==1)) {
+    node_msg("ROSE Links:");
+    if (check_perms(PERM_ANSI, 0L) != -1) {
+      axio_printf(NodeIo, "\e[0;m");
+    }
+    axio_printf(NodeIo,"Call      Dnic      Interf  Description\n");
+    axio_printf(NodeIo,"--------- --------- ------- -----------");
+    for(p=axrt;p!=NULL;p=p->next)
+      {  if (*p->conn_type==CONN_TYPE_ROSE)  axio_printf(NodeIo,"\n%-9s %-9s  %-7s %s", p->dest_call, p->alias, p->dev, p->description); }
+    free_ax_routes(axrt);
+    if (User.ul_type == AF_NETROM) {
+      node_msg("");
+    }
+    return 0;
+  }
+*/  
   /* "links v" */
   if ((*argv[1]=='v') && (strlen(argv[1])==1)) {
     node_msg("AX25 Links via digipeaters:");

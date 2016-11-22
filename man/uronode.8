@@ -1,0 +1,251 @@
+.TH URONODE 8 "28 April 1998" Linux "Linux System Managers Manual"
+.SH NAME
+URONode \- Node front end for AX.25, NET/ROM, Rose and TCP
+.SH SYNOPSIS
+.B node
+.SH DESCRIPTION
+.LP
+.B URONode
+is a simple node front end, modelled after the node shells of LinuxNode,
+AWZNode, and Flexnode.
+.SH COMMANDS
+The following commands are supported for users of
+.B URONode:
+.TP 13
+.BI ?
+Give short list of available commands.
+.TP 13
+.BI Bye
+Disconnect user from the node.
+.TP 13
+.BI "Connect <call | alias> [s|d]                  For NETROM"
+.TP 13
+.BI "Connect <port> <call> [via <call1> ...] [d|s] For AX.25"
+.TP 13
+.BI "Connect <call> <address> [<digi>] [d|s]       For ROSE"
+.TP 13
+.BI "Connect <destination> [s|d]                   For FlexNet"
+.sp 1
+Initiates an AX25, NET/ROM, ROSE or Flexnet connection to a remote host. 
+If more than two parameters are entered and the second parameter is ten 
+charachers in length then it is interpreted as a ROSE connection, 
+otherwise the first parameter is interpreted as a port name and AX25 is 
+used to make the connection via that port. If only one parameter is given 
+the connection is made searching for the callsign in NET/ROM nodes, 
+in AX25 Fixed links, in FlexNet destinations and last in Mheard database 
+in this order.	
+.sp
+For a ROSE connection the <address> part must be exactly six or ten digits.
+If only six digits are supplied, the DNIC (first four digits) default to the
+local DNIC. The local DNIC is assumed to be that of the first configured
+Rose port in /etc/ax25/rsports.
+.sp
+The user may optionally supply as the last argument a single character
+which modifies the default behaviour on disconnection of the connection.
+If a single `s' is entered as the last argument, then when the remote host
+disconnects you will be returned to this node. If a single `d' is entered as
+the last argument, you will be disconnected from this node too. The Default
+behaviour (neither `s' nor `d' entered) is configured in the node configuration
+file and depends on the sysop preference.
+.TP 13
+.BI "CAllbook <call>[@<server>]"
+Retrieve data about a callsign from an internet-accessible
+callbook server. The server name can usually be omitted, since
+the default server configured by the operator is usually
+valid. The default setting can be overridden by specifying
+a host name.
+.TP 13
+.BI "Escape [<escape string>]"
+Override the sysop configured default escape character setting. If the Escape
+command is given without an argument then the current escape character setting
+is returned to the user. The escape string may be specified using any of the
+well known codings:
+.IP
+.BI "<char>"
+to enter the escape character in its binary form.
+.IP
+.BI "^C"
+to enter the escape character as a control character value.
+.IP
+.BI "NNN"
+to set the escape character to a Decimal value.
+.IP
+.BI "0xNN"
+to set the escape character to a HexaDecimal value.
+.IP
+.BI "0NNN"
+to set the escape character to an Octal value.
+.IP
+.BI "off"
+to disable the escape character.
+.TP 13
+.BI "Finger [<username>][@<hostname>]"
+Retrieve information about users of a system. If the user
+name is omitted, shows the users currently logged on the
+host. If the hostname is omitted, defaults to the local host.
+.TP 13
+.BI "Help [<command>]"
+Give help for the specified command or this text if no
+command is specified. Commands can not be abbreviated.
+Use the "?" command to retrieve a list of available commands.
+.TP 13
+.BI "HOst <hostname> | <ip address>"
+Give the Domain Name Service host name information about <hostname> or
+<ip address>.
+.TP 13
+.BI Info
+Display the version information and the contents of the
+/usr/local/etc/ax25/uronode.info file, which should describe any aspects
+of your system that you would like to brag about.
+.TP 13
+.BI INTerfaces
+Display the node's interface schema, most folks often call these "ports".
+.TP 13
+.BI Jheard <interface>
+Displays the last 20 stations heard to this node. You may use an interface
+name to get the last 20 stations heard to that particular interface.
+.TP 13
+.BI JLong <interface>
+Displays the full list of the heards database up to the last 100 callsigns.
+Add the name of an interface for the full heards listing for that specific
+interface.
+.TP 13
+.BI "Links [d | n | v | <call>]"
+Shows the AX25 link table of the local node. The destinations 
+on this list can be reached using the Connect command without 
+knowing the actual network path used (assuming the network is OK).
+
+The optional parameter d show the AX25 nodes directly linked.
+The optional parameter n show the AX25 nodes linked connecting 
+another node and passing a string like "C XX0XX".
+The optional parameter v show the AX25 links via digipeaters.
+
+You can also specify a destination callsign to get the verbose 
+information for a single destination.
+.TP 13
+.BI "Nodes [* | <node>]"
+Show the NET/ROM node table of the local host. The nodes on this
+list can be reached using the Connect command without knowing the
+actual network path used (assuming the network is OK).
+.sp
+The optional argument '*' toggles verbose mode, showing the
+Obsolescence counter, relative path quality and the port and
+neighbour node used to reach each node. You can also specify
+a node callsign to get the verbose information for a single node.
+In that case a "which" field that tells what route the kernel
+will use to reach the node is also shown.
+.TP 13
+.BI "Ping <host> [<size>]"
+Check if a host can be reached trough the network by sending
+an ICMP Echo Request packet to the host and waiting for it to
+reply. If a reply is received the round-trip-time (RTT)
+between the local and remote hosts is shown.
+.sp
+If an optional length is specified the data portion of the
+packet is filled with length number of bytes up to 128.
+.TP 13
+.BI Routes
+Shows the NET/ROM route table of the local host (eg. the nodes
+which the local node directly talks with). These nodes are used
+to reach the other nodes on the node table. Fields shown are:
+.IP
+.BI "Link"
+Is there an AX25 connection active to this node.
+.IP
+.BI "Port"
+Which port is this route on.
+.IP
+.BI "Callsign"
+The callsign of the neighbour node.
+.IP
+.BI "Quality"
+A relative quality for the path (0-255).
+.IP
+.BI "Destinations"
+Number of other nodes reached via this route.
+.IP
+.BI "Lock"
+Is the quality of this route locked by the operator.
+.IP
+.BI "QSO"
+Number of NET/ROM session enties.
+.TP 13
+.BI "Telnet <host> [<port>] [<string>] [d|s]"
+Initiate a telnet session to a remote host using TCP/IP.
+By default, the telnet command connects to the TCP port 23
+(allocated for telnet). You can specify another TCP port or
+a TCP port name.
+.sp
+If an optional third argument <string> is given, that string, followed
+by a CRLF is sent to the remote host right after the connection is
+established. This is mainly useful for command aliases.
+.sp
+If a single `s' is entered as the last parameter, then when
+the remote host disconnects you will be returned to this node.
+If a single `d' is entered as the last parameter, you will
+be disconnected from this node too. Default behaviour (neither
+`s' nor `d' entered) depends on sysop configuration.
+.TP 13
+.BI "MSG <user> <message>"
+Send a message to another user of the node. The user
+in question must be in idle state (ie. not connected/connecting
+anywhere or running a program).
+.sp
+If the user has an SSID other than zero, the SSID must be
+specified. If multiple users are logged in with the same
+callsign/SSID pair, those who are in idle state, get the message.
+.TP 13
+.BI Users
+Show a list of users currently connected to the local node,
+where the users are coming from, and what are they doing at the
+moment.
+.SH FILES
+.LP
+.TP 5 
+.B /usr/local/etc/ax25/uronode.conf
+URONode configuration file.
+.br
+.TP 5
+.B /usr/local/etc/ax25/uronode.perms
+URONode permissions file.
+.br
+.TP 5
+.B /usr/local/etc/ax25/uronode.users
+URONode users settings file.
+.br
+.TP 5
+.B /usr/local/etc/ax25/uronode.motd
+URONode message of the day file.
+.br
+.TP 5 
+.B /usr/local/etc/ax25/uronode.info
+The response to the 'info' command.  
+This file should be edited to reflect the local configuration.
+.br
+.TP 5 
+.B /usr/local/var/ax25/node/loggedin
+Database of current users.
+.br
+.TP 5
+.B /usr/local/var/ax25/mheard/mheard.dat
+Information about AX.25 stations heard.
+.br
+.TP 5 
+.B /usr/local/var/ax25/node/help/*.hlp
+The online help files.
+.SH "SEE ALSO"
+.BR uronode.conf (5),
+.BR uronode.perms (5),
+.BR axports (5),
+.BR ax25d (8),
+.BR mheardd (8).
+.SH AUTHOR
+Brian Rogers N1URO <n1uro@n1uro.com>
+.SH THANKS TO
+Stefano Noferi IZ5AWZ <iz5awz@radio-gw.cnuce.cnr.it>
+.br
+Tomi Manninen OH2BNS <tpmannin@cc.hut.fi>
+.br 
+Alan Cox GW4PTS <gw4pts@gw4pts.ampr.org>
+.br 
+Roy PE1RJA <roy@esrac.ele.tue.nl>

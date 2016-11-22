@@ -150,7 +150,8 @@ char *read_perms(struct user *up, unsigned long peer)
       if (!strcasecmp(argv[1], "rose"))
 	break;
       continue;
-#endif			
+#endif	
+    case AF_INET6:		
     case AF_INET:
       if (!strcmp(argv[1], "*"))
 	break;
@@ -191,7 +192,8 @@ static int do_alias(int argc, char **argv)
     return -1;
   if ((new = calloc(1, sizeof(struct cmd))) == NULL) {
     node_perror("do_alias: malloc", errno);
-    return -2;
+ // return -2;
+    return -1;       /* ve3tok 31 Mar,2016 - tnx Brian */
   }
   new->name = strdup(argv[1]);
   while (isupper(new->name[len]))
@@ -402,7 +404,7 @@ static int do_roseid(int argc, char **argv)
 
 static int do_prompt(int argc, char **argv)
 {
-  if ((User.ul_type != AF_NETROM) || (User.ul_type != AF_INET)) {
+  if ((User.ul_type != AF_NETROM) && (User.ul_type != AF_INET) && (User.ul_type != AF_INET6)) {
     if (argc < 2) {
       return -1;
       Prompt = strdup(argv[1]);

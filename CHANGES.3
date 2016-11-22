@@ -1,0 +1,306 @@
+27/03/2016 - v2.5 YO2LOJ reports 2 warnings with regards to system.c and 
+the date/time stamp function. While I do not get one, I also do not get 
+one with his supplied patch... so I included it. The patch affects the 
+differences between 32 and 64 bit OS timestamps. Now the OS bit 
+shouldn't matter. Thanks Marius! (That's why we have ya on the team)
+
+Ported the calibrate tool from F1OAT to the URONode suite. I could have 
+rewritten the whole thing from scratch but why the need to reinvent the 
+wheel? There was some recoding I had to do so that it'd compile under 
+URONode but that was somewhat minor. Usage is the same: 
+calibrate -t [ms] interface. 
+This port is similar in theory to what I did with Craig Small's axdigi package.
+
+Cleaned up routines in Makefile. I'll probably have several and 
+hopefully they will go unnoticed. One critical thing I did notice and 
+I'm surprised no one reported this was if flexnet wasn't selected, and 
+one ran a "make install" or "make upgrade" - it would exit as soon as it 
+tried to install a non-existant binary (FlexD). This left the axdigi 
+module to go un-installed/upgraded. This is a very important module to 
+install as it allows for interface to multi-interface digipeating. 
+Anyway, I got off my butt and fixed this amongst other things.
+
+Fixed the way the system handled parsing of the info file that carried 
+the stats for Memory and Swap usage: /proc/meminfo.  In some cases, the 
+node couldn't properly parse the swap statistics in the "Status" 
+command. Now, regardless of which kernel is being used, the proper stats 
+will be parsed and the percentage arithmetic will be properly applied to 
+show final percentage used. An example of the output:
+
+Memory:            Available  Used       Free       perc. Used
+------------------ ---------- ---------- ---------- ----------
+Physical:          4048024 kB 3206552 kB 841472  kB  79 %
+    Swap:          1881084 kB 0       kB 1881084 kB   0 %
+
+I really don't know why this was such a difficult thing for me to fix 
+but I got it after months of pondering. This fixes a known non-critial 
+bug :D After fixing this bug however I created another one that would 
+cause a divide-by-zero segfault. Someone asked me to configure a box 
+remotely for them and they didn't add a swap partition at all! Now if 
+there's none or it's simply not activated, the node's 'STatus' report 
+will reflect such. Thanks to the NY EOC folks for creating this error so 
+I could find this bug before relase xD
+
+Fixing texts in gateway.c and mheard.c where it still referenced the 
+word "port(s)" instead of "interface(s)" as it should. Also cleaned up 
+some minor error reporting. Also made some changes in how some aborts 
+are displayed, and also invalid callsign error reporting. For example, 
+an aborted connect will now show: 
+c n1uro-3 
+UNIVLE:N1URO-5} link setup (ax2)... 
+
+UNIVLE:N1URO-5} Connection aborted. 
+The same as with an aborted telnet session.
+
+Pings now will show: ping www.comcast.com 
+ICMP Echo request sent to: 68.87.29.59
+
+UNIVLE:N1URO-5} Ping aborted.
+
+and a connect attempt that doesn't exist in any tables or links: 
+c g4apl 
+UNIVLE:N1URO-5} G4APL not found, please retry your entry. 
+I'm sure I'll figure out some more as time goes on. Always a little something 
+to do :)
+
+One thing I noticed was an error in the Ping routine. The "Maximum size" 
+of a ping was preset to 248 bytes. On an ax25 link, this doesn't even 
+leave room for the IP headers, nevermind the ax25 headers! In thinking 
+this over, and not knowing if the IP path would be over vanilla ax25 OR 
+perhaps via NetRom, I decided to make the Maximum content per ping at 
+128 bytes. This should also be just large enough to allow ALL ascii 
+characters a chance to be included in 1 ping frame. Ex: 
+
+n1uro-15@n1uro.ampr.org:/uronode$ ping k1yon 129 
+Maximum size is 128 
+n1uro-15@n1uro.ampr.org:/uronode$ ping k1yon 128 
+ICMP Echo request sent to: 44.88.4.1 
+ICMP Echo reply received from: 44.88.4.1 
+Ping completed in: 151ms (ttl=63) 
+n1uro-15@n1uro.ampr.org:/uronode$
+
+While at it, I made changes to the online help file for ping and to 
+uronode.8 man page. 
+
+Also I noticed while working on a new site for EastNet, I somehow omitted an 
+install line in the Makefile for flexd.8. This not only is fixed but I also 
+expanded a bit on the limited text that was inside.
+
+Cleaned up a text display bug in the Status report. Swap: was not right 
+column justified with the rest of the memory stats. This was handled in 
+command.c
+
+Added a routine in configure to check for "make" as I've seen new 
+installs where make is not installed but gcc is. Needless to say you 
+can't "make" a binary if "make" does not exist ;->
+
+Also added a notification in flexd where when started to inform you that 
+the poll cycle has started. You may see it connect to test the existance 
+of an ax25 socket for the remote end when you first start flexd. This 
+starts the timer for your poll sequence in flexd.conf.
+
+While I was at it (and with a decent nudge from Tomasz SP2L) I did some 
+further digging and found (with the aid of Thomas DL9SAU) that the 
+getsockopt routine itself was showing failure because the socket wasn't 
+initially established prior to the polling loop. In adjusting it's 
+settings this appears to help relieve the initial error getsockopt() was 
+showing upon start of flexd. Now flexd should login to the remote 
+immediately upon start and pull down the desti table of the remote node. 
+Thanks Thomas and Tomasz :)
+
+In digging through the flexd source some more, and enjoying the fact 
+that the configs can be changed "on the fly" without having to restart 
+the system in most cases, or disrupt activity that's in session on or 
+through the node, I added a call to update the destinations upon a 
+"killall -HUP flexd". This allows the node sysop to change the flex-gate 
+they wish to poll without having to stop and restart flexd, and grab an 
+immediate destinations list. Remember to do the following: 
+- add the route in uronode.routes 
+- change the flex gateway in flexd.conf 
+- killall -HUP flexd 
+... and your new config and destination will instantly be live. Also, you can 
+-HUP your flexd to force an update as well. 
+
+Fixed a non-critical bug in axdigi where killing the daemon would NOT 
+clear the pidfile in /var/run. Always a stale pidfile was left over, and 
+as a quick fix I had the daemon delete the pidfile through a system call upon
+start. A hack but worked. NOW, the daemon will remove the pidfile upon 
+exit as it should.
+
+Wrote a set of SystemD files since xinetd/inet will soon be eliminated in
+favor of SystemD. I've tested the files on both a Pi running Raspbian
+wheezy and on my Fedora testbed. Important Note:
+IF you spawn your incoming telnet connects with SystemD, it's very possible
+that SystemD *will* convert your incoming IPv4 to internal IPv6 sockets. 
+You may handle this by forcing IPv4 in your SystemD uronode.socket file.
+While as of this version URONode will handle *incoming* IPv6, I haven't
+written any outbound routines for IPv6. To my knowledge, there's no need
+for it and I don't know if we'll ever have such a need on ham-based
+networks for IPv6. URONode *is* the first packet node however, to support
+IPv6... a historical milestone I do believe.
+
+While I was testing SystemD and finally realizing that the above IPv6
+conversions were true, I created a menu system for IPv6 to make it a lot
+cleaner than it already was... actually it had none. Since it's also
+spawned by SystemD, I made that the prompt for IPv6...
+SystemD - n1uro@fedora.n1uro.ampr.org:
+I was going to dupe the IPv4 prompt but decided it should have it's own
+to follow with the scope of how I maintain this project. So far everything
+in regards to both SystemD and IPv6 seem to be working fine.
+
+31/03/2016 - v2.5.1 (Maintenance release)
+Added better error handling output to FlexD and axDigi. Now they tell you
+when they've properly received your -HUP, your -TERM or your start. This 
+should help you all in better debugging your backend engines (FlexD, axDigi,
+etc.)
+
+Added a -b flag to the installer routines by suggestion of Marius YO2LOJ
+so one with an existing install won't have their files totally overwritten
+however they'll be backed up with a *~ flag instead during "make install".
+The preferred method for upgrading an existing node as always is by using
+"make upgrade" which only copies over the files required for that version.
+Once in a while a new field will be added or one deleted from the file
+uronode.conf, or one of the others and I've noticed sysops don't pay
+any attention to the new field requirements (ex: RoseId is the latest
+add). Compare the fields in files before just copying them back over!
+
+Gus I0OJJ and our own Bob VE3TOK reported strangeness in certain ALIAS
+commands. I tried like heck to reproduce it here and on machines I take
+care of. I knew where the issue layed but not fully being able to get
+it to reproduce was a royal "b". After sending Bob code to test, he
+was able to get positive results and checked it in for me.
+
+While at it Bob increased the buffer for the reader within FlexD. Seems
+Xnet may require a larger buffer than FlexNet for some reason? Bob also
+checked that in. Thanks Bob.
+
+18/04/2016 - v2.6
+Removed stale and unused axdigi.conf file. Thanks to David KI6ZHD for
+pointing this out that I had a stale file in the archive. This file
+belonged to another digi daemon I was going to revive instead of Craig
+Small's multi-interface crossport digi daemon. I find that especially
+with FlexNet, a multi-interface crossport digipeat system not only is
+unique to the native linux kernel BUT is also very efficient. If you
+have a stale copy of axdigi.conf floating around, please delete this.
+
+Added a question to engage or disengage interactive configure/make mode.
+This idea came to me from a query I received by KI6ZHD. If you choose NOT
+to use interactive mode, than you must run make/make upgrade/make install
+manually. Note: ALL options including rose and flexnet WILL BE COMPILED IN.
+
+Tomasz SP2L was seeing carriage returns when administering his server
+remotely and sending SIGHUP to flexd in the terminal messages confirming
+the -HUP. Removed.
+
+Added a version output for FlexD and tweeked the one for axdigi. Now both
+helper daemons will display its versions based on URONode's version and
+some very brief information about themselves. flexd -v or flexd -h
+along with axdigi -v or axdigi -h will bring up this information.
+
+Decided that since there's so many commands beginning with M I would move
+the MHeard command to a Jheard command. This keeps the commandset more in
+line with other systems except for TheNet and X1J-4, and separates that one
+command away from the volume of M's. While at it I also made a JL for
+Just heard Long. If you specify an interface, Jheard/JLong engages only for 
+that interface. Note - JLong will say: it may time out HFers. I also had to 
+modify Makefile and rework the help files to match. While at it I needed to
+modify the uronode.8 MAN page.
+
+Gave Makefile a more modernized compile line option. I'm hoping this will
+keep URONode one of packet's better robust nodes.
+
+I noticed some sites were violating Software2000's NetRom specifications
+by defaulting reconnect on still in their uronode.conf files. I had thought
+that I fixed this in an earlier release. Perhaps I did and then migrated
+an old .c file back into the mix? (wouldn't be the first time I've done
+that by mistake!) Anyway... three key things Software2000 was insistant upon
+were NO CTEXT, NO RECONNECT, NO GOODBYE MESSAGES. If you've noticed, I've
+taken ALL that out of URONode. These things were done as to not confuse
+robot scripts such as PBBS mail forwarding sessions. While other systems
+may wish to continue to violate the NetRom protocol (and others) I will
+do everything in my power NOT to.
+
+An anonymous user from sourceforge had a compiler warning on the
+do_prompt cycle in config.c and provided a fix for it. I don't know if
+the user is even a ham but their alias is dcb314, and we thank them. Their
+report and fix which is included:
+config.c:407:35: warning: logical 'or' of collectively exhaustive tests is always true [-Wlogical-op]
+Source code is
+if ((User.ul_type != AF_NETROM) || (User.ul_type != AF_INET) || 
+(User.ul_type != AF_INET6)) {
+Maybe better code
+if ((User.ul_type != AF_NETROM) && (User.ul_type != AF_INET) && 
+(User.ul_type != AF_INET6)) {
+While I don't get the warning he had, the logistics seem to be fine. Thanks
+again to dcb314 at sourceforge for their report.
+
+I have made a diff file for JNOS2.0K that makes it a bit more user 
+compatible with URONode, and other linux-based nodes. For almost 30 years
+TCP port 3694 has been used for inbound telnet for linux-based nodes, and
+URONode is no exception... just as IP protocol 93 is for axip and UDP
+port 93 is for axudp (again other systems love to violate protocols, we
+try not to). Besides my little isms that I like in xNOS which I often
+contributed to K2MF for MFNOS, I've began to do similar for JNOS. I'm adding
+the .diff file in the main code distribution so if you do run JNOS 2.0K as
+your PBBS TCP port 3694 is now recognized in JNOS with my patch. I have
+as of this writing submitted it to Maiko for considerations, I don't know
+if he's going to use it or not. If you do want to patch your JNOS 2.0K
+copy it into your jnos source directory and run: patch -p1 -i jnos20k.diff
+and you should see about a half dozen files updated. If Maiko doesn't wish
+to include this and you want me to keep up to date with it, let me know.
+
+With the recent CVE study on Winlink2000 and plain text passwords exposed, I
+went through URONode to insure it wasn't posessing the same issue. By
+default URONode doesn't ask for ANY passwords however it's highly suggested
+that the sysop require passwords on any internet or amprnet interface. Before
+yes, a sysop could require a password on an ax25/NetRom/Rose interface which
+would be exposed. Now, if a sysop mistakenly tries to force a password
+on RF, it will be ignored by the node so it's not exposed.
+
+----------- Note on SystemD --------
+In uronode.socket, you'll notice the line:
+ListenStream=0.0.0.0:3694
+This tells SystemD to listen on TCP socket 3694 for any IPv4 ONLY incoming
+connection. If you wish to filter JUST your amprnet and IPv4 localhost
+IPs make a line for each changing 0.0.0.0 to 127.0.0.1 and another for
+your amprnet IP. This will by default filter any commercial IP requests
+to URONode. If you want SystemD to try IPv6 *first*, don't enter in any
+IP schemas and just list the port number. SystemD by default appears to
+use IPv6 prior to IPv4.
+
+You can verify the above by running systemctl status uronode.socket:
+ystemctl status uronode.socket
+● uronode.socket - URONode Server Activation Socket
+   Loaded: loaded (/usr/lib/systemd/system/uronode.socket; enabled)
+   Active: active (listening) since Mon 2016-03-07 15:30:39 EST; 6min ago
+   Listen: 0.0.0.0:3694 (Stream)
+ Accepted: 3; Connected: 1
+
+----------- Wish-list: -----------
+----------------------------------
+Original Development Information (aka Disclaimer): URONode was developed 
+on an IBM eSeries 330 eServer with dual 1.2GHz CPUs The OS is Debian 
+Linux 4 using kernel 2.4.27, libax25 v0.0.11, ax25-tools v0.0.8 and 
+ax25-apps v0.0.6. This software comes with absolutely NO guarantees so 
+crash n burn at your own risk. We all may be surprised and find out that 
+it actually DOES something useful! URONode may not run 100% depending on 
+environmental conditions specific to your system.
+
+URONode is GLPv2 code, and tested by it's main author on the following 
+platforms: Raspberry Pi ver. B, Debian 7.7 on a Core-i3, Ubuntu 
+12.0.4LTS on a Core-i3, Fedora ver. 21
+
+------------
+
+Comments/suggestions? email: n1uro@n1uro.ampr.org Gripes??? cat gripes > 
+/dev/null :D just kidding!
+
+This version will get you going for now. I'll post any changes to: 
+ftp://ftp.n1uro.net/packet and https://uronode.sourceforge.net. You may 
+also find URONode in your distro's repositories. <dnf/yum or apt-cache> 
+search uronode
+
+Join our support mail list graciously donated by TAPR! 
+http://www.tapr.org/mailman/listinfo/uronode
+
+73 de Brian N1URO

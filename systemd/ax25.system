@@ -1,0 +1,13 @@
+[Unit]
+Description=ax25 service
+After=network.target syslog.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/ax25 start
+ExecReload=/usr/local/bin/ax25 restart
+ExecStop =/usr/local/bin/ax25 stop
+
+[Install]
+WantedBy=multi-user.target
+

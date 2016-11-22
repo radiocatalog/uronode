@@ -1,0 +1,15 @@
+[Unit]
+Description = URONode Server
+Requires = uronode.socket
+After=syslog.target network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/uronode
+StandardInput=socket
+Sockets=uronode.socket
+
+[Install]
+Also = uronode.socket
+WantedBy = multi-user.target
+WantedBy = network.target

@@ -1,5 +1,5 @@
-#define VERSION                "URONode v2.3.1"
-#define COMPILING	       "February 14, 2015"
+#define VERSION                "URONode v2.6"
+#define COMPILING	       "November 25, 2016"
 
 #define STATE_IDLE	0
 #define STATE_TRYING	1
@@ -168,5 +168,6 @@ extern void newmail(void);
 extern void mailcheck(void);
 extern void lastlog(void);
 
-/* in mheard.c */
-extern int do_mheard(int argc, char **argv);
+/* in jheard.c */
+extern int do_jheard(int argc, char **argv);
+extern int do_jlong(int argc, char **argv);

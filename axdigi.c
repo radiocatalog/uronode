@@ -1,6 +1,7 @@
 /* 
  * axdigi: Cross and straight port digipeater program
  * Copyright (C) 1995 Craig Small VK2XLZ
+ * modificatioins 2012-present Brian N1URO
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,8 +33,13 @@
 /* below added by N1URO */
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <error.h>
+#include <signal.h>
 #include <linux/ax25.h>
-
+/* added by N1URO */
+#include <netax25/daemon.h>
+#include "node.h"
 int recv_packet(unsigned char *buf, int size, unsigned char *port);
 void print_call(unsigned char *buf);
 unsigned char *find_call(char *port);
@@ -47,12 +53,30 @@ void get_interfaces(int skt);
 #define E_BIT 0x01	/* Address extension bit */
 #define REPEATED 0x80	/* Has-been-repeated bit */
 #define MAX_PORTS 16
-#define VERSION "0.2"
-
+// #define VERSION "0.3"
+#define AXDIGI_PID_FILE  "/var/run/axdigi.pid"
 int port_count = 0;
 unsigned char portname[MAX_PORTS][20];
 unsigned char portcall[MAX_PORTS][8];
 
+void(*sigterm_defhnd)(int);
+
+void quit_handler(int sig)
+{
+  unlink(AXDIGI_PID_FILE);
+  signal(SIGTERM, SIG_IGN);
+  fprintf(stderr, "axDigi quitting.\n\r");
+  signal(SIGTERM, sigterm_defhnd);
+  raise(SIGTERM);
+  return;
+}
+
+void hup_handler(int sig)
+{
+  signal(SIGHUP, SIG_IGN);
+  fprintf(stderr, "SIGHUP caught by axDigi.\n\r");
+  signal(SIGHUP, hup_handler); /* Restore hangup handler */
+}
 
 
 int main(int argc, char *argv[])
@@ -62,27 +86,49 @@ int main(int argc, char *argv[])
   unsigned char buf[4096];
   struct sockaddr sa;
   int asize;
-	
+
+
+  FILE *pidfile;
+
   /* Check our huge range of flags */
   if (argc > 1)
     {
       if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "-h") ==0)
 	{
-	  printf("axdigi version %s. Copyright (C) 1995 Craig Small VK2XLZ\n\n", VERSION);
-	  printf("axdigi comes with ABSOLUTELY NO WARRANTY.\n");
-	  printf("This is free software, and you are welcome to redistribute it\n");
-	  printf("under the terms of GNU General Public Licence as published\n");
-	  printf("by Free Software Foundation; either version 2 of the License, or\n");
-	  printf("(at your option) any later version.\n");
+	  printf("axdigi: version %s.\n\r", VERSION);
+	  printf("Copywrite (c) 1995 Craig Small - VK2XLZ\n\r");
+	  printf("modificatiions Copyright (C) 2012-present by Brian N1URO\n\n");
+	  printf("axdigi comes with ABSOLUTELY NO WARRANTY.\n\r");
+	  printf("This is free software, and you are welcome to redistribute it\n\r");
+	  printf("under the terms of GNU General Public Licence as published\n\r");
+	  printf("by Free Software Foundation; either version 2 of the License, or\n\r");
+	  printf("(at your option) any later version.\n\r");
 	  return 0;
 	}
-    }		
+    }
+
+/* Routine to daemonize - added by N1URO */
+
+if (!daemon_start(TRUE)) {
+   fprintf(stderr, "Sorry, axdigi cannot become a daemon\n");
+   return 1;
+   }
+
 /* Change to keep code more modern - N1URO */
   if ((skt = socket(PF_PACKET, SOCK_PACKET, htons(ETH_P_AX25))) == -1)
     {
       perror("socket");
       return(1);
     }
+
+  pidfile = fopen(AXDIGI_PID_FILE, "w");
+  fprintf(pidfile, "%d\n", (int)getpid());
+  fprintf(stderr, "axDigi started. \n");
+  fclose(pidfile);
+
+  signal(SIGHUP, hup_handler);
+  sigterm_defhnd = signal(SIGTERM, quit_handler);
+
   get_interfaces(skt);
 	
   while(1)
@@ -107,6 +153,7 @@ int main(int argc, char *argv[])
 	  /*			printf("Unknown port %s\n", sa.sa_data);*/
 	} /* recv_packet true */
     } /* while(1) */
+
   close(skt);
 }
 
@@ -252,4 +299,5 @@ void get_interfaces(int skt)
 	}
     } /* for */
 }	
-		
+
+void(*sigterm_defhnd)(int);

@@ -62,7 +62,7 @@ if you use inetd -
 /etc/inetd.conf could have something like this in it:
 
 # Listen at telnet port -> URONode
-uronode  stream  tcp     nowait  nobody    /usr/local/sbin/uronode  uronode
+uronode  stream  tcp     nowait  root    /usr/local/sbin/uronode  uronode
 
 if you use xinetd -
 /etc/xinetd.d/uronode should look like this:
@@ -72,7 +72,7 @@ service uronode
         disable         = no
         socket_type     = stream
         protocol        = tcp
-        user            = nobody
+        user            = root
         server          = /usr/local/sbin/uronode
         wait            = no
         instances       = 20

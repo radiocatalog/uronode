@@ -216,7 +216,8 @@ int cmdparse(struct cmd *list, char *cmdline)
   static char cmdbuf[1024];
 
   /* convert cmdline to argc,argv[]  if '#' or empty: return */
-  if ((argc = parse_args(argv, cmdline)) == 0 || *argv[0] == '#') return 2;
+  /* changing return 2 to return -1 */
+  if ((argc = parse_args(argv, cmdline)) == 0 || *argv[0] == '#') return 1;
   /* check if the command in argv[0] is in the list */
   for (cmdp = list; cmdp != NULL; cmdp = cmdp->next) {
     if (strlen(argv[0]) < cmdp->len || strlen(argv[0]) > strlen(cmdp->name)) continue;

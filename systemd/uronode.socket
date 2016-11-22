@@ -1,0 +1,9 @@
+[Unit]
+Description=URONode Server Activation Socket
+
+[Socket]
+ListenStream=0.0.0.0:3694
+Accept=yes
+
+[Install]
+WantedBy=sockets.target

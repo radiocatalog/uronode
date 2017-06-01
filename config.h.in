@@ -21,6 +21,7 @@
 #define	CONF_NODE_PERMS_FILE	"@ETC_DIR@/uronode.perms"
 @HAVEMOTD@		@MOTDPATH@
 #define	CONF_NODE_INFO_FILE	"@ETC_DIR@/uronode.info"
+#define CONF_NODE_ANN_FILE	"@ETC_DIR@/uronode.announce"
 #define AX_ROUTES_FILE          "@ETC_DIR@/uronode.routes"
 #define CONF_USERS_FILE         "@ETC_DIR@/uronode.users"
 #define FLEXD_CONF_FILE         "@ETC_DIR@/flexd.conf"

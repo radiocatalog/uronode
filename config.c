@@ -40,7 +40,8 @@ static char *HiddenPorts[32]		= {0};
 
 /*
  * Return non-zero if `port' is a hidden port.
- */
+*/ 
+
 int is_hidden(const char *port)
 {
   int i;
@@ -54,6 +55,7 @@ int is_hidden(const char *port)
 /*
  * Return non-zero if peer is on "local" or loopback network.
  */
+
 static int is_local(unsigned long peer)
 {
   return ((peer & LocalMask) == LocalNet) || ((peer & 0xff) == 127);
@@ -404,7 +406,7 @@ static int do_roseid(int argc, char **argv)
 
 static int do_prompt(int argc, char **argv)
 {
-  if ((User.ul_type != AF_NETROM) && (User.ul_type != AF_INET) && (User.ul_type != AF_INET6)) {
+  if ((User.ul_type != AF_NETROM) || (User.ul_type != AF_INET) || (User.ul_type != AF_INET6)) {
     if (argc < 2) {
       return -1;
       Prompt = strdup(argv[1]);

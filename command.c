@@ -30,6 +30,7 @@ struct cmd *Nodecmds = NULL;
 void init_nodecmds(void)
 {
   add_internal_cmd(&Nodecmds, "?",        1, do_help);
+  add_internal_cmd(&Nodecmds, "Announce", 1, do_help);
   add_internal_cmd(&Nodecmds, "Bye",      1, do_bye);
   add_internal_cmd(&Nodecmds, "Escape",   1, do_escape);
   if (User.ul_type == AF_INET) {
@@ -125,9 +126,9 @@ void node_logout(char *reason)
       if (check_perms(PERM_ANSI, 0L) != -1) {
       axio_printf(NodeIo, "\e[03;36m");
     }   
-    axio_printf(NodeIo, "%s, thank you for connecting to the %s\nURONode ROSE network node. Come back again soon, 73!\r ", User.call, RoseId);
+    axio_printf(NodeIo, "%s, thank you for connecting to the %s\nURONode ROSE network node. Come back again soon, 73!\n", User.call, RoseId);
     if (check_perms(PERM_ANSI, 0L) != -1) {
-      axio_printf(NodeIo, "\e[0;m\b");
+      axio_printf(NodeIo, "\e[0;m");
     }
   } else 
   if ((User.ul_type == AF_FLEXNET) || (User.ul_type == AF_AX25)) {
@@ -136,7 +137,7 @@ void node_logout(char *reason)
     } 
     axio_printf(NodeIo, "%s de %s\n73! ", User.call, FlexId);
     if (check_perms(PERM_ANSI, 0L) != -1) {
-      axio_printf(NodeIo, "\e[0;m\b");
+      axio_printf(NodeIo, "\e[0;m");
     }
   }
 #endif
@@ -242,18 +243,28 @@ int do_help(int argc, char **argv)
   }
   if (*argv[0] == 'i') {                          /* "info"       */
     strcpy(fname, CONF_NODE_INFO_FILE);
+    } else if (*argv[0] == 'a') {		/* announcements */
+    strcpy(fname, CONF_NODE_ANN_FILE);
+
     if (User.ul_type == AF_NETROM) {
 
-      axio_printf(NodeIo,"%s} ", NodeId);
+//      axio_printf(NodeIo,"%s} ", NodeId);
     }
     if (check_perms(PERM_ANSI, 0L) != -1) {
       axio_printf(NodeIo, "\e[01;37m");
     }
+    if (*argv[0] == 'i') {
+//    axio_printf(NodeIo,"%s - %s \n", VERSION, COMPILING);
     axio_printf(NodeIo,"System Information:\n");
+    } else if (*argv[0] == 'a') {
+//    axio_printf(NodeIo,"%s - %s \n", VERSION, COMPILING);
+//    axio_printf(NodeIo,"System Announcements/News:\n");
+    axio_printf(NodeIo,"    NEWS & ANNOUNCEMENTS   NEWS & ANNOUNCEMENTS   NEWS & ANNOUNCEMENTS\n");
+    axio_printf(NodeIo,"    --------------------   --------------------   --------------------\n");
+    }
     if (check_perms(PERM_ANSI, 0L) != -1) {
       axio_printf(NodeIo, "\e[0;m");
     }
-    axio_printf(NodeIo,"%s - %s \n", VERSION, COMPILING);
   } else if (!argv[1]) {                 /* "help"       */
     strcpy(fname, DATA_NODE_HELP_DIR "help.hlp");
   } else {                               /* "help <cmd>" */
@@ -262,7 +273,7 @@ int do_help(int argc, char **argv)
     fname[sizeof(fname) - 1] = 0;
   }
   if ((fp = fopen(fname, "r")) == NULL) {
-    if (*argv[0] != 'i')
+    if ((*argv[0] != 'a') || (*argv[0] != 'i'))
       if (User.ul_type == AF_NETROM) {
 	axio_printf(NodeIo,"%s} ", NodeId);
       }
@@ -273,9 +284,11 @@ int do_help(int argc, char **argv)
     return 0;
   }
   if (User.ul_type == AF_NETROM) {
-    axio_printf(NodeIo,"%s} ", NodeId);
+//    axio_printf(NodeIo,"%s} ", NodeId);
   }
-  if (*argv[0] != 'i')
+  if ((*argv[0] != 'a') || (*argv[0] != 'i')) 
+    axio_printf(NodeIo,"");
+    else
     node_msg("Help for command %s", argv[1] ? argv[1] : "help"); 
   while (fgets(line, 256, fp) != NULL)
     axio_puts(line,NodeIo);

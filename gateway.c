@@ -24,6 +24,7 @@
 #include <netax25/rsconfig.h>
 #include <netax25/procutils.h>
 
+#include "sysinfo.h"
 #include "procinfo.h"
 #include "node.h"
 
@@ -138,9 +139,10 @@ static ax25io *connect_to(char **addr, int family, int escape, int compr)
     /* Uncomment the below if you wish to have the node show a 'Trying' state */
 	if (check_perms(PERM_ANSI, 0L) != -1) {
           axio_printf(NodeIo, "\e[01;35m");
-	}
-        axio_printf(NodeIo,"Trying %s... press <Enter> to abort", User.dl_name); 
-	
+	} 
+        if (User.ul_type != AF_NETROM) {
+        axio_printf(NodeIo,"Trying %s... <Enter> aborts. ", User.dl_name); 
+	  }
     break;
 #endif		
 #ifdef HAVE_NETROM
@@ -189,8 +191,8 @@ static ax25io *connect_to(char **addr, int family, int escape, int compr)
     if (check_perms(PERM_ANSI, 0L) != -1) {
       if (User.ul_type == AF_NETROM) {
 	break;
-      }
-      node_msg("\e[01;36mTrying %s... hit <Enter> to abort", User.dl_name);
+      } if (User.ul_type != AF_NETROM) {
+      node_msg("\e[01;36mTrying %s... <Enter> aborts. ", User.dl_name);
     }
     break;
 #endif
@@ -199,7 +201,7 @@ static ax25io *connect_to(char **addr, int family, int escape, int compr)
   case AF_AX25:
     if (aliascmd==0) {    
       if (check_perms(PERM_AX25, 0L) == -1 || (is_hidden(addr[0]) && check_perms(PERM_HIDDEN, 0L) == -1)) {
-	axio_printf(NodeIo,"Permission denied");
+	axio_printf(NodeIo,"Not a user interface.");
 	if (User.ul_type == AF_NETROM) {
 	  node_msg("");
 	}
@@ -328,13 +330,19 @@ static ax25io *connect_to(char **addr, int family, int escape, int compr)
 	return NULL;
       }
     }
-    /*    if ((check_perms(PERM_ANSI, 0L) != -1) && (family == AF_NETROM)) {
-	  axio_printf(NodeIo,"\e[01;36m%s Trying %s... Type <RETURN> to abort. (Escape: %s%c) \n",NodeId,
-	  User.dl_name,
-	  escape < 32 ? "CTRL-" : "",
-	  escape < 32 ? (escape + 'A' - 1) : escape);
+         if (check_perms(PERM_ANSI, 0L) != -1) {
+		axio_printf(NodeIo,"\e[01;36m");
+		} 
+	if (User.ul_type != AF_NETROM) {
+ 	  axio_printf(NodeIo,"Trying %s:%s... <Enter> aborts. ", User.dl_name, User.dl_port);
+//	  escape < 32 ? "CTRL-" : "",
+//	  escape < 32 ? (escape + 'A' - 1) : escape);
 	  axio_flush(NodeIo);
-	  } */
+	      }
+	 } 
+	         if (check_perms(PERM_ANSI, 0L) != -1) {
+                axio_printf(NodeIo,"\e[0m");
+                }
     break;
   default:
     if (User.ul_type == AF_NETROM) {
@@ -448,8 +456,11 @@ static ax25io *connect_to(char **addr, int family, int escape, int compr)
     }
     if (check_perms(PERM_ANSI, 0L) != -1) {
       axio_printf(NodeIo,"\e[01;32m");
-    }
-    node_msg("Socket established to %s:%s", User.dl_name, User.dl_port);
+    } if (User.ul_type != AF_NETROM) {
+    node_msg("\nSocket established to %s:%s", User.dl_name, User.dl_port);
+        }  else { 
+	node_msg("Socket established to %s:%s", User.dl_name, User.dl_port);
+      }
     if (check_perms(PERM_ANSI, 0L) != -1) {
       axio_printf(NodeIo,"\e[0;m");
     }

@@ -402,7 +402,7 @@ int main(int argc, char *argv[])
 	}
 	else 	{
 	  if (User.ul_type == AF_NETROM) {
-	    node_msg("%s Too many invalid commands. Disconnecting...", NodeId);
+	    node_msg("%s} Too many invalid commands. Disconnecting...", NodeId);
 	    node_logout("Too many invalid commands");
 	  } else {
 	    node_msg("Too many invalid commands, disconnecting you...");

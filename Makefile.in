@@ -48,6 +48,7 @@ installhelp:
 
 installconf: installhelp
 	install -b -m 755    -D -d		 $(ETC_DIR)
+	install -b -m 600    -p etc/uronode.announce  $(ETC_DIR)
 	install -b -m 600    -p etc/uronode.conf  $(ETC_DIR)
 	install -b -m 600    -p etc/uronode.perms $(ETC_DIR)
 	install -b -m 600    -p etc/uronode.info  $(ETC_DIR)
@@ -68,11 +69,13 @@ installman:
 	install -m 644	  -p man/flexd.8	 $(MAN_DIR)/man8
 
 upgrade: installman installhelp
+	install -b -m 600    -p etc/uronode.announce  $(ETC_DIR)
 	install -m 755 -p uronode       $(SBIN_DIR)
 	install -m 755 -p nodeusers     $(SBIN_DIR)
 	install -m 755 -p calibrate	$(SBIN_DIR)
 @IN@	install -m 755 -p flexd		$(SBIN_DIR)
 	install -m 755 -p axdigi	$(SBIN_DIR)
+
  
 clean:
 	rm -f *.o *~ *.bak *.orig make.debug nodeusers uronode flexd axdigi calibrate

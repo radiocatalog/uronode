@@ -220,20 +220,6 @@ robot scripts such as PBBS mail forwarding sessions. While other systems
 may wish to continue to violate the NetRom protocol (and others) I will
 do everything in my power NOT to.
 
-An anonymous user from sourceforge had a compiler warning on the
-do_prompt cycle in config.c and provided a fix for it. I don't know if
-the user is even a ham but their alias is dcb314, and we thank them. Their
-report and fix which is included:
-config.c:407:35: warning: logical 'or' of collectively exhaustive tests is always true [-Wlogical-op]
-Source code is
-if ((User.ul_type != AF_NETROM) || (User.ul_type != AF_INET) || 
-(User.ul_type != AF_INET6)) {
-Maybe better code
-if ((User.ul_type != AF_NETROM) && (User.ul_type != AF_INET) && 
-(User.ul_type != AF_INET6)) {
-While I don't get the warning he had, the logistics seem to be fine. Thanks
-again to dcb314 at sourceforge for their report.
-
 I have made a diff file for JNOS2.0K that makes it a bit more user 
 compatible with URONode, and other linux-based nodes. For almost 30 years
 TCP port 3694 has been used for inbound telnet for linux-based nodes, and
@@ -256,6 +242,61 @@ that the sysop require passwords on any internet or amprnet interface. Before
 yes, a sysop could require a password on an ax25/NetRom/Rose interface which
 would be exposed. Now, if a sysop mistakenly tries to force a password
 on RF, it will be ignored by the node so it's not exposed.
+
+25/05/2017 - v2.7
+
+Added an "A"nnouncements command. Sysops can use this to give users a chance
+to read any announcements you and/or your club may have. I figured that I 
+would segment this from the "I"nformation command since a lot of guys tend
+to post their system specs in the uronode.info file. If a user is seeking any
+news or announcements they won't have to sort through the other information
+contained within the system.info file and vice versa. A new file called
+uronode.announce now needs to be with your other uronode.* files.
+
+Added a trying state display for telnet where before there was none. Actually
+there was a whole bunch of info but I had it commented out. This I did after
+a recent user poll was in support of such and other "trying" state messages.
+Such messages are still filtered for netrom connects.
+
+Removed uronode.service file from the systemd group. Only uronode.socket and
+uronode@service needs to be placed and engaged. This was discovered by SP2L 
+on his systems and I verified this on my Fedora test system (which is systemd).
+Thanks to Tomasz for finding this and pointing it out to me. Without the
+uronode@.service file, the uronode.socket file won't properly engage upon
+a connection request via IP. Without uronode@.service your systemd will
+report an error in loading the uronode.socket file:
+root@vbfc25:~# systemctl status uronode.socket
+● uronode.socket - URONode Server Activation Socket
+   Loaded: loaded (/usr/lib/systemd/system/uronode.socket; enabled; vendor preset:
+   Active: failed (Result: resources) since Sat 2016-12-31 11:30:54 CET; 45s ago
+   Listen: 0.0.0.0:3694 (Stream)
+   Accepted: 4; Connected: 0
+
+   Dec 31 12:18:11 vbfc25 systemd[1]: Listening on URONode Server Activation Socket.
+   Dec 31 11:30:54 vbfc25 systemd[1]: uronode.socket: Failed to queue service startup
+   Dec 31 11:30:54 vbfc25 systemd[1]: uronode.socket: Unit entered failed state.
+   lines 1-9/9 (END)
+
+Fixed a bug in JHeard and JLong in regards to flagging an interface that
+has existed I'll guess since the beginning of time. This bug was found and
+reported to me by Han PE1FAM. I was considering removing this feature
+however I can understand it's usage in the way Han is using it. In the way
+I have it now, the "Hidden" interface now will lock an end user from trying
+to attempt connects out an interface a sysop doesn't want users connecting
+out from such as an APRS interface. The interface in an "int' will not be
+displayed as to be a subtle message that the interface is not usable, however
+it will be displayed in a NetRom "Routes" list and in J/JL request. 
+If an attempt to connect out a "hidden port" is made the user is shown an error:
+n1uro-15@n1uro.ampr.org:/uronode$ c ax1 foo
+Not a user interface.
+The reason I did this was so that you may see propagation in a heard list
+in the event of ducting for some VHF/UHF "dx"ing so to speak.
+**Note: do NOT flag a L4 protocol interface such as a NetRom interface
+as a locked interface or the node will not deliberately load.
+Thanks to Han for reporting this.
+
+While working on new node W1WCG, I noticed some code clean up in node.c
+There's still a lot more to do especially with ANSI.
 
 ----------- Note on SystemD --------
 In uronode.socket, you'll notice the line:

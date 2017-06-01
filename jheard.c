@@ -36,9 +36,10 @@ int do_jheard (int argc,char **argv) {
     axio_printf(NodeIo,"%s} ",NodeId);
 
   if(argc > 0) {
-    if(ax25_config_get_dev(argv[1]) == NULL
-       || (check_perms(PERM_HIDDEN, 0) == -1
-	   && is_hidden(argv[1]))) {
+    if(ax25_config_get_dev(argv[1]) == NULL)
+//       || (check_perms(PERM_HIDDEN, 0) == -1
+//	   && is_hidden(argv[1]))) {
+	{
       axio_printf(NodeIo,"Invalid interface: %s", argv[1]);
 
       if(User.ul_type == AF_NETROM)
@@ -57,8 +58,8 @@ int do_jheard (int argc,char **argv) {
       if(strcmp(argv[1],mh.portname))
 	continue;
     }
-    if(check_perms(PERM_HIDDEN,0) == -1 && is_hidden(mh.portname))
-      continue;
+//    if(check_perms(PERM_HIDDEN,0) == -1 && is_hidden(mh.portname))
+//      continue;
 
     if((new = calloc(1,sizeof(struct mheard_list))) == NULL) {
       node_perror("do_mheard: calloc",errno);
@@ -163,11 +164,11 @@ int do_jlong (int argc,char **argv) {
     axio_printf(NodeIo,"%s} ",NodeId);
 
   if(argc > 0) {
-    if(ax25_config_get_dev(argv[1]) == NULL
-       || (check_perms(PERM_HIDDEN, 0) == -1
-           && is_hidden(argv[1]))) {
+    if(ax25_config_get_dev(argv[1]) == NULL )
+//       || (check_perms(PERM_HIDDEN, 0) == -1
+//           && is_hidden(argv[1]))) 
+	{
       axio_printf(NodeIo,"Invalid interface: %s", argv[1]);
-
       if(User.ul_type == AF_NETROM)
         node_msg("");
 
@@ -184,8 +185,8 @@ int do_jlong (int argc,char **argv) {
       if(strcmp(argv[1],mh.portname))
         continue;
     }
-    if(check_perms(PERM_HIDDEN,0) == -1 && is_hidden(mh.portname))
-      continue;
+//    if(check_perms(PERM_HIDDEN,0) == -1 && is_hidden(mh.portname))
+//      continue;
 
     if((new = calloc(1,sizeof(struct mheard_list))) == NULL) {
       node_perror("do_mheard: calloc",errno);

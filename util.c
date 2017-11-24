@@ -79,9 +79,10 @@ char *print_node(const char *alias, const char *call)
   static char node[17];
 
   sprintf(node, "%s%s%s",
-	  !strcmp(alias, "*") ? "" : alias,
-	  !strcmp(call, "*") ? "" : ":", call);
-  
+	  !strcmp(alias, "*") ? "##TEMP:" : alias,
+	  !strcmp(alias, "*") ? "" : ":",
+//	  !strcmp(call, "*") ? "" : call);
+	  call);
   return node;
 }
 

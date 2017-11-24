@@ -99,10 +99,10 @@ void node_prompt(const char *fmt, ...)
    axio_printf(NodeIo,"\r\e[01;35m-=>\e[0m  \b");
   }
   if ((User.ul_type ==AF_INET6)  && (check_perms(PERM_ANSI, 0L) == -1)) {
-    axio_printf(NodeIo, "\nSystemD - %s@%s: ",User.call, HostName);
+    axio_printf(NodeIo, "\n%s@%s-IPv6: ",User.call, HostName);
   }
   if ((User.ul_type ==AF_INET6)  && (check_perms(PERM_ANSI, 0L) != -1)) {
-    axio_printf(NodeIo, "\n\e[01;31mSystemD \e[0m- \e[01;34m%s@\e[0m%s: ",User.call, HostName);
+    axio_printf(NodeIo, "\n\e[01;34m%s\e[0m@\e[01;31m%s\e[0m-\e[01;33mIPv6\e[0m: ",User.call, HostName);
   }
 /*  axio_flush(NodeIo); */
 }
@@ -118,7 +118,16 @@ void node_logout(char *reason)
     if (check_perms(PERM_ANSI, 0L) != -1) {
       axio_printf(NodeIo, "\e[0;m");
     }
-  } 
+  }
+  if (User.ul_type == AF_INET6) {
+    if (check_perms(PERM_ANSI, 0L) != -1) {
+      axio_printf(NodeIo, "\e[03;36m");
+    }
+    axio_printf(NodeIo, "Thank you %s, for connecting to the \n%s URONode IPv6 packet shell.\n", User.call, HostName);
+    if (check_perms(PERM_ANSI, 0L) != -1) {
+      axio_printf(NodeIo, "\e[0;m");
+    }
+  }
   if (User.ul_type == AF_NETROM) {
     axio_printf(NodeIo,"");
   } 
@@ -662,6 +671,8 @@ int do_nodes(int argc, char **argv)
     }
     if ((User.ul_type == AF_NETROM) && (i % 4) != 0) {
 	node_msg("");
+    } else
+    if ((User.ul_type != AF_NETROM) && (i % 4) == 0) {
     }
     free_proc_nr_nodes(list);
     return 0;
@@ -981,7 +992,7 @@ int nuser_list(int argc, char **argv)
       break;
 
     case AF_INET6:
-       sprintf(buf, "\nTelnet6 (%.9s @ SystemD)", u.call);
+       sprintf(buf, "\nTelnet6 (%.9s @ IPv6)", u.call);
        break;
 
     case AF_UNSPEC:

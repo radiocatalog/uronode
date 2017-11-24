@@ -144,7 +144,7 @@ static int pipe_extcmd(struct cmd *cmdp, char **argv)
     if (check_perms(PERM_ANSI, 0L) != -1) {
       axio_printf(NodeIo, "\e[01;31m");
     }  
-    axio_printf(NodeIo, "Returning you to the shell... ");
+    axio_printf(NodeIo, "Returning you to the shell...");
   } else if (User.ul_type == AF_AX25) {
     if (check_perms(PERM_ANSI, 0L) != -1) {
       axio_printf(NodeIo,"\e[01;31m");

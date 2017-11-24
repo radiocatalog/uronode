@@ -9,7 +9,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-
+//IPv6
+#include <netdb.h>
 #include <netax25/ax25.h>
 #include <netrose/rose.h>
 #include <netax25/axlib.h>
@@ -194,8 +195,8 @@ int main(int argc, char *argv[])
       /*			axio_flush(NodeIo); */
       if(NodeIo!=NULL)
 	axio_flush(NodeIo);
-	if (system("telnet 127.0.0.1 3694") < 0 ) {                        /* VE3TOK - 18Nov2014, return value */
-           syslog(LOG_DEBUG, "Can't \"execute telnet 127.0.0.1 3694\"");
+	if (system("telnet localhost 3694") < 0 ) {                        /* VE3TOK - 18Nov2014, return value */
+           syslog(LOG_DEBUG, "Can't \"execute telnet ::1 or 127.0.0.1 3694\"");
            return 1;
         }
 	node_log(LOGLVL_ERROR,"Closing console telnet session.", -1);
@@ -256,6 +257,7 @@ int main(int argc, char *argv[])
   }
   if ((pw = read_perms(&User, saddr.sin.sin_addr.s_addr)) == NULL) {
     node_msg("Sorry, I'm not allowed to talk to you.");
+    axio_printf(NodeIo,"*** Password required! If you don't have a password please email\n%s for a password you wish to use.\n", Email);
     node_log(LOGLVL_LOGIN, "Login denied for %s @ %s", User.call, User.ul_name);
     node_logout("Login denied");
   } 

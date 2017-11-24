@@ -271,6 +271,7 @@ static ax25io *connect_to(char **addr, int family, int escape, int compr)
     /*    else node_msg("Trying %s on %s... Type <RETURN> to abort", User.dl_name, User.dl_port); */
     break;
 #endif
+  case AF_INET6:
   case AF_INET:
     if ((fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
       node_perror("connect_to: socket", errno);
@@ -493,7 +494,7 @@ static ax25io *connect_to(char **addr, int family, int escape, int compr)
 	  if (check_perms(PERM_ANSI, 0L) != -1) {
 	    axio_printf(NodeIo,"\e[01;32m");
 	  }
-	  if (User.ul_type == AF_INET) {
+	  if ((User.ul_type == AF_INET) || (User.ul_type == AF_INET6)) {
 	    axio_printf(NodeIo,"Virtual circuit established to %s\n", User.dl_name);
 	  }
 	  if (User.ul_type == AF_NETROM) {
@@ -701,7 +702,12 @@ int do_connect(int argc, char **argv)
       if (User.ul_type == AF_NETROM) {
 	axio_printf(NodeIo,"%s} ", NodeId);
       }
-      axio_printf(NodeIo,"%s not found, please retry your entry.", argv[1]);
+
+      if (strcmp(argv[1], "##TEMP") == 0) {
+         axio_printf(NodeIo,"%s is not connectable. Use the callsign-ssid.", argv[1]);
+         } else {
+      axio_printf(NodeIo,"%s not found. Please retry your entry.", argv[1]);
+      }
       family = AF_UNSPEC;
       //      free_flex_dst(flx);
       //      free_ax_routes(ax);
@@ -789,7 +795,7 @@ int do_connect(int argc, char **argv)
     if (check_perms(PERM_ANSI, 0L) != -1) {
       axio_printf(NodeIo,"\e[01;31m");
     }
-    axio_printf(NodeIo,"\nReturning you to the shell... ");
+    axio_printf(NodeIo,"Returning you to the shell...");
   } else
       if ((User.ul_type == AF_AX25) && (!stay)) {
   axio_flush(NodeIo);
@@ -1032,6 +1038,12 @@ int do_ping(int argc, char **argv)
   if ((fd = socket(AF_INET, SOCK_RAW, prot->p_proto)) == -1) {
     node_perror("do_ping: socket", errno);
     return 0;
+  }
+  if (check_perms(PERM_ANSI, 0L) != -1) {
+    axio_printf(NodeIo,"\e[01;32mPing engaged, hit <ENTER> to abort.\n\e[0m");
+  }
+  if (check_perms(PERM_ANSI, 0L) == -1) {
+    axio_printf(NodeIo, "Ping engaged, hit <ENTER> to abort.\n");
   }
   if (check_perms(PERM_ANSI, 0L) != -1) {
     axio_printf(NodeIo,"\e[01;35mICMP Echo request sent to: \e[0m");

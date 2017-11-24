@@ -413,7 +413,7 @@ int main(int argc, char *argv[])
            printf("FlexD version %s.\n\r", VERSION);
 	   printf("Copywrite (c) 2000-2003 by Roy PE1RJA and Stefano IZ5AWZ\n\r");
            printf("Copywrite (c) 2003 - present by Brian Rogers - N1URO.\n\r");
-           printf("FlexD is free sofware and you are welcome to redistribute it\n\r");
+           printf("FlexD is free software and you are welcome to redistribute it\n\r");
            printf("under the terms of GNU General Public Licence as published\n\r");
            printf("by Free Software Foundation; either version 2 of the License, or\n\r");
            printf("(at your option) any later version.\n\r");

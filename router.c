@@ -206,9 +206,9 @@ int do_dest(int argc, char **argv)
     }
     if ((i % 4) != 0) axio_printf(NodeIo,""); 
     free_flex_dst(fdst);
-    if (User.ul_type == AF_NETROM) {
-      node_msg("");
-    }
+//    if (User.ul_type == AF_NETROM) {
+//      node_msg("");
+//    }
     return 0;
   }
   if ((flgt=read_flex_gt()) == NULL) {

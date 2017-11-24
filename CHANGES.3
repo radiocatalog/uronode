@@ -298,6 +298,41 @@ Thanks to Han for reporting this.
 While working on new node W1WCG, I noticed some code clean up in node.c
 There's still a lot more to do especially with ANSI.
 
+15/06/2017 - v2.8
+In gateway.c I cleaned up the do_ping routing slightly. I was going to add
+a default timer but instead decided to let the user hit enter for their own
+"timer" of sorts. Users are also now instructed on the node to hit enter
+in order to abort a ping.
+
+Cleaned up do_nodes so now if there's a slime trail node, rather than prefix
+it with a colon ":", now it will display ##TEMP: instead. This was sorta
+bugging me on just how to handle these. While I was at it, I made a 
+modification to gateway.c so if a user tried to "C ##TEMP" it instructs the
+end user to use the callsign-ssid. I can't think of any other node that does
+this.
+
+Thanks to Dave Hibbard (at Debian) for pointing out a dropped "t" in the word
+"software" in flexd.c when the -v switch is used.
+
+Cleaned up some prompt routines including the ipv4/ipv6 login sequences.
+Before (especially with ipv6) if a callsign had no permissions to login via
+the internet they were never informed how to gain access - they were simply
+denied. I found this to somewhat make the node a bit unfriendly. Fixed.
+
+With all the chatter on the 44-net list about IPv6, I've decided to get my
+block active for further testing. In doing so, I noticed that if a user
+telnetted in via IPv6 and made a NetRom connect out, the node failed to
+inform them that they were connected... fixed.
+
+As of this writing there's no outboud telnet or dns functions for IPv6
+but that's not to say it's not in the works. Personally, I don't see a
+true need for IPv6 outbound for amateur radio as the amprnet is going
+quite strong however that's not to say things may not change either. If
+anything, IPv6 through an HE.net tunnel works as slick as the amprnet
+does with the exception of how it handles dynamic clients. Other than 
+that, it does appear to tunnel through your ISP filters as amprnet
+does which is a plus.
+
 ----------- Note on SystemD --------
 In uronode.socket, you'll notice the line:
 ListenStream=0.0.0.0:3694

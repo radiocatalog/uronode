@@ -299,6 +299,7 @@ While working on new node W1WCG, I noticed some code clean up in node.c
 There's still a lot more to do especially with ANSI.
 
 15/06/2017 - v2.8
+
 In gateway.c I cleaned up the do_ping routing slightly. I was going to add
 a default timer but instead decided to let the user hit enter for their own
 "timer" of sorts. Users are also now instructed on the node to hit enter
@@ -332,6 +333,16 @@ anything, IPv6 through an HE.net tunnel works as slick as the amprnet
 does with the exception of how it handles dynamic clients. Other than 
 that, it does appear to tunnel through your ISP filters as amprnet
 does which is a plus.
+
+12/07/2017 v2.8.1
+Spotted and fixed an issue in the D command within router.c that I somehow
+introduced in regards to columns not equalling a full 4x4. Locally it didn't
+show but remotely it did. When one ran a D command and there were less than
+4 columns a carriage return/new line was not sent making the user's screen
+look "stuck" when in fact it was not. Fixed!.. before bugs were reported :)
+Note: this *only* affected an incoming NetRom connection.
+
+Changed this file and node.h to reflect 2.8.1.
 
 ----------- Note on SystemD --------
 In uronode.socket, you'll notice the line:

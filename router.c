@@ -202,10 +202,17 @@ int do_dest(int argc, char **argv)
     }
     for (p=fdst;p!=NULL;p=p->next) {
       sprintf(ssid, "%d-%d", p->ssida, p->sside);
-      axio_printf(NodeIo,"%-7s %-5s %4ld%s",p->dest_call,ssid,p->rtt,(++i % 4) ? "  " : "\n");
+      axio_printf(NodeIo,"%-7s %-5s %4ld%c",p->dest_call,ssid,p->rtt,(++i % 4) ? ' ' : '\n');
     }
-    if ((i % 4) != 0) axio_printf(NodeIo,""); 
-    free_flex_dst(fdst);
+    if ((User.ul_type == AF_NETROM) && (i % 4) == 0) {
+          node_msg("");
+        }
+    if ((User.ul_type == AF_NETROM) && (i % 4) != 0) { 
+	  node_msg(""); 
+	} else
+    if ((User.ul_type != AF_NETROM) && (i % 4) == 0) {
+	}
+	free_flex_dst(fdst);
 //    if (User.ul_type == AF_NETROM) {
 //      node_msg("");
 //    }

@@ -1,5 +1,5 @@
-#define VERSION                "URONode v2.8.1"
-#define COMPILING	       "December 7, 2017"
+#define VERSION                "URONode v2.9"
+#define COMPILING	       "May 27, 2018"
 
 #define STATE_IDLE	0
 #define STATE_TRYING	1

@@ -33,7 +33,7 @@ void init_nodecmds(void)
   add_internal_cmd(&Nodecmds, "Announce", 1, do_help);
   add_internal_cmd(&Nodecmds, "Bye",      1, do_bye);
   add_internal_cmd(&Nodecmds, "Escape",   1, do_escape);
-  if (User.ul_type == AF_INET) {
+  if (User.ul_type == AF_INET || (User.ul_type == AF_INET6)) {
     add_internal_cmd(&Nodecmds, "EXit",	  1, do_bye);
   }
   add_internal_cmd(&Nodecmds, "Help",     1, do_help);
@@ -99,10 +99,10 @@ void node_prompt(const char *fmt, ...)
    axio_printf(NodeIo,"\r\e[01;35m-=>\e[0m  \b");
   }
   if ((User.ul_type ==AF_INET6)  && (check_perms(PERM_ANSI, 0L) == -1)) {
-    axio_printf(NodeIo, "\n%s@%s-IPv6: ",User.call, HostName);
+    axio_printf(NodeIo, "\r\n%s@%s:/uronode6: ",User.call, HostName);
   }
   if ((User.ul_type ==AF_INET6)  && (check_perms(PERM_ANSI, 0L) != -1)) {
-    axio_printf(NodeIo, "\n\e[01;34m%s\e[0m@\e[01;31m%s\e[0m-\e[01;33mIPv6\e[0m: ",User.call, HostName);
+    axio_printf(NodeIo, "\r\n\e[01;34m%s\e[0m@\e[01;31m%s:/\e[0m\e[01;33muronode6\e[0m: ",User.call, HostName);
   }
 /*  axio_flush(NodeIo); */
 }
@@ -884,7 +884,7 @@ int do_status(int argc, char **argv)
     }
   free_flex_dst(fd_list);
 
-  axio_printf(NodeIo,"Sockets:           Sessions   Dest/Nodes Links/Routes\n");
+  axio_printf(NodeIo,"Sockets:          Sessions   Dest/Nodes Links/Routes\n");
   axio_printf(NodeIo,"------------------ ---------- ---------- ------------\n");
   axio_printf(NodeIo,"AX25:              %-10d %-10d %-10d\n",na,nd,nl);
 #ifdef HAVE_NETROM

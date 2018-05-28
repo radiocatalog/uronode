@@ -344,6 +344,35 @@ Note: this *only* affected an incoming NetRom connection.
 
 Changed this file and node.h to reflect 2.8.1.
 
+27/05/2018 v2.9
+Changed the abort message from "Connection Aborted" to just "Aborted".
+The madness in the logic is that FBB and other PBBS scripts may only
+read "Connect" and send their next command in their sequence and thus
+causing a bit of a loop. 
+
+Changed version number in node.h
+Changed this file.
+
+I noticed that an IPv6 connection did NOT offer EXit as a command. Fixed.
+
+I also noticed that for an IPv6 connection, when running an external command
+it did not inform the user that they were being returned to the node which
+may hint that the plug-in is not returning to the node properly, or is
+exiting/forking prior to it's close. This is now fixed.
+
+Mainly for sysop debugging purposes but also for end users, when executing a
+plugin such as NS or tracer, it'll still open with "Executing command" but now
+it will return back to the node prompt with "Command ended.". This lets both
+the sysop and end user know the command exited properly, like with a
+"return 0"
+
+I decided that just having IPv6 as a trailer for IPv6 connects at the prompt
+to be a bit vague in display so to keep it a bit more consistant with IPv4
+it now will show ...:/uronode6 instead.
+
+Fixed the "Sockets:" line in the Status command display. The word "Sessions"
+was off by one space throwing all the following column headers off by 1 space.
+
 ----------- Note on SystemD --------
 In uronode.socket, you'll notice the line:
 ListenStream=0.0.0.0:3694

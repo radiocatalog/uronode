@@ -205,17 +205,14 @@ int do_dest(int argc, char **argv)
       axio_printf(NodeIo,"%-7s %-5s %4ld%c",p->dest_call,ssid,p->rtt,(++i % 4) ? ' ' : '\n');
     }
     if ((User.ul_type == AF_NETROM) && (i % 4) == 0) {
-          node_msg("");
         }
     if ((User.ul_type == AF_NETROM) && (i % 4) != 0) { 
 	  node_msg(""); 
 	} else
-    if ((User.ul_type != AF_NETROM) && (i % 4) == 0) {
+    if ((User.ul_type != AF_NETROM) && (i % 4) != 0) {
+	printf("test");
 	}
 	free_flex_dst(fdst);
-//    if (User.ul_type == AF_NETROM) {
-//      node_msg("");
-//    }
     return 0;
   }
   if ((flgt=read_flex_gt()) == NULL) {

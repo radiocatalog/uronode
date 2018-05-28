@@ -436,7 +436,7 @@ static ax25io *connect_to(char **addr, int family, int escape, int compr)
 	if (check_perms(PERM_ANSI, 0L) != -1) {
 	  axio_printf(NodeIo, "\e[05;31m");
 	}
-	axio_printf(NodeIo,"Connection aborted.");
+	axio_printf(NodeIo,"Aborted.");
 	if (check_perms(PERM_ANSI, 0L) != -1) {
 	  axio_printf(NodeIo, "\e[0;m");
 	}

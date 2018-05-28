@@ -135,26 +135,31 @@ static int pipe_extcmd(struct cmd *cmdp, char **argv)
   if (User.ul_type == AF_NETROM) {
     axio_printf(NodeIo, "%s} ", NodeId);
     if (check_perms(PERM_ANSI, 0L) != -1) {
-      axio_printf(NodeIo,"\e[01;31mWelcome back.\e[0m");
+//      axio_printf(NodeIo,"\e[01;31mWelcome back.\e[0m");
+	axio_printf(NodeIo,"\e[01;31mEnd of command.\e[0m");
     } else {
-      axio_printf(NodeIo, "Welcome back.");
+//      axio_printf(NodeIo, "Welcome back.");
+	axio_printf(NodeIo, "End of command.");
     }
 
-  } else if (User.ul_type == AF_INET) {
+  } else if ((User.ul_type == AF_INET) || (User.ul_type == AF_INET6)) {
     if (check_perms(PERM_ANSI, 0L) != -1) {
       axio_printf(NodeIo, "\e[01;31m");
     }  
-    axio_printf(NodeIo, "Returning you to the shell...");
+//    axio_printf(NodeIo, "Returning you to the shell...");
+	axio_printf(NodeIo, "End of command.");
   } else if (User.ul_type == AF_AX25) {
     if (check_perms(PERM_ANSI, 0L) != -1) {
       axio_printf(NodeIo,"\e[01;31m");
     } 
-    axio_printf(NodeIo,"Welcome back to %s.", FlexId);
+//    axio_printf(NodeIo,"Welcome back to %s.", FlexId);
+	axio_printf(NodeIo,"End of command.");
   } else if (User.ul_type == AF_ROSE) {
     if (check_perms(PERM_ANSI, 0L) != -1) {
       axio_printf(NodeIo,"\e[01;31m");
     }
-    axio_printf(NodeIo,"Back to %s", RoseId);
+//    axio_printf(NodeIo,"Back to %s", RoseId);
+	axio_printf(NodeIo,"End of command.");
   }
 
 #endif
@@ -186,7 +191,8 @@ int extcmd(struct cmd *cmdp, char **argv)
 #ifdef HAVEMOTD
   if (cmdp->flags & ECMD_RECONN) {
     if (User.ul_type == AF_NETROM) {
-      axio_printf(NodeIo, "%s} Welcome back.", NodeId);
+//      axio_printf(NodeIo, "%s} Welcome back.", NodeId);
+	axio_printf(NodeIo, "%s} End of command.", NodeId);
     }
   }
   else if (User.ul_type == AF_AX25) { 

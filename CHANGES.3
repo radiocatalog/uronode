@@ -373,6 +373,26 @@ it now will show ...:/uronode6 instead.
 Fixed the "Sockets:" line in the Status command display. The word "Sessions"
 was off by one space throwing all the following column headers off by 1 space.
 
+17/10/2018 v2.10
+Edited node.h to reflect this version.
+
+Edited CHANGES.3 to include new changes to the node.
+
+Thanks to Marius YO2LOJ for a patch in do_ports within command.c where there
+is a possibility that the interface count may return NULL and the function
+will generate an exception in libc for the routine causing the node to 
+segment fault out and disconnect the user from the node. Good to see Marius
+digging into the code again.
+
+While at it Marius also discovered the possibility of the interface showing
+as "null" in the do_sessions routine, possibly due to some changes in 
+libax25 perhaps? Under some conditions ax25_config_get_name(dev) could return 
+a null pointer - Marius YO2LOJ
+
+Changed a call that was in axdigi.c which had a lib call hardcoded and could
+break compiles under different archs. Patch supplied by Helmut Grohne, thanks
+to KI6ZHD for relaying the mail that included the patch.
+
 ----------- Note on SystemD --------
 In uronode.socket, you'll notice the line:
 ListenStream=0.0.0.0:3694

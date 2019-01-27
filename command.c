@@ -395,7 +395,9 @@ int do_ports(int argc, char **argv)
     n=0;
     if (ax_list) for (ax=ax_list;ax!=NULL;ax=ax->next) {
 	//      		if (strcmp(ax25_config_get_name(ax->dev), cp)==0 && strcmp(ax->dest_addr, "*")!=0) n++;
-	if (strcmp(ax->dest_addr, "*")!=0 && strcmp(ax25_config_get_name(ax->dev), cp)==0) n++;
+	/*  Fixed a possible exception error if the port count returns NULL
+	    in libc for strcmp - Marius YO2LOJ */
+	if (strcmp(ax->dest_addr, "*")!=0 && ax25_config_get_name(ax->dev) && strcmp(ax25_config_get_name(ax->dev), cp)==0) n++;
       }
     tx=0; rx=0;
     if (dev_list) for (dev=dev_list;dev!=NULL;dev=dev->next) {
@@ -448,6 +450,9 @@ int do_sessions(int argc, char **argv)
       if ((argc < 2) && !strcmp(ax_p->dest_addr, "*"))
 	continue;
       cp = ax25_config_get_name(ax_p->dev);
+      /* under some conditions ax25_config_get_name(dev) could return a null 
+         pointer - Marius YO2LOJ */
+      if(!cp) continue;
       axio_printf(NodeIo,"%-7s %-9s %-9s ", cp, ax_p->dest_addr, ax_p->src_addr);
       if (!strcmp(ax_p->dest_addr, "*")) {
 	axio_printf(NodeIo,"Listening\n");

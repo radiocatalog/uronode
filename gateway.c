@@ -266,7 +266,12 @@ static ax25io *connect_to(char **addr, int family, int escape, int compr)
       if (check_perms(PERM_ANSI, 0L) != -1) {
 	axio_printf(NodeIo, "\e[01;33m");
       }
+      if (check_perms(PERM_ANSI, 0L) == -1) {
       axio_printf(NodeIo,"link setup (%s)...", User.dl_port);
+      }
+      if (check_perms(PERM_ANSI, 0L) != -1) {
+      axio_printf(NodeIo,"link setup (%s)...\e[0;m", User.dl_port);
+      }
     }
     /*    else node_msg("Trying %s on %s... Type <RETURN> to abort", User.dl_name, User.dl_port); */
     break;
@@ -795,7 +800,7 @@ int do_connect(int argc, char **argv)
     if (check_perms(PERM_ANSI, 0L) != -1) {
       axio_printf(NodeIo,"\e[01;31m");
     }
-    axio_printf(NodeIo,"Returning you to the shell...");
+    axio_printf(NodeIo, "Returning you to the shell...");
   } else
       if ((User.ul_type == AF_AX25) && (!stay)) {
   axio_flush(NodeIo);
@@ -1146,17 +1151,17 @@ int do_ping(int argc, char **argv)
         if (User.ul_type ==  AF_NETROM){
 	  axio_printf(NodeIo,"%s} ", NodeId);
 	}
-	if (User.ul_type == AF_INET) {
+//	if (User.ul_type == AF_INET) {
 	  if (check_perms(PERM_ANSI, 0L) != -1) {
 	    axio_printf(NodeIo, "\e[05;31m");
-	  }
+//	  }
 	}
 	axio_printf(NodeIo,"Ping aborted.");
-	if (User.ul_type == AF_INET) {
+//	if (User.ul_type == AF_INET) {
 	  if (check_perms(PERM_ANSI, 0L) != -1) {
 	    axio_printf(NodeIo, "\e[0;m");
 	  }
-	}
+//	}
 	if (User.ul_type == AF_NETROM) {
 	  node_msg("");
 	}

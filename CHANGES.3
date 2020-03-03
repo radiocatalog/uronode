@@ -393,6 +393,29 @@ Changed a call that was in axdigi.c which had a lib call hardcoded and could
 break compiles under different archs. Patch supplied by Helmut Grohne, thanks
 to KI6ZHD for relaying the mail that included the patch.
 
+03/03/2020 v2.11
+Changed node.h to reflect current version.
+
+Note: The system has been behaving as best as it can be expected considering
+it's a front-end to the linux protocol stacks. As long as there can be an
+ax# or sp# interface, it can attach to it and work the protocol(s) the user
+wishes to use. There's still the 2-line patch that the kernel maintainers 
+need to add to ax25.ko so that netrom will continue to properly function
+however that's not the issue of URONode, it's the kernel ax25 module.
+
+Made a couple of changes in gateway.c where the color schema wasn't properly
+resetting the netrom prompt only in regards to aborting ping or a connect
+request. This is now fixed.
+
+Made changes in system.c where it wasn't displaying the user being on IPv6
+properly. While at it, I changed how it handles the user when they're on
+IPv4 in the lastlog and loggedin databases.
+
+Changed user.c to reflect incoming session is via IPv6 which also fixes the
+output of nodeusers so that instead of displaying ??????? it now shows that
+Telnet6 is being used as the incoming protocol. This one was really getting
+under my skin. Now I can rest in peace (as per QST 2/2020 haha!)
+
 ----------- Note on SystemD --------
 In uronode.socket, you'll notice the line:
 ListenStream=0.0.0.0:3694
@@ -436,7 +459,7 @@ ftp://ftp.n1uro.net/packet and https://uronode.sourceforge.net. You may
 also find URONode in your distro's repositories. <dnf/yum or apt-cache> 
 search uronode
 
-Join our support mail list graciously donated by TAPR! 
-http://www.tapr.org/mailman/listinfo/uronode
+Join our support mail list:
+https://uronode.n1uro.com/list/
 
 73 de Brian N1URO

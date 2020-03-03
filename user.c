@@ -185,6 +185,9 @@ int user_list(int argc, char **argv)
       sprintf(buf, "\nTelnet (%.9s @ %.16s)",
 	      u.call, u.ul_name);
       break;
+    case AF_INET6:
+	sprintf(buf, "\nTelnet6 (%.9s via IPv6)", u.call);
+      break;
     case AF_UNSPEC:
       sprintf(buf, "\nHost (%.9s on local)",
 	      u.call);

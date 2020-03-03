@@ -21,7 +21,7 @@
  *        12th June 1997.
  */
 
-#include <net/if.h>
+#include </usr/include/net/if.h>
 #include <linux/if_ether.h>
 #include <netinet/in.h>
 #include <sys/ioctl.h>

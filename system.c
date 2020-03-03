@@ -458,6 +458,7 @@ void lastlog(void)
   int UserId=0;
   char tty[LAST_DATA_SIZE];
   char hostname[LAST_DATA_SIZE];
+  char hostname6[LAST_DATA_SIZE];
   char usercall[10];
   char *cp;
   int escape;
@@ -494,7 +495,13 @@ void lastlog(void)
     }
     break;
 #endif    
-  case AF_INET:   strcpy(hostname, User.ul_name);
+  case AF_INET:   strcpy(hostname, User.call);
+	strcat(hostname, " from ip ");
+	strcat(hostname, User.ul_name);
+    break;
+  case AF_INET6:  strcpy(hostname6, User.ul_name);
+	strcat(hostname, User.call);
+        strcat(hostname, " on IPv6");
     break;
   case AF_UNSPEC: strcpy(hostname, User.call);
     strcat(hostname, " on local");

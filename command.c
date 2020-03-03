@@ -77,6 +77,10 @@ void init_nodecmds(void)
 
 void node_prompt(const char *fmt, ...)
 {
+
+  if ((User.ul_type == AF_NETROM) && (check_perms(PERM_ANSI, 0L) != -1)) {
+    axio_printf(NodeIo,"\e[0m");
+  }
   if (User.ul_type == AF_NETROM) {
     axio_printf(NodeIo,"%s} ", NodeId);
   }

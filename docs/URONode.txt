@@ -1,0 +1,7 @@
+Documentation for URONode program
+version 2.10  dated  27/01/2019
+
+Latest release of this program can be downloaded
+from one of two below sites:
+	ftp://ftp.n1uro.net/pub/hamradio/packet/
+	https://sourceforge.net/projects/uronode/

@@ -1,11 +1,16 @@
 
 USAGE
-        STatus
+        STatus [<l>ong]
 
 DESCRIPTION
         Returns information about the status of the Linux system which this 
         URONode runs on. All information is taken directly from the 
         operating system.
+
+	By itself STatus will show 4 lines of basic status of the system:
+        Version, System time, Hostname, and Uptime. When followed with a
+        Long or L it will give you more detailed information about the
+	host.
 
         The "load average" values indicate the average amount of processes
         waiting for processor time during the last 1, 5 and 15 minutes.

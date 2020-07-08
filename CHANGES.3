@@ -416,6 +416,25 @@ output of nodeusers so that instead of displaying ??????? it now shows that
 Telnet6 is being used as the incoming protocol. This one was really getting
 under my skin. Now I can rest in peace (as per QST 2/2020 haha!)
 
+28/03/2020 v2.12
+Edited node.h to reflect new version.
+
+ADDED documentation! I wrote docs in both .txt and .doc format. Choose your
+poison hihi! Unless you're a new sysop, I'm sure these are a waste of time
+for you to read.
+
+Modified the do_sessions command so that a plain S now shows SEssions and
+ST is the minimum required now for do_status. This also cleans up the
+commandset so it's more alphabetical.
+
+I also modified do_status so that it now may require an argument to show
+the full screen worth of system status otherwise by default it will only
+show very basic stats of version/date/hostname/uptime and now requires 
+"ST" to be called. Calling "ST L" will show the long (original) status 
+screens. I did this after noticing some other node softwares go to the 
+extreme in showing stats that most end users would never understand nor 
+even care about. This also saves a lot of bandwidth!
+
 ----------- Note on SystemD --------
 In uronode.socket, you'll notice the line:
 ListenStream=0.0.0.0:3694

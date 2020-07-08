@@ -39,7 +39,7 @@ void init_nodecmds(void)
   add_internal_cmd(&Nodecmds, "Help",     1, do_help);
   add_internal_cmd(&Nodecmds, "Info",     1, do_help);
   add_internal_cmd(&Nodecmds, "Quit",     1, do_bye);
-  add_internal_cmd(&Nodecmds, "Status",   1, do_status);
+  add_internal_cmd(&Nodecmds, "STatus",   2, do_status);
   add_internal_cmd(&Nodecmds, "Version",  1, do_version);
 #ifdef HAVEMOTD
   add_internal_cmd(&Nodecmds, "Who",      1, do_last);
@@ -49,7 +49,7 @@ void init_nodecmds(void)
   add_internal_cmd(&Nodecmds, "Connect",  1, do_connect);
   add_internal_cmd(&Nodecmds, "Links",    1, do_links);
   add_internal_cmd(&Nodecmds, "INTerfaces",    3, do_ports);
-  add_internal_cmd(&Nodecmds, "SEssions", 2, do_sessions);
+  add_internal_cmd(&Nodecmds, "Sessions", 1, do_sessions);
   add_internal_cmd(&Nodecmds, "Users",    1, nuser_list);
 #ifdef HAVE_FLEX
   add_internal_cmd(&Nodecmds, "Desti",    1, do_dest);
@@ -769,7 +769,8 @@ int do_nodes(int argc, char **argv)
 /*
  * by Heikki Hannikainen <hessu@pspt.fi> 
  * The following was mostly learnt from the procps package and the
- * gnu sh-utils (mainly uname).
+ * gnu sh-utils (mainly uname). Addition of argument switches added
+ * by N1URO.
  */
 int do_status(int argc, char **argv)
 {
@@ -792,21 +793,59 @@ int do_status(int argc, char **argv)
   int na, nl, nd;
 #endif
   int ma, mu, mf, sa, su, sf;
+/* "Status" */
+  if (argc == 1) {
   if (User.ul_type == AF_NETROM) {
     axio_printf(NodeIo,"%s} ", NodeId);
   }
   if (check_perms(PERM_ANSI, 0L) != -1) {
     axio_printf(NodeIo, "\e[01;37m");
   }
-  node_msg("Status:");
+  node_msg("Status report:");
   if (check_perms(PERM_ANSI, 0L) != -1) {
     axio_printf(NodeIo, "\e[0;m");
   }
   time(&t);
+  axio_printf(NodeIo,"Version:           %s\n", VERSION);
   axio_printf(NodeIo,"System time:       %s", ctime(&t));
   if (uname(&name) == -1) axio_printf(NodeIo,"Cannot get system name\n");
   else {
     axio_printf(NodeIo,"Hostname:          %s\n", HostName);  
+//    axio_printf(NodeIo,"Operating system:  %s %s (%s)\n", name.sysname, name.release, name.machine);
+  }
+  /* read and calculate the amount of uptime and format it nicely */
+  uptime(&uptime_secs, &idle_secs);
+  updays = (int) uptime_secs / (60*60*24);
+  upminutes = (int) uptime_secs / 60;
+  uphours = upminutes / 60;
+  uphours = uphours % 24;
+  upminutes = upminutes % 60;
+  axio_printf(NodeIo,"Uptime:            ");
+  if (updays) axio_printf(NodeIo,"%d day%s, ", updays, (updays != 1) ? "s" : "");
+  if(uphours) axio_printf(NodeIo,"%d hour%s ", uphours, (uphours != 1) ? "s" : "");
+  axio_printf(NodeIo,"%d minute%s\n", upminutes, (upminutes != 1) ? "s" : "");
+  loadavg(&av[0], &av[1], &av[2]);
+//    }
+  return 0;  
+}
+/* "Status L" */
+  if (argc == 2) {
+  if (User.ul_type == AF_NETROM) {
+    axio_printf(NodeIo,"%s} ", NodeId);
+  }
+  if (check_perms(PERM_ANSI, 0L) != -1) {
+    axio_printf(NodeIo, "\e[01;37m");
+  }
+  node_msg("Full Status report:");
+  if (check_perms(PERM_ANSI, 0L) != -1) {
+    axio_printf(NodeIo, "\e[0;m");
+  }
+  time(&t);
+  axio_printf(NodeIo,"Version:           %s\n", VERSION);
+  axio_printf(NodeIo,"System time:       %s", ctime(&t));
+  if (uname(&name) == -1) axio_printf(NodeIo,"Cannot get system name\n");
+  else {
+    axio_printf(NodeIo,"Hostname:          %s\n", HostName);
     axio_printf(NodeIo,"Operating system:  %s %s (%s)\n", name.sysname, name.release, name.machine);
   }
   /* read and calculate the amount of uptime and format it nicely */
@@ -821,9 +860,10 @@ int do_status(int argc, char **argv)
   if(uphours) axio_printf(NodeIo,"%d hour%s ", uphours, (uphours != 1) ? "s" : "");
   axio_printf(NodeIo,"%d minute%s\n", upminutes, (upminutes != 1) ? "s" : "");
   loadavg(&av[0], &av[1], &av[2]);
+
   axio_printf(NodeIo,"Load average:      %.2f, %.2f, %.2f\n", av[0], av[1], av[2]);
   axio_printf(NodeIo,"Users:             %d node, %d system\n", user_count(), system_user_count());
-
+  
 //  if (!(mem = meminfo()) || meminfo("memtotal") == 0) {
     /* cannot normalize mem usage */
 //    axio_printf(NodeIo,"Cannot get memory information!\n"); 
@@ -845,8 +885,7 @@ int do_status(int argc, char **argv)
     } 
     else 
     axio_printf(NodeIo,"Cannot get swap information or swap not active!\n"); 
-      axio_printf(NodeIo," ");
-    
+      axio_printf(NodeIo," ");    
   }
 
 #ifdef HAVE_AX25
@@ -902,6 +941,7 @@ int do_status(int argc, char **argv)
 #endif
   if (User.ul_type == AF_NETROM) {
     node_msg("");
+    }
   }
   return 0;
 }
@@ -935,6 +975,7 @@ int do_version(int argc, char **argv)
   }
   return 0;
 }
+
 int nuser_list(int argc, char **argv)
 {
   FILE *f;

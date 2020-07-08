@@ -496,7 +496,7 @@ void lastlog(void)
     break;
 #endif    
   case AF_INET:   strcpy(hostname, User.call);
-	strcat(hostname, " from ip ");
+	strcat(hostname, " on IPv4 ");
 	strcat(hostname, User.ul_name);
     break;
   case AF_INET6:  strcpy(hostname6, User.ul_name);

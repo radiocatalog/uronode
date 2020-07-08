@@ -1,7 +1,244 @@
 Documentation for URONode program
-version 2.10  dated  27/01/2019
+dated  28/03/2020
 
-Latest release of this program can be downloaded
-from one of two below sites:
+Contents:
+
+	I   - Introduction
+	II  - What it is
+	III - Generic commands
+	IV  - Extra commands
+	V   - Where to get it
+        VI  - Where to get support
+	VII - Acknowledgements
+
+Introduction:
+
+I decided to make URONode primarily for my own use and purposes but those who
+came to login my node enjoyed it's functionality so much that they would want
+a copy of their own so I decided around the year 2000 to release it. At the
+time I was also helping K2MF with MFNOS and wanted something a bit similar
+in functionality with xNOS that would also keep true to form with the basics
+of the linux-nodes (and variants). Since the original code, there's been many
+changes and additions. Around 2015 it became a standard node in Debian and
+Red Hat repositories having proven itself as a sturdy node for native linux.
+
+I took the best of all the linux based nodes, put them all together into one
+and made many changes including adding a color schema if a user desires full
+ansi colors to their screens. The prompt systems are also unique in nature
+as depending on how the user connects IN to a URONode system is the style of
+prompt they get returned to them. No other node system allows for such a 
+thing. The advantage is that under no circumstance if a user (or bbs for that
+matter) connects via NetRom, never ever will a CTEXT or MOTD text get pushed
+out which can disrupt a BBS session. The same goes for any sort of DTEXT 
+under a NetRom session.
+
+All your configuration file manuals are online at a shell prompt. Just
+type: man <filename> to view the online help. Ex: man uronode.conf to
+read up on the main uronode configuration file or man flexd.conf to see how
+to add flexnet routing into your node. If by chance you do find a man page
+missing feel free to let me know.
+
+There's some what I call helper apps included for you such as axDigi and
+FlexD for example.  AxDigi is a true cross-interface digipeater. There's NO
+configuration you need to do for axDigi at all. It will auto-sense your ax.25
+interfaces and simply listen for requests to digi in from one and out the
+other interface. For more information on this, type "man axdigi".
+
+
+What URONode is:
+
+What many people get extremely confused about it is the fact it's not a
+daemon - it's a shell.  Like with bash/dash/sh/etc, it doesn't stay in
+memory. You'll only see it listed in your process list if someone is
+connected to you and it's been commanded to spawn so it doesn't hog up
+any system resources when it's not needed unlike other systems that do.
+It's also much smaller than bash, and with all features compiled into
+URONode it's still under 500K in size. This makes it a smart choice to
+use as it's not sitting there using CPU for nothing, which makes the CPU
+run cooler thus improving it's lifespan.
+
+It also locks the connected user to the command-set either within the
+shell itself or any external commands the sysop may allow for, so
+there's no file manipulation available, or system info available to
+"steal" such as user account information. It also never overrides a
+human command like some other systems may do. for an example, 
+c <int> <callsign-ssid> won't force a user to use an internet gated
+route to the remote end, but will follow the human instruction to use
+the RF interface as commanded. If a user wishes to stay RF they may do
+so and not be forced on wired internet because the systems sees it's a
+quicker path.
+
+For those who still believe IP is a wire link only and not a protocol,
+if you wish not to use it, say NO during the configuration to TCP/IP.
+Same with ROSE, NetRom, FlexNet, etc. when you compile it if you compile
+your own. I believe when it's packaged by the various distributions all
+options are flagged on (which would make sense).
+
+All protocol routing is handled by the kernel and various tools. Like
+with bash, it doesn't provide any routing whatsoever. All routing for
+all protocols is handled internally within the linux kernel. The same
+for firewalling. By not introducing a "middle man" or trying to
+re-invent the wheel by using the native protocol stacks within linux
+itself, URONode is a much faster system.
+
+For those who aren't that linux savvy, I've made 2 versions of an install
+script for URONode, axMail-FAX (an SMTP plugin module for the node), and
+a library installer to get you ready for LinFBB if you so choose to run a
+BBS with your node. This gives you the opportunity to be fully messaging
+compliant. One version of the install system is for sysvinit, the other
+for systemd. It also will install ampr-ripd routing daemon if you're looking
+to run as an internet gateway, along with an axip and an axudp interface along
+with what I consider to be a master control file I call ax25 and is located in
+/usr/local/bin/. All your amateur services can be controlled from this one
+file quite easily.
+
+
+Generic node commands:
+
+Online help is available for all native compiled commands. The user simply
+does: help <commandname-in-full> to see the online help. If a sysop wishes
+to add more commands to their node they should follow the format of the
+online help files (located in /path/to/node/help) to keep consistent with
+the online help system. Every node may be configured with different commands
+as sysops often may develop their own tools/apps for their set of users.
+
+A brief description of compiled-in commands would be:
+announcements - local news/announcements to share.
+bye/exit (ipv4/ipv6 only)/quit - leave the node.
+connect - gateway out to another system/node.
+desti - bring up a list of flexnet destinations if applicable.
+escape - This can change/display/disable your escape character. Defaults to 
+         ctrl-T
+finger - finger information from the local or a remote host.
+host - look up an IP or Hostname in dns.
+info - read the uronode.info file and display it to the end user.
+jheard - the most recent 20 just heard stations
+jlong - a long list of stations heard. This may be quite long.
+links - connectable nodes hard coded into the uronode.routes file.
+msg - an "instant message" utility build into the node to talk to another user.
+nodes - display a listing of NetRom based nodes.
+ping -  an ICMP ping utility to see how fast a path to a remote is.
+ports - a display of the ax.25 interfaces available on the node.
+routes - a display of direct neighbor NetRom links.
+status - a display of some of the hosts statistics including uptime.
+telnet - a means to use tcp/ip to gateway out to a remote site.
+users - who's online at the moment.
+version - display information about the node's version.
+who - information about a node's users or a specific user.
+
+This command set is automatically compiled into URONode for you based on the
+options you choose at pre-compilation time with the configure command.
+
+
+Extra commands:
+
+URONode supports execution of external commands from it's own shell such as
+the axMail-FAX plugin. Some standard shell commands such as "netstat" are
+preconfigured for you so that you may easily see how to duplicate adding a
+custom command for your system. Typically these are commanded by executing
+bash scripts.
+
+The ideas of added commands you may choose are endless in nature! I have the
+old Z-80 based game Zork available on my node for example.  I also run an
+Ambient Weather station to which users may pull real-time weather information
+from via my URONode that calls Lynx (text based browser) and other formulas
+to gather real-time statistics on my local weather.
+
+I do provide a bunch of add-ons both on my FTP server and on SourceForge for
+those who wish to add even more functionality to their node(s). An example
+of one very useful one is NodeSearch where a user may enter a string either
+by alias or by callsign to find a NetRom node. An example of searching for
+either type of string:
+n1uro-15@n1uro.ampr.org:/uronode6: ns
+Executing command...
+Which node are you looking for (no * please): n9
+Searching NetRom nodes for N9 ...
+BBSLYA:N9LYA-4    IN105:N9LYA-7     INNOS:N9LYA-5
+NodeSearch v2.2 by N1URO for URONode.
+Goodbye.
+End of command.
+n1uro-15@n1uro.ampr.org:/uronode6: ns
+Executing command...
+Which node are you looking for (no * please): in
+Searching NetRom nodes for IN ...
+DZINOD:SV1DZI-11  DZINOS:SV1DZI-12  IN105:N9LYA-7     INNOS:N9LYA-5
+NodeSearch v2.2 by N1URO for URONode.
+Goodbye.
+End of command.
+
+Bob Tenty has written a parallel for flexnet destis:
+n1uro-15@n1uro.ampr.org:/uronode6: ds
+Executing command...
+Enter the first character or more of a flexnet digi callsign: k1y
+Searching Flexnet Digi nodes for K1Y ...
+K1YON    1-1    K1YON    2-14
+
+Flexnet DigiSearch by VE3TOK for URONode.
+Adaptation of NodeSearch v1.7 by N1URO.
+Goodbye.
+End of command.
+
+While URONode handles HF just fine such as on Net105, some guys seem to live
+by the game of "he with the most nodes listing on their node wins", a listing
+of more than 80 nodes may time out a guest connecting into you via HF thus
+NOT making them feel welcome. Having easy to use search utilities for example
+will make their stay with you pleasant and easier to use than some other
+systems.
+
+
+Where to get it:
+
+Latest release of URONode and various plug-ins may be downloaded from one of 
+two below sites:
 	ftp://ftp.n1uro.net/pub/hamradio/packet/
 	https://sourceforge.net/projects/uronode/
+
+It's always best to wait until you see a new version with .tgz or .tar.gz
+appended so you know the code has been tested to be as bug-free as possible
+or else you're on your own. 
+
+
+Where to get support:
+
+I run an email list server which you may subscribe to by visiting the official
+URONode website at https://uronode.n1uro.com/ just look for the link.
+
+
+Acknowledgements:
+
+I'd like to acknowledge the following people and groups for their various
+contributions and support of the project:
+
+Marius Petrescu - code contributor and member of the URONode development
+                  team
+
+Bob Tenty - code contributor and member of the URONode development team
+
+Paul Lewis - supplied many great ideas for URONode
+
+Tomasz Stankiewicz - supplied many great ideas for URONode
+
+Barry Siegfried - supplied code for URONode
+
+Dave Hibbard - Debian contact
+
+Jaroslav Skarvada - Red Hat contact and code contributor
+
+Craig Small - originated axDigi
+
+Tomi Manninen - original (linux) node creator
+
+Alan Cox - early linux ax.25 developer
+
+Roy Van Zundert - FlexNode developer
+
+Stefano Noferi - AWZNode developer
+
+TAPR - very supportive of URONode
+
+... and the many others involved as sysops and developers of the ax.25 and
+tcp/ip stacks for linux.
+
+URONode comes with absolutely NO WARRANTEE whatsoever. Use at your own risk.
+There are no fees to use this software and unlike others we will never "beg"
+for donations either. Thanks for your support by using URONode.

@@ -26,7 +26,7 @@ make distclean > make.debug
 [ "$LIB_DIR" ] || LIB_DIR=/usr/local/lib
 [ "$DATA_DIR" ] || DATA_DIR=/usr/local/share
 [ "$MAN_DIR" ] || MAN_DIR=/usr/local/share/man
-[ "$VAR_DIR" ] || VAR_DIR=/usr/local/var/ax25
+[ "$VAR_DIR" ] || VAR_DIR=/usr/local/var/lib/ax25
 
 echo "Welcome to the configuration utility for URONode. This configure script"
 echo "will very simply and easily guide you into installling URONode with as"
@@ -62,7 +62,7 @@ if [ -e "$MAKE" ]
    then
    echo -n "saw $MAKE... "
    _sleep 1
-   echo "MAKE found! Congratulations!!"
+   echo "MAKE found!"
 else
    echo "make not found!"
    echo " "

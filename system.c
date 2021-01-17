@@ -73,8 +73,9 @@ int cusgets(char *buf, int buflen, ax25io *iop)
 }
 
 /*---------------------------------------------------------------------------*/
+#define _XOPEN_SOURCE
 
-int find_pty(char *ptyname)
+int find_pty(char **ptyname)
 {
   char master[80];
   int fd;
@@ -83,10 +84,11 @@ int find_pty(char *ptyname)
 
   for(num = lastnum + 1; ; num++) {
     if (num >= NUMPTY) num = 0;
-    sprintf(master, "/dev/pty%c%x", 'p' + (num >> 4), num & 0xf); 
+//    sprintf(master, "/dev/ptmx%c%x", 'p' + (num >> 4), num & 0xf); 
+	sprintf(master, "/dev/ptmx", O_RDWR);
 /*      sprintf(master, "/dev/pts/%x", num & 0xf); */
     if ((fd = open(master, O_RDWR | O_NONBLOCK, 0600)) >= 0) {
-      sprintf(ptyname, "/dev/tty%c%x", 'p' + (num >> 4), num & 0xf);
+      sprintf(ptyname, "/dev/ptmx", 'p' + (num >> 4), num & 0xf);
 /*     sprintf(ptyname, "/dev/pts/%x", num & 0xf); */
       lastnum = num;
       return fd;
@@ -496,7 +498,7 @@ void lastlog(void)
     break;
 #endif    
   case AF_INET:   strcpy(hostname, User.call);
-	strcat(hostname, " on IPv4 ");
+	strcat(hostname, " from ip ");
 	strcat(hostname, User.ul_name);
     break;
   case AF_INET6:  strcpy(hostname6, User.ul_name);

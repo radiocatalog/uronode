@@ -801,7 +801,7 @@ int do_status(int argc, char **argv)
   if (check_perms(PERM_ANSI, 0L) != -1) {
     axio_printf(NodeIo, "\e[01;37m");
   }
-  node_msg("Status report:");
+  node_msg("Short Status report:");
   if (check_perms(PERM_ANSI, 0L) != -1) {
     axio_printf(NodeIo, "\e[0;m");
   }
@@ -829,7 +829,7 @@ int do_status(int argc, char **argv)
   return 0;  
 }
 /* "Status L" */
-  if (argc == 2) {
+  if ((*argv[1] == 'L') || (*argv[1] == 'l')) {
   if (User.ul_type == AF_NETROM) {
     axio_printf(NodeIo,"%s} ", NodeId);
   }
@@ -939,12 +939,21 @@ int do_status(int argc, char **argv)
   axio_printf(NodeIo,"NET/ROM:           %-10d %-10d %-10d",nn,n,r);
 #endif
 #endif
+}
+  else { 
+	if (User.ul_type == AF_NETROM) {
+    	axio_printf(NodeIo, "%s} ", NodeId);
+    	}
+	if (check_perms(PERM_ANSI, 0L) != -1) {
+	axio_printf(NodeIo, "\e[01;37m");
+  	}
+	axio_printf(NodeIo, "Usage: status l OR status L");
+	}
   if (User.ul_type == AF_NETROM) {
     node_msg("");
     }
-  }
   return 0;
-}
+} 
 
 int do_version(int argc, char **argv)
 {

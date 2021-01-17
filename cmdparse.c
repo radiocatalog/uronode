@@ -244,9 +244,9 @@ int cmdparse(struct cmd *list, char *cmdline)
       axio_printf(NodeIo, "%s} ", NodeId);
     }
     if (check_perms(PERM_ANSI, 0L) != -1) {
-      axio_printf(NodeIo,"\e[01;32mExecuting command...\e[0m\n");
+      axio_printf(NodeIo,"\e[01;32mExecuting command. Escape is disabled until command is done.\e[0m\n");
     } else {
-      axio_puts("Executing command... \n", NodeIo);
+      axio_puts("Executing command. Escape is disabled until command is done. \n", NodeIo);
     }
     return extcmd(cmdp, argv);
   }

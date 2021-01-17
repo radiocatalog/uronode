@@ -435,6 +435,36 @@ screens. I did this after noticing some other node softwares go to the
 extreme in showing stats that most end users would never understand nor 
 even care about. This also saves a lot of bandwidth!
 
+17/01/2020 v2.13
+
+Changed the external command text to inform the end user that the escape
+sequence (CTRL-T typically) is disabled while an external command is run. 
+I've been wanting to do this for a while to preserve integrity for the
+user. This required an edit in cmdparse.c
+
+Edited node.h to reflect this version.
+
+Cleaned up the status command. Prior *any* single character would print the
+long status report. Now either "l" OR "L" will be accepted. If another 
+character is pressed an error will display:
+n1uro-15@n1uro.ampr.org:/uronode6: st s
+Usage: status l OR status L
+
+** IMPORTANT **
+-= IF YOU DO NOT READ THIS YOU WILL APPEAR BROKEN =-
+To be more compliant with downstreams I moved the files in /var/ax25/
+to now be looked for in /var/lib/ax25 which appears to be the new file
+system ruleset by the linux gods. I did NOT make this up. I would *strongly*
+urge you to copy over your current /var/ax25/node/* files after running 
+"make upgrade" unless you wish to start with a fresh system of sorts.
+Your config files in etc/ax25 won't be moved or touched and the man
+pages will remain where they are. Your  help files, perhaps your ROSE
+directory (if you use rose.hlp like I do), and user logs will be reset.
+Users will be all considered new again so to prevent this from occurring
+I would move those files over.
+
+73 - Enjoy.
+
 ----------- Note on SystemD --------
 In uronode.socket, you'll notice the line:
 ListenStream=0.0.0.0:3694

@@ -68,7 +68,7 @@ installman:
 	install -m 644	  -p man/axdigi.8	 $(MAN_DIR)/man8
 	install -m 644	  -p man/flexd.8	 $(MAN_DIR)/man8
 
-upgrade: installman installhelp
+upgrade: installbin installman installhelp
 	install -b -m 600    -p etc/uronode.announce  $(ETC_DIR)
 	install -m 755 -p uronode       $(SBIN_DIR)
 	install -m 755 -p nodeusers     $(SBIN_DIR)

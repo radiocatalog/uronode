@@ -37,6 +37,10 @@ PollInterval <time/mins>. Be sure you do NOT configure it to connect to
 a service linked within the flexnet neighbor such as a BBS! You will NOT
 receive any destinations to your system that way and the BBS will think
 you're attempting a feed.
+
+Also note: your FlexNet destination host *must* reside in your uronode.route
+file or else flexd will *not* know the path where to connect and the robot
+will exit.
 .TP 14
 
 
@@ -44,6 +48,7 @@ you're attempting a feed.
 .SH FILES
 .LP
 /usr/local/etc/ax25/flexd.conf
+/usr/local/etc/ax25/uronode.routes
 .SH "SEE ALSO"
 .BR uronode (8),
 .BR uronode.perms (5),

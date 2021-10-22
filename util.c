@@ -17,8 +17,8 @@
 #include "procinfo.h"
 
 static char buf[256];
-char *HostName;
-char *Prompt;
+//char *HostName;
+//char *Prompt;
 
 void node_msg(const char *fmt, ...)
 {

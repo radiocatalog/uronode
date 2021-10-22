@@ -19,9 +19,12 @@
  *
  *  JSN - Small tweaks to ensure compilation and execution under Linux 2.1.x.
  *        12th June 1997.
+ *
+ *  Thanks to Helmut Grohne for a minor patch
+ *
  */
 
-#include </usr/include/net/if.h>
+#include <net/if.h>
 #include <linux/if_ether.h>
 #include <netinet/in.h>
 #include <sys/ioctl.h>

@@ -27,6 +27,10 @@
 
 struct cmd *Nodecmds = NULL;
 
+int meminfo(const char *s);
+
+int kill();
+
 void init_nodecmds(void)
 {
   add_internal_cmd(&Nodecmds, "?",        1, do_help);
@@ -1059,7 +1063,7 @@ int nuser_list(int argc, char **argv)
 	      u.call);
       break;
     default:
-      sprintf(buf, "\n?????? (%.9s %.18s)",
+      sprintf(buf, "\n????? (%.9s %.18s)",
 	      u.call, u.ul_name);
       break;
     }

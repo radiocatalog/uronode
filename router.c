@@ -209,8 +209,8 @@ int do_dest(int argc, char **argv)
     if ((User.ul_type == AF_NETROM) && (i % 4) != 0) { 
 	  node_msg(""); 
 	} else
-    if ((User.ul_type != AF_NETROM) && (i % 4) != 0) {
-	printf("test");
+//    if ((User.ul_type != AF_NETROM) && (i % 4) != 0) {
+    if ((User.ul_type != AF_NETROM) && ((i % 4) == 0)) {
 	}
 	free_flex_dst(fdst);
     return 0;

@@ -23,6 +23,8 @@
 
 ax25io *NodeIo  = NULL;
 
+void node_prompt();
+
 int aliascmd = 0;
 
 /*

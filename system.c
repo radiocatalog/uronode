@@ -75,7 +75,7 @@ int cusgets(char *buf, int buflen, ax25io *iop)
 /*---------------------------------------------------------------------------*/
 #define _XOPEN_SOURCE
 
-int find_pty(char **ptyname)
+int find_pty(char *ptyname)
 {
   char master[80];
   int fd;

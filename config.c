@@ -153,7 +153,12 @@ char *read_perms(struct user *up, unsigned long peer)
 	break;
       continue;
 #endif	
-    case AF_INET6:		
+//    case AF_INET6:		
+//      if (!strcmp(argv[1], "*"))
+//        break;
+//      if (!strcasecmp(argv[1], ""))
+//	break;
+//     continue;
     case AF_INET:
       if (!strcmp(argv[1], "*"))
 	break;

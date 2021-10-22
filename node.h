@@ -1,5 +1,5 @@
-#define VERSION                "URONode v2.13"
-#define COMPILING	       "17 January, 2021"
+#define VERSION                "URONode v2.15"
+#define COMPILING	       "14 October, 2021"
 
 #define STATE_IDLE	0
 #define STATE_TRYING	1
@@ -103,6 +103,7 @@ extern struct cmd *Nodecmds;
 void free_cmdlist(struct cmd *list);
 extern void insert_cmd(struct cmd **list, struct cmd *new);
 extern int add_internal_cmd(struct cmd **list, char *name, int len, int (*function) (int argc, char **argv));
+
 /* extern char *expand_string(char *str, int argc, char **argv); */
 extern int parse_args(char **argv, char *cmd);
 extern int cmdparse(struct cmd *cmdp, char *cmdline);
@@ -171,3 +172,4 @@ extern void lastlog(void);
 /* in jheard.c */
 extern int do_jheard(int argc, char **argv);
 extern int do_jlong(int argc, char **argv);
+

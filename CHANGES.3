@@ -465,6 +465,31 @@ I would move those files over.
 
 73 - Enjoy.
 
+24/6/2021 2.14
+Fixed a display issue when connecting via flex/ax.25 in regard to the desti
+table where an additional line feed was presented upon the last row being
+a full 4-wide. This was done in router.c
+
+I went through multiple files that were giving compile warnings and fixed
+all the warnings I saw. Hopefully URONode compiles without any warnings
+whatsoever. If you do send me your log.
+
+Note: Linux is on kernel 5.x now and since kernel 4.2, the ax.25 stack module
+in the kernel has had a minor issue of NOT closing an ax.25 socket when used
+with NetRom as a virtual circuit. This prohibits other NetRom sockets from
+being created/established.  This is an awful long time to allow such a bug
+to linger. Until this bug is fixed (to which I have nothing to do with) there's
+not much more I can do with the node. Some guys are more than able to do
+their own kernel compiles, others are not however I seem to get the blame of
+faulty software when this is far from the truth. Until this bug is resolved
+and fixed, the project is on an indefinite pause.
+
+22/10/2021 2.15
+K3CHB found when running "make" that it was erroring on util.c due to dupe
+calls. Removing those calls fixes this bug and allows URONode to compile
+now without error on newer GCC systems. Older ones were a lot more tollerant
+to bugs like this.
+
 ----------- Note on SystemD --------
 In uronode.socket, you'll notice the line:
 ListenStream=0.0.0.0:3694

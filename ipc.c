@@ -31,6 +31,8 @@ struct nmsgbuf {
 
 static int ipc_id = -1;
 
+void node_prompt();
+
 static void usr2_handler(int sig)
 {
   struct nmsgbuf buf;
